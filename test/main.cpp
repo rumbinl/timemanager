@@ -1,9 +1,13 @@
 #include <gl3w/GL/gl3w.h>
 #include <GLFW/glfw3.h>
 #include <skia/include/core/SkCanvas.h>
+#define SK_GANESH
 #define SK_GL
+#include <skia/include/gpu/gl/GrGLInterface.h>
 #include <skia/include/gpu/GrDirectContext.h>
 #include <skia/include/core/SkSurface.h>
+#include <skia/include/core/SkColor.h>
+#include <skia/include/core/SkColorSpace.h>
 
 int main()
 {
@@ -19,17 +23,20 @@ int main()
 
 	gl3wInit();
 	
-	GrDirectContext* gl_context = GrDirectContext::MakeGL().release();
+	sk_sp<GrDirectContext> gl_context = GrDirectContext::MakeGL();
 	GrGLFramebufferInfo framebuffer_info;
 	framebuffer_info.fFBOID=0;
 	framebuffer_info.fFormat=GL_RGBA8;
 	SkColorType color_type = kRGBA_8888_SkColorType;
-	GrBackendRenderTarget backend_render_target(640,480,0,0,framebuffer_info);
-	SkSurface* surface = SkSurface::MakeFromBackendRenderTarget(gl_context, backend_render_target, kBottomLeft_GrSurfaceOrigin, color_type, nullptr, nullptr).release();
+	GrBackendRenderTarget backend_render_target(640,480,4,8,framebuffer_info);
+	sk_sp<SkSurface> surface = SkSurface::MakeFromBackendRenderTarget(gl_context.get(), backend_render_target, kBottomLeft_GrSurfaceOrigin, color_type, nullptr, nullptr);
 
 	while(!glfwWindowShouldClose(context))
 	{
 		glfwSwapBuffers(context);
+
+		surface->getCanvas()->clear(SK_ColorWHITE);
+		surface->flushAndSubmit();
 		
 		glfwPollEvents();
 	}
