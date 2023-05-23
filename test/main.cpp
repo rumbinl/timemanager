@@ -6,6 +6,7 @@
 #include <skia/include/gpu/gl/GrGLInterface.h>
 #include <skia/include/gpu/GrDirectContext.h>
 #include <skia/include/core/SkSurface.h>
+#include <skia/include/core/SkTextBlob.h>
 #include <skia/include/core/SkFont.h>
 #include <skia/include/core/SkColor.h>
 #include <skia/include/core/SkColorSpace.h>
@@ -21,7 +22,7 @@ int main()
 
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
-	uint32_t flags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE;
+	uint32_t flags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE |SDL_WINDOW_HIGH_PIXEL_DENSITY;
 
 	SDL_GL_SetAttribute(SDL_GL_RED_SIZE,8);
 	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE,8);
@@ -50,7 +51,8 @@ int main()
 
 	gl3wInit();
 
-	glViewport(0, 0, 640,480);
+	float dpi = SDL_GetWindowPixelDensity(window);
+	glViewport(0, 0, 640*dpi,480*dpi);
 	glClearColor(1, 1, 1, 1);
 	glClearStencil(0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
@@ -66,21 +68,32 @@ int main()
 	SkColorType color_type = kRGB_888x_SkColorType;
 	GrColorType grColorType = SkColorTypeToGrColorType(color_type);
 
-	GrBackendRenderTarget backend_render_target(640,480,0,8,framebuffer_info);
+	GrBackendRenderTarget backend_render_target(640*dpi,480*dpi,0,8,framebuffer_info);
 		SkSurface* surface = SkSurface::MakeFromBackendRenderTarget(gl_context, backend_render_target, kBottomLeft_GrSurfaceOrigin, color_type,nullptr,nullptr).release();
 
 	SkCanvas* canvas = surface->getCanvas();
 
 	SDL_Event e;
 
+
+	SkPaint p;
+	p.setColor(SK_ColorBLACK);
+	p.setStyle(SkPaint::kFill_Style);
+	p.setAntiAlias(true);
+	p.setDither(true);
+	p.setStrokeWidth(0);
+	SkFont f=SkFont(SkTypeface::MakeDefault(), 20*dpi);
+	canvas->clear(SkColorSetRGB(255,255,255));
+	canvas->drawString("Honestas. Tranquilitas. Progressus.",80,80,f,p);
+	canvas->flush();
+	SDL_GL_SwapWindow(window);
 	while(1)
 	{
-		SDL_PollEvent(&e);
-		if(e.type==SDL_EVENT_QUIT)
+		if(SDL_WaitEvent(&e)!=0)
+		{
+			if(e.type==SDL_EVENT_QUIT)
 			break;
-		canvas->clear(SK_ColorRED);
-		canvas->flush();
-		SDL_GL_SwapWindow(window);
+		}
 	}
 
 	if(context)
