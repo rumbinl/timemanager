@@ -4,6 +4,8 @@
 
 #include <SDL3/SDL.h>
 
+#include <iostream>
+
 #include <string>
 
 #define SK_GANESH
@@ -11,6 +13,7 @@
 #include <skia/include/core/SkCanvas.h>
 #include <skia/include/gpu/gl/GrGLInterface.h>
 #include <skia/include/gpu/GrDirectContext.h>
+#include <skia/include/core/SkSurface.h>
 #include <skia/include/core/SkColor.h>
 
 // Naming Convention
@@ -50,26 +53,29 @@ class TM_Graphics_Window
 */
 {
 	public:
-		TM_Graphics_Window(std::string window_title, uint32_t init_window_width, uint32_t init_window_height);
-		void Poll_event(SDL_Event* window_event);
-		SkCanvas* Get_skia_canvas_ptr();
+		TM_Graphics_Window(std::string window_title, uint32_t init_window_width, uint32_t init_window_height); // Constructor
+		SkCanvas* Get_skia_canvas_ptr(); // Gets Skia Canvas object for drawing 
 		~TM_Graphics_Window();
 	private:
-		void Set_SDL_GL_attributes();
-		void Handle_resize(SDL_Event* window_event);
+		void Init_skia();
+		void Set_SDL_GL_attributes(); // Sets API specific GL attributes
+		void Handle_resize(SDL_Event* window_event); // Manipulates window data in case of resize
 
 		// General SDL Window + GL Objects
+		bool init_success;
 		SDL_Window* SDL_window_ptr;
-		SDL_GLContext* SDL_GL_context;
+		SDL_GLContext SDL_GL_context;
 
 		// Window attributes
 		float SDL_window_DPI;
+		uint32_t SDL_window_flags;
 		std::string window_title;
 		uint32_t window_width,window_height;
-		uint32_t gl_framebuffer_id;
+		GLint gl_framebuffer_id;
 	
 		// Skia objects
 		GrDirectContext* skia_GL_context;
+		GrBackendRenderTarget* skia_backend_render_target;
 		GrGLFramebufferInfo skia_GL_framebuffer_info;
 		SkColorType skia_color_type;
 		SkSurface* skia_window_surface;

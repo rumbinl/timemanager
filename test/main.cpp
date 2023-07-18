@@ -20,7 +20,7 @@ using namespace std;
 int main()
 {
 
-	// SDL OpenGL Config.
+	// SDL OpenGL Config. DONE
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -36,11 +36,11 @@ int main()
 	SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL,1);
 	
 	uint32_t flags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE |SDL_WINDOW_HIGH_PIXEL_DENSITY;
-	// SDL Video and Input Initialization
+	// SDL Video and Input Initialization. DONE
 	if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS)!=0)
 		cout<<"Failed to initialize SDL"<<endl;
 	
-	// Window object created
+	// Window object created. DONE
 	SDL_Window* window = SDL_CreateWindow("Time Man.", 640, 480, flags);
 
 	if(!window)
@@ -51,9 +51,7 @@ int main()
 	if(SDL_GL_MakeCurrent(window, context)!=0)
 		cout<<"Failed to make context current"<<endl;
 
-	uint32_t format = SDL_GetWindowPixelFormat(window);
-	int context_type;	
-	SDL_GL_GetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,&context_type); 
+	 
 
 	// Init openGL
 	gl3wInit();
@@ -67,6 +65,10 @@ int main()
 	glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 	// Skia Settings
+	uint32_t format = SDL_GetWindowPixelFormat(window); // IGNORE FOR NOW
+
+	int context_type;	
+	SDL_GL_GetAttribute(SDL_GL_CONTEXT_PROFILE_MASK,&context_type); // IGNORE FOR NOW
 	GrDirectContext* gl_context = GrDirectContext::MakeGL(GrGLMakeNativeInterface()).release();
 	if(gl_context==NULL)
 		cout<<"Failed to create Skia GL context"<<endl;
