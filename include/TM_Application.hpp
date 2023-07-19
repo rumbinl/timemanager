@@ -15,6 +15,7 @@
 #include <skia/include/gpu/GrDirectContext.h>
 #include <skia/include/core/SkSurface.h>
 #include <skia/include/core/SkColor.h>
+#include <skia/include/core/SkColorSpace.h>
 
 // Naming Convention
 // Words spaced with '_'
@@ -57,7 +58,8 @@ class TM_Graphics_Window
 		SkCanvas* Get_skia_canvas_ptr(); // Gets Skia Canvas object for drawing 
 		~TM_Graphics_Window();
 	private:
-		void Init_skia();
+		void Init_skia(); // Helper function of constructor
+		void Destroy_skia(); // Helper function of destructor
 		void Set_SDL_GL_attributes(); // Sets API specific GL attributes
 		void Handle_resize(SDL_Event* window_event); // Manipulates window data in case of resize
 
@@ -74,8 +76,8 @@ class TM_Graphics_Window
 		GLint gl_framebuffer_id;
 	
 		// Skia objects
-		GrDirectContext* skia_GL_context;
-		GrBackendRenderTarget* skia_backend_render_target;
+		GrDirectContext* skia_GL_context=NULL;
+		GrBackendRenderTarget* skia_backend_render_target=NULL;
 		GrGLFramebufferInfo skia_GL_framebuffer_info;
 		SkColorType skia_color_type;
 		SkSurface* skia_window_surface;

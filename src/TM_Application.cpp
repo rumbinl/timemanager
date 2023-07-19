@@ -1,16 +1,17 @@
-#include "TM_Application.hpp"
+#include <TM_Application.hpp>
 
 // All necessary Skia GL settings
-const SDL_GL_setting SDL_GL_setting_array[10]={{SDL_GL_CONTEXT_MAJOR_VERSION, 3},
-					       {SDL_GL_CONTEXT_MINOR_VERSION, 0},
-					       {SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE},
-					       {SDL_GL_RED_SIZE,8},
-					       {SDL_GL_GREEN_SIZE,8},
-					       {SDL_GL_BLUE_SIZE,8},
-					       {SDL_GL_DOUBLEBUFFER,1},
-					       {SDL_GL_DEPTH_SIZE,0},
-					       {SDL_GL_STENCIL_SIZE,8},
-					       {SDL_GL_ACCELERATED_VISUAL,1}};
+const SDL_GL_setting SDL_GL_setting_array[10]={
+							{SDL_GL_CONTEXT_MAJOR_VERSION, 3},
+					       	{SDL_GL_CONTEXT_MINOR_VERSION, 0},
+					       	{SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE},
+					       	{SDL_GL_RED_SIZE,8},
+					       	{SDL_GL_GREEN_SIZE,8},
+					       	{SDL_GL_BLUE_SIZE,8},
+					       	{SDL_GL_DOUBLEBUFFER,1},
+					       	{SDL_GL_DEPTH_SIZE,0},
+					       	{SDL_GL_STENCIL_SIZE,8},
+					       	{SDL_GL_ACCELERATED_VISUAL,1}};
 
 const uint32_t default_SDL_window_flags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY;
 
@@ -23,6 +24,8 @@ TM_Graphics_Window::TM_Graphics_Window(std::string window_title, uint32_t init_w
 	this->window_title = window_title;
 	this->window_width = init_window_width;
 	this->window_height = init_window_height;
+
+	this->Set_SDL_GL_attributes();
 
 	if(SDL_Init(default_SDL_flags)!=0)
 	{
@@ -39,7 +42,24 @@ TM_Graphics_Window::TM_Graphics_Window(std::string window_title, uint32_t init_w
 	}	
 
 	this->SDL_GL_context = SDL_GL_CreateContext(this->SDL_window_ptr);
-	// LEFT OFF
+
+	if(SDL_GL_MakeCurrent(this->SDL_window_ptr, this->SDL_GL_context)!=0)
+	{
+		std::cout<<"Failed to make GL context current! Aborting..."<<std::endl;
+		this->init_success = false;
+	}
+
+	if(gl3wInit())
+	{
+		std::cout<<"Failed to initialize OpenGL! Aborting..."<<std::endl;
+		this->init_success = false;
+	}
+
+	if(this->init_success)
+		glViewport(0, 0, this->window_width * this->SDL_window_DPI, this->window_height * this->SDL_window_DPI);
+
+	if(this->init_success)
+		this->Init_skia();
 }
 
 SkCanvas* TM_Graphics_Window::Get_skia_canvas_ptr()
@@ -50,6 +70,12 @@ SkCanvas* TM_Graphics_Window::Get_skia_canvas_ptr()
 
 TM_Graphics_Window::~TM_Graphics_Window()
 {
+	this->Destroy_skia();
+
+	if(this->SDL_GL_context)
+		SDL_GL_DeleteContext(this->SDL_GL_context);
+	SDL_DestroyWindow(this->SDL_window_ptr);
+	SDL_Quit();
 }
 
 void TM_Graphics_Window::Init_skia()
@@ -70,6 +96,15 @@ void TM_Graphics_Window::Init_skia()
 	this->skia_color_type = kRGB_888x_SkColorType;
 
 	this->skia_backend_render_target = new GrBackendRenderTarget(this->window_width*this->SDL_window_DPI, this->window_height*this->SDL_window_DPI, 0, 8, this->skia_GL_framebuffer_info);
+}
+
+void TM_Graphics_Window::Destroy_skia()
+{
+	if(this->skia_backend_render_target)
+		delete this->skia_backend_render_target;
+
+	if(this->skia_GL_context)
+		delete this->skia_GL_context;
 }
 
 void TM_Graphics_Window::Set_SDL_GL_attributes()
