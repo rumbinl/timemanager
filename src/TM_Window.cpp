@@ -55,8 +55,15 @@ TM_Graphics_Window::TM_Graphics_Window(std::string window_title, uint32_t init_w
 		this->init_success = false;
 	}
 
+	this->SDL_window_DPI = SDL_GetWindowPixelDensity(this->SDL_window_ptr);
+
 	if(this->init_success)
+	{
 		glViewport(0, 0, this->window_width * this->SDL_window_DPI, this->window_height * this->SDL_window_DPI);
+		glClearColor(1,1,1,1);
+		glClearStencil(0);
+		glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+	}
 
 	if(this->init_success)
 		this->Init_skia();
@@ -84,8 +91,11 @@ TM_Graphics_Window::~TM_Graphics_Window()
 
 	if(this->SDL_GL_context)
 		SDL_GL_DeleteContext(this->SDL_GL_context);
+
 	SDL_DestroyWindow(this->SDL_window_ptr);
+
 	SDL_Quit();
+	
 }
 
 void TM_Graphics_Window::Init_skia()
@@ -126,4 +136,9 @@ void TM_Graphics_Window::Set_SDL_GL_attributes()
 
 void TM_Graphics_Window::Handle_resize(SDL_Event* window_event)
 {
+	SDL_GetWindowSize(this->SDL_window_ptr, &this->window_width, &this->window_height);
+	glViewport(0,0,this->window_width*this->SDL_window_DPI, this->window_height*this->SDL_window_DPI);
+
+	delete this->skia_backend_render_target;
+	this->skia_backend_render_target = new GrBackendRenderTarget(this->window_width*this->SDL_window_DPI, this->window_height*this->SDL_window_DPI, 0, 8, this->skia_GL_framebuffer_info);
 }

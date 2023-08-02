@@ -27,6 +27,7 @@ class TM_Graphics_Window
 		SkCanvas* Get_skia_canvas_ptr(); // Gets Skia Canvas object for drawing 
 		bool Was_init_success();
 		void Swap_buffers();
+		void Handle_resize(SDL_Event* window_event); // Manipulates window data in case of resize
 
 		~TM_Graphics_Window();
 
@@ -34,7 +35,6 @@ class TM_Graphics_Window
 		void Init_skia(); // Helper function of constructor
 		void Destroy_skia(); // Helper function of destructor
 		void Set_SDL_GL_attributes(); // Sets API specific GL attributes
-		void Handle_resize(SDL_Event* window_event); // Manipulates window data in case of resize
 
 		// General SDL Window + GL Objects
 		bool init_success;
@@ -45,7 +45,7 @@ class TM_Graphics_Window
 		float SDL_window_DPI;
 		uint32_t SDL_window_flags;
 		std::string window_title;
-		uint32_t window_width,window_height;
+		int window_width,window_height;
 		GLint gl_framebuffer_id;
 	
 		// Skia objects
