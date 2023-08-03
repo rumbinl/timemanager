@@ -142,3 +142,8 @@ void TM_Graphics_Window::Handle_resize(SDL_Event* window_event)
 	delete this->skia_backend_render_target;
 	this->skia_backend_render_target = new GrBackendRenderTarget(this->window_width*this->SDL_window_DPI, this->window_height*this->SDL_window_DPI, 0, 8, this->skia_GL_framebuffer_info);
 }
+
+float TM_Graphics_Window::getDPI()
+{
+	return this->SDL_window_DPI;
+}

@@ -18,8 +18,7 @@ TM_ApplicationManager::TM_ApplicationManager() : window_ptr("Timeman", 640, 480)
     this->should_render_update = true;
     this->skia_canvas_clear_color = colorScheme[BACKGROUND_COLOR_INDEX];
 
-    this->text_view_1 = new TM_TextView("Timeman", 200, 100, {colorScheme[1],colorScheme[2],colorScheme[3],2,36});
-    this->calendar_view = new TM_CalendarMonthView(1,2024,1280,960);
+    this->calendar_view = new TM_CalendarMonthView(100, 100, 1,2024,640,480);
 }
 
 void TM_ApplicationManager::Run()
@@ -37,6 +36,7 @@ void TM_ApplicationManager::Run()
 
 void TM_ApplicationManager::Render()
 {
+    this->skia_canvas->resetMatrix();
     this->skia_canvas->clear(this->skia_canvas_clear_color);
 
     this->calendar_view->Render(this->skia_canvas, this->skia_fontList[this->defaultFont]);
@@ -49,13 +49,20 @@ void TM_ApplicationManager::PollEvents()
 {
     if(SDL_WaitEvent(&this->SDL_event_ptr))
     {
-       if(this->SDL_event_ptr.type==SDL_EVENT_QUIT)
+        if(this->SDL_event_ptr.type==SDL_EVENT_QUIT)
             this->should_terminate=true;
         else if(this->SDL_event_ptr.type == SDL_EVENT_WINDOW_RESIZED)
         {
             this->window_ptr.Handle_resize(&this->SDL_event_ptr);
             this->skia_canvas = this->window_ptr.Get_skia_canvas_ptr();
             this->should_render_update = true;
+        }
+        else if(this->SDL_event_ptr.type== SDL_EVENT_MOUSE_MOTION)
+        {
+            float mouseX,mouseY;
+            SDL_GetMouseState(&mouseX,&mouseY);
+            if(this->calendar_view->PollEvents(mouseX*this->window_ptr.getDPI(),mouseY*this->window_ptr.getDPI()))
+                should_render_update = true;
         }
     }
 }
