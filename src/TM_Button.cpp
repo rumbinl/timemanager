@@ -7,7 +7,8 @@ TM_Button::TM_Button(std::string text, SkScalar x, SkScalar y, SkScalar width, S
 
 bool TM_Button::PollEvent(float mouseX, float mouseY)
 {
-    if(this->bounds.contains(mouseX,mouseY))
+    return this->bounds.contains(mouseX,mouseY);
+    /*if(this->bounds.contains(mouseX,mouseY))
     {
         if(!select)
         {
@@ -15,6 +16,7 @@ bool TM_Button::PollEvent(float mouseX, float mouseY)
             std::swap(this->viewSetting.backgroundColor, this->viewSetting.textColor);
             return true;
         }
+        return true;
     }
     else if(this->select)
     {
@@ -22,7 +24,7 @@ bool TM_Button::PollEvent(float mouseX, float mouseY)
         this->select = false;
         return true;
     }
-    return false;
+    return false;*/
 }
 
 SkScalar TM_Button::getX()
@@ -38,4 +40,9 @@ void TM_Button::setX(SkScalar x)
 void TM_Button::setY(SkScalar y)
 {
     this->bounds.offsetTo(this->bounds.x(),y);
+}
+
+void TM_Button::invertColors()
+{
+    std::swap(this->viewSetting.backgroundColor, this->viewSetting.textColor);
 }

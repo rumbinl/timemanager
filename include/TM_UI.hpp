@@ -25,6 +25,7 @@ class TM_TextView
     protected:
         TM_ViewSetting viewSetting;
         SkRect bounds;
+        SkSurface* renderSurface;
     private:
         std::string text;
 };
@@ -36,6 +37,7 @@ class TM_Button : public TM_TextView
         bool PollEvent(float mouseX, float mouseY);
         void setX(SkScalar x);
         void setY(SkScalar y);
+        void invertColors();
         SkScalar getX();
     private:
         bool select;
@@ -50,8 +52,9 @@ class TM_CalendarMonthView
         ~TM_CalendarMonthView();
     private:
         std::vector<TM_Button> dayViewList; 
-        int month,year,firstDay,numDays,numRows,numColumns;
+        int month,year,firstDay,numDays,numRows,numColumns,hoverDayButton=-1,selectDayButton=-1;
         TM_TextView* dataView;
+        SkSurface* renderSurface;
         SkRect bounds;
 };
 
