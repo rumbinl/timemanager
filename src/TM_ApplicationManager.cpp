@@ -18,7 +18,7 @@ TM_ApplicationManager::TM_ApplicationManager() : window_ptr("Timeman", 640, 480)
     this->should_render_update = true;
     this->skia_canvas_clear_color = colorScheme[BACKGROUND_COLOR_INDEX];
 
-    this->calendar_view = new TM_CalendarMonthView(100, 100, 1,2024,640,480);
+    this->calendar_view = new TM_CalendarMonthView(0, 0, 1,2024,640,480);
 }
 
 void TM_ApplicationManager::Run()
@@ -57,13 +57,17 @@ void TM_ApplicationManager::PollEvents()
             this->skia_canvas = this->window_ptr.Get_skia_canvas_ptr();
             this->should_render_update = true;
         }
-        else if(this->SDL_event_ptr.type== SDL_EVENT_MOUSE_MOTION)
+        else if(this->SDL_event_ptr.type== SDL_EVENT_MOUSE_MOTION || (this->SDL_event_ptr.type == SDL_EVENT_MOUSE_BUTTON_DOWN && !this->pressed))
         {
             float mouseX,mouseY;
-            SDL_GetMouseState(&mouseX,&mouseY);
-            if(this->calendar_view->PollEvents(mouseX*this->window_ptr.getDPI(),mouseY*this->window_ptr.getDPI()))
+            int leftPressed = SDL_GetMouseState(&mouseX,&mouseY)&1;
+            if(this->calendar_view->PollEvents(mouseX*this->window_ptr.getDPI(),mouseY*this->window_ptr.getDPI(),leftPressed))
                 should_render_update = true;
+            if(this->SDL_event_ptr.type == SDL_EVENT_MOUSE_BUTTON_DOWN)
+                pressed = true;
         }
+        else
+            this->pressed = false;
     }
 }
 

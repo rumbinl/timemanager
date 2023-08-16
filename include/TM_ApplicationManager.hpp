@@ -36,6 +36,6 @@ class TM_ApplicationManager
 		SkCanvas* skia_canvas;
 
         // Runtime attributes
-		bool should_render_update, should_terminate;
+		bool should_render_update, should_terminate, pressed=false;
         SkColor skia_canvas_clear_color;
 };

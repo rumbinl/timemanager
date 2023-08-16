@@ -5,7 +5,7 @@ TM_Button::TM_Button(std::string text, SkScalar x, SkScalar y, SkScalar width, S
     this->select = false;
 }
 
-bool TM_Button::PollEvent(float mouseX, float mouseY)
+bool TM_Button::PollEvent(float mouseX, float mouseY, bool isPressed)
 {
     return this->bounds.contains(mouseX,mouseY);
     /*if(this->bounds.contains(mouseX,mouseY))

@@ -34,7 +34,7 @@ class TM_Button : public TM_TextView
 {
     public:
         TM_Button(std::string text, SkScalar x, SkScalar y, SkScalar width, SkScalar height, TM_ViewSetting viewSettings={colorScheme[1],colorScheme[2],colorScheme[3],1,24});
-        bool PollEvent(float mouseX, float mouseY);
+        bool PollEvent(float mouseX, float mouseY, bool isPressed);
         void setX(SkScalar x);
         void setY(SkScalar y);
         void invertColors();
@@ -48,7 +48,7 @@ class TM_CalendarMonthView
     public:
         TM_CalendarMonthView(SkScalar x, SkScalar y, int month, int year, SkScalar width, SkScalar height);
         void Render(SkCanvas* skia_canvas, SkFont* font);
-        bool PollEvents(float x, float y);
+        bool PollEvents(float x, float y, bool isPressed);
         ~TM_CalendarMonthView();
     private:
         std::vector<TM_Button> dayViewList; 

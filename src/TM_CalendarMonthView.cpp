@@ -32,28 +32,35 @@ void TM_CalendarMonthView::Render(SkCanvas* skia_canvas, SkFont* font)
         this->dayViewList[i].setX(x);
         this->dayViewList[i].setY(y);
         this->dayViewList[i].setText(std::to_string(i+1));
-        if(i == hoverDayButton)
+        if(i == hoverDayButton || i == selectDayButton)
             this->dayViewList[i].invertColors();
         this->dayViewList[i].Render(skia_canvas, font);
-        if(i == hoverDayButton)
+        if(i == hoverDayButton || i == selectDayButton)
             this->dayViewList[i].invertColors();
         x+=this->dayViewList[0].getWidth();
     }
 }
 
-bool TM_CalendarMonthView::PollEvents(float x, float y)
+bool TM_CalendarMonthView::PollEvents(float x, float y, bool isPressed)
 {
     bool select=false;
     if(this->bounds.contains(x,y))
     {
         for(int i = 0; i<this->dayViewList.size(); i++)
         {
-            if(this->dayViewList[i].PollEvent(x,y))
+            if(this->dayViewList[i].PollEvent(x,y,isPressed))
             {
                 if(this->hoverDayButton!=i)
                 {
                     this->hoverDayButton = i;
                     select = true;
+                }
+                if(isPressed)
+                {
+                    if(this->selectDayButton==i)
+                        this->selectDayButton = -1;
+                    else
+                        this->selectDayButton = i;
                 }
             }
         }
