@@ -1,10 +1,11 @@
 #include <TM_UI.hpp>
 
-TM_TextView::TM_TextView(std::string text, SkScalar width, SkScalar height, SkScalar x, SkScalar y, TM_ViewSetting viewSetting)
+TM_TextView::TM_TextView(std::string text, SkScalar width, SkScalar height, SkScalar x, SkScalar y, TM_ViewSetting viewSetting, bool centered)
 {
     this->text = text;
     this->bounds = SkRect::MakeXYWH(x,y,width,height);
     this->viewSetting = viewSetting;
+    this->centered = centered;
 }
 
 void TM_TextView::Render(SkCanvas* skia_canvas, SkFont* font)
@@ -24,10 +25,16 @@ void TM_TextView::Render(SkCanvas* skia_canvas, SkFont* font)
 
     SkFontMetrics font_metrics;
     font->getMetrics(&font_metrics);
-    SkScalar fontHeight = font_metrics.fDescent;
+    SkScalar fontHeight = font_metrics.fDescent,textX,textY;
     SkRect text_bounds;
+    //skia_canvas->clipRect(this->bounds);
     font->measureText(this->text.c_str(), this->text.length()*sizeof(char), SkTextEncoding::kUTF8, &text_bounds, &paint);
-    skia_canvas->drawString(this->text.c_str(), this->bounds.x()+this->bounds.width()/2 - text_bounds.width()/2, this->bounds.y()+this->bounds.height()/2+fontHeight, *font, paint);
+    if(this->centered)
+        textX = this->bounds.x()+this->bounds.width()/2 - text_bounds.width()/2, textY = this->bounds.y()+this->bounds.height()/2+fontHeight;
+    else 
+        textX = this->bounds.x(), textY = this->bounds.y()+font_metrics.fCapHeight;
+    //skia_canvas->restore();
+    skia_canvas->drawString(this->text.c_str(), textX, textY, *font, paint);
 }
 
 void TM_TextView::setText(std::string newText)

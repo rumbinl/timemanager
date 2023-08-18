@@ -2,7 +2,7 @@
 
 #include <TM_Core.hpp>
 
-typedef struct { SkColor backgroundColor, borderColor, textColor; SkScalar borderThickness, fontSize; } TM_ViewSetting;
+typedef struct { SkColor backgroundColor, borderColor, textColor; SkScalar borderThickness, fontSize, padding; } TM_ViewSetting;
 
 // Render order:
 // 1. Background
@@ -12,7 +12,7 @@ typedef struct { SkColor backgroundColor, borderColor, textColor; SkScalar borde
 class TM_TextView 
 {
     public:
-        TM_TextView(std::string text, SkScalar width, SkScalar height, SkScalar x=0.0f, SkScalar y=0.0f, TM_ViewSetting viewSetting={colorScheme[1],colorScheme[2],colorScheme[3],1,16});
+        TM_TextView(std::string text, SkScalar width, SkScalar height, SkScalar x=0.0f, SkScalar y=0.0f, TM_ViewSetting viewSetting={colorScheme[1],colorScheme[2],colorScheme[3],1,16,5}, bool centered=false);
         void Render(SkCanvas* skia_canvas, SkFont* font);
         void setText(std::string newText);
         SkScalar getWidth();
@@ -21,12 +21,14 @@ class TM_TextView
         void setHeight(SkScalar newHeight);
         void setHeightFont(SkFont* font);
         void setWidth(SkScalar newWidth);
+        void setTextXOffset(SkScalar newTextXOffset);
         ~TM_TextView();
     protected:
         TM_ViewSetting viewSetting;
         SkRect bounds;
-        bool centered = true;
+        bool centered;
         SkSurface* renderSurface;
+        SkScalar textXOffset=0.0f;
     private:
         std::string text;
 };
@@ -34,7 +36,7 @@ class TM_TextView
 class TM_Button : public TM_TextView
 {
     public:
-        TM_Button(std::string text, SkScalar x, SkScalar y, SkScalar width, SkScalar height, TM_ViewSetting viewSettings={colorScheme[1],colorScheme[2],colorScheme[3],1,16});
+        TM_Button(std::string text, SkScalar x, SkScalar y, SkScalar width, SkScalar height, TM_ViewSetting viewSettings={colorScheme[1],colorScheme[2],colorScheme[3],1,16,0});
         bool PollEvent(float mouseX, float mouseY, bool isPressed);
         void setX(SkScalar x);
         void setY(SkScalar y);
@@ -75,7 +77,7 @@ class TM_TextBox : public TM_TextView
 {
 
     public:
-        TM_TextBox(SkScalar x, SkScalar y, SkScalar width, SkScalar height, std::string placeholder, TM_ViewSetting viewSetting ={colorScheme[1],colorScheme[2],colorScheme[3],1,16});
+        TM_TextBox(SkScalar x, SkScalar y, SkScalar width, SkScalar height, std::string placeholder, TM_ViewSetting viewSetting ={colorScheme[1],colorScheme[2],colorScheme[3],1,16,5});
         void Render(SkCanvas* skia_canvas, SkFont* font);
         void PollEvents(float x, float y, bool isPressed);
         ~TM_TextBox();
