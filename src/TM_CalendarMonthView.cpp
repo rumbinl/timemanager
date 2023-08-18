@@ -50,11 +50,8 @@ bool TM_CalendarMonthView::PollEvents(float x, float y, bool isPressed)
         {
             if(this->dayViewList[i].PollEvent(x,y,isPressed))
             {
-                if(this->hoverDayButton!=i)
-                {
-                    this->hoverDayButton = i;
-                    select = true;
-                }
+                this->hoverDayButton = i;
+                select = true;
                 if(isPressed)
                 {
                     if(this->selectDayButton==i)
@@ -65,7 +62,7 @@ bool TM_CalendarMonthView::PollEvents(float x, float y, bool isPressed)
             }
         }
     }
-    else if(this->hoverDayButton!=-1)
+    if(select == false && this->hoverDayButton!=-1)
     {
         this->hoverDayButton = -1;
         return true;

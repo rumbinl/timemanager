@@ -61,9 +61,10 @@ void TM_ApplicationManager::PollEvents()
         {
             float mouseX,mouseY;
             int leftPressed = SDL_GetMouseState(&mouseX,&mouseY)&1;
+            std::cout<<mouseX<<' '<<mouseY<<' '<<leftPressed<<std::endl;
             if(this->calendar_view->PollEvents(mouseX*this->window_ptr.getDPI(),mouseY*this->window_ptr.getDPI(),leftPressed))
                 should_render_update = true;
-            if(this->SDL_event_ptr.type == SDL_EVENT_MOUSE_BUTTON_DOWN)
+            if(leftPressed)
                 pressed = true;
         }
         else
