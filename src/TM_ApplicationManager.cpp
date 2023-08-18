@@ -2,23 +2,24 @@
 
 TM_ApplicationManager::TM_ApplicationManager() : window_ptr("Timeman", 640, 480)
 {
-    if(!this->window_ptr.Was_init_success())
-    {
-        std::cout<<"Window failed to initialize! Aborting..."<<std::endl;
-        this->should_terminate = true;
-        return;
-    }
+	if(!this->window_ptr.Was_init_success())
+	{
+	std::cout<<"Window failed to initialize! Aborting..."<<std::endl;
+	this->should_terminate = true;
+	return;
+	}
 
-    this->skia_canvas = this->window_ptr.Get_skia_canvas_ptr();
-    if(!this->skia_canvas)
-    {
-        std::cout<<"Failed to create Skia canvas!"<<std::endl;
-    }
+	this->skia_canvas = this->window_ptr.Get_skia_canvas_ptr();
+	if(!this->skia_canvas)
+	{
+	std::cout<<"Failed to create Skia canvas!"<<std::endl;
+	}
 
-    this->should_render_update = true;
-    this->skia_canvas_clear_color = colorScheme[BACKGROUND_COLOR_INDEX];
+	this->should_render_update = true;
+	this->skia_canvas_clear_color = colorScheme[BACKGROUND_COLOR_INDEX];
 
-    this->calendar_view = new TM_CalendarMonthView(0, 0, 1,2024,640,480);
+	this->calendar_view = new TM_CalendarMonthView(0, 0, 1,2024,640,480);
+	this->calendar_day_view = new TM_CalendarDayView(640, 0, 640, 480);
 }
 
 void TM_ApplicationManager::Run()
@@ -36,13 +37,14 @@ void TM_ApplicationManager::Run()
 
 void TM_ApplicationManager::Render()
 {
-    this->skia_canvas->resetMatrix();
-    this->skia_canvas->clear(this->skia_canvas_clear_color);
+	this->skia_canvas->resetMatrix();
+	this->skia_canvas->clear(this->skia_canvas_clear_color);
 
-    this->calendar_view->Render(this->skia_canvas, this->skia_fontList[this->defaultFont]);
+	this->calendar_day_view->Render(this->skia_canvas, this->skia_fontList[this->defaultFont]);
+	this->calendar_view->Render(this->skia_canvas, this->skia_fontList[this->defaultFont]);
 
-    this->skia_canvas->flush();
-    this->window_ptr.Swap_buffers();
+	this->skia_canvas->flush();
+	this->window_ptr.Swap_buffers();
 }
 
 void TM_ApplicationManager::PollEvents()
@@ -57,17 +59,23 @@ void TM_ApplicationManager::PollEvents()
             this->skia_canvas = this->window_ptr.Get_skia_canvas_ptr();
             this->should_render_update = true;
         }
-        else if(this->SDL_event_ptr.type== SDL_EVENT_MOUSE_MOTION || (this->SDL_event_ptr.type == SDL_EVENT_MOUSE_BUTTON_DOWN && !this->pressed))
+        else if(this->SDL_event_ptr.type== SDL_EVENT_MOUSE_MOTION)
         {
             float mouseX,mouseY;
             SDL_PumpEvents();
-            int leftPressed = SDL_GetMouseState(&mouseX,&mouseY)&1;
-            std::cout<<mouseX<<' '<<mouseY<<' '<<leftPressed<<std::endl;
-            if(this->calendar_view->PollEvents(mouseX*this->window_ptr.getDPI(),mouseY*this->window_ptr.getDPI(),leftPressed))
+            SDL_GetMouseState(&mouseX,&mouseY);
+            if(this->calendar_view->PollEvents(mouseX*this->window_ptr.getDPI(),mouseY*this->window_ptr.getDPI(),false))
                 should_render_update = true;
-            if(leftPressed)
-                pressed = true;
         }
+	else if(this->SDL_event_ptr.type == SDL_EVENT_MOUSE_BUTTON_DOWN && !this->pressed)
+	{
+		float mouseX,mouseY;
+		SDL_PumpEvents();
+		SDL_GetMouseState(&mouseX,&mouseY);
+		if(this->calendar_view->PollEvents(mouseX*this->window_ptr.getDPI(),mouseY*this->window_ptr.getDPI(),true))
+			should_render_update = true;
+		pressed = true;
+	}
         else
             this->pressed = false;
     }

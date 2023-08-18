@@ -12,7 +12,7 @@ typedef struct { SkColor backgroundColor, borderColor, textColor; SkScalar borde
 class TM_TextView 
 {
     public:
-        TM_TextView(std::string text, SkScalar width, SkScalar height, SkScalar x=0.0f, SkScalar y=0.0f, TM_ViewSetting viewSetting={colorScheme[1],colorScheme[2],colorScheme[3],1,16,5}, bool centered=false);
+        TM_TextView(std::string text, SkScalar width, SkScalar height, SkScalar x=0.0f, SkScalar y=0.0f, TM_ViewSetting viewSetting={colorScheme[1],colorScheme[2],colorScheme[3],1,16,5}, bool centered=true);
         void Render(SkCanvas* skia_canvas, SkFont* font);
         void setText(std::string newText);
         SkScalar getWidth();
@@ -64,7 +64,13 @@ class TM_CalendarMonthView
 class TM_CalendarDayView
 {
     public:
+	TM_CalendarDayView(SkScalar x, SkScalar y, SkScalar width, SkScalar height, SkScalar hourHeight = 80.0, TM_ViewSetting viewSettings={colorScheme[1],colorScheme[2],colorScheme[3],1,16,1});
+	void Render(SkCanvas* skia_canvas, SkFont* font);
+	~TM_CalendarDayView();
     private:
+	TM_ViewSetting viewSettings;
+	SkRect bounds;
+	SkScalar hourHeight;
 };
 
 class TM_CalendarWeekView
