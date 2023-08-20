@@ -27,13 +27,11 @@ void TM_TextView::Render(SkCanvas* skia_canvas, SkFont* font)
     font->getMetrics(&font_metrics);
     SkScalar fontHeight = font_metrics.fDescent,textX,textY;
     SkRect text_bounds;
-    //skia_canvas->clipRect(this->bounds);
     font->measureText(this->text.c_str(), this->text.length()*sizeof(char), SkTextEncoding::kUTF8, &text_bounds, &paint);
     if(this->centered)
         textX = this->bounds.x()+this->bounds.width()/2 - text_bounds.width()/2, textY = this->bounds.y()+this->bounds.height()/2+fontHeight;
     else 
         textX = this->bounds.x(), textY = this->bounds.y()+font_metrics.fCapHeight;
-    //skia_canvas->restore();
     skia_canvas->drawString(this->text.c_str(), textX, textY, *font, paint);
 }
 

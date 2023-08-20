@@ -19,7 +19,7 @@ TM_ApplicationManager::TM_ApplicationManager() : window_ptr("Timeman", 640, 480)
 	this->skia_canvas_clear_color = colorScheme[BACKGROUND_COLOR_INDEX];
 
 	this->calendar_view = new TM_CalendarMonthView(0, 0, 1,2024,640,480);
-	this->calendar_day_view = new TM_CalendarDayView(640, 0, 640, 480);
+	this->calendar_day_view = new TM_CalendarDayView(640, 0, 640, 840);
 }
 
 void TM_ApplicationManager::Run()
@@ -51,6 +51,9 @@ void TM_ApplicationManager::PollEvents()
 {
     if(SDL_WaitEvent(&this->SDL_event_ptr))
     {
+	float mouseX,mouseY;
+	SDL_PumpEvents(); 
+	SDL_GetMouseState(&mouseX,&mouseY);
         if(this->SDL_event_ptr.type==SDL_EVENT_QUIT)
             this->should_terminate=true;
         else if(this->SDL_event_ptr.type == SDL_EVENT_WINDOW_RESIZED)
@@ -61,20 +64,23 @@ void TM_ApplicationManager::PollEvents()
         }
         else if(this->SDL_event_ptr.type== SDL_EVENT_MOUSE_MOTION)
         {
-            float mouseX,mouseY;
-            SDL_PumpEvents();
-            SDL_GetMouseState(&mouseX,&mouseY);
+            
             if(this->calendar_view->PollEvents(mouseX*this->window_ptr.getDPI(),mouseY*this->window_ptr.getDPI(),false))
                 should_render_update = true;
         }
 	else if(this->SDL_event_ptr.type == SDL_EVENT_MOUSE_BUTTON_DOWN && !this->pressed)
 	{
-		float mouseX,mouseY;
-		SDL_PumpEvents();
-		SDL_GetMouseState(&mouseX,&mouseY);
 		if(this->calendar_view->PollEvents(mouseX*this->window_ptr.getDPI(),mouseY*this->window_ptr.getDPI(),true))
 			should_render_update = true;
+
+		if(this->calendar_day_view->PollEvents(mouseX*this->window_ptr.getDPI(),mouseY*this->window_ptr.getDPI(),0,true))
+			should_render_update = true;
 		pressed = true;
+	}
+	else if(this->SDL_event_ptr.type == SDL_EVENT_MOUSE_WHEEL)
+	{
+		if(this->calendar_day_view->PollEvents(mouseX*this->window_ptr.getDPI(),mouseY*this->window_ptr.getDPI(),this->SDL_event_ptr.wheel.y*scrollSensFactor*(this->SDL_event_ptr.wheel.direction==SDL_MOUSEWHEEL_FLIPPED?-1:1),0))
+			should_render_update = true;
 	}
         else
             this->pressed = false;
