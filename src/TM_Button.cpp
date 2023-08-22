@@ -32,15 +32,6 @@ SkScalar TM_Button::getX()
     return this->bounds.x();
 }
 
-void TM_Button::setX(SkScalar x)
-{
-    this->bounds.offsetTo(x,this->bounds.y());
-}
-
-void TM_Button::setY(SkScalar y)
-{
-    this->bounds.offsetTo(this->bounds.x(),y);
-}
 
 void TM_Button::invertColors()
 {
