@@ -11,6 +11,7 @@ TM_CalendarMonthView::TM_CalendarMonthView(SkScalar x, SkScalar y, int month, in
     this->month = month;
     this->year = year;
     this->bounds = SkRect::MakeXYWH(x,y,width,height);
+    this->weekList = std::vector(7, TM_TextView("XX", width/7.0f, 0.0f));
 }
 
 void TM_CalendarMonthView::Render(SkCanvas* skia_canvas, SkFont* font)
@@ -21,6 +22,15 @@ void TM_CalendarMonthView::Render(SkCanvas* skia_canvas, SkFont* font)
     this->dataView->setHeightFont(font);
     this->dataView->Render(skia_canvas, font);
     SkScalar x=this->firstDay*(this->dayViewList[0].getWidth())+this->bounds.x(),y=this->dataView->getHeight()+this->bounds.y();
+    for(int i=0;i<7;i++)
+    {
+        this->weekList[i].setText(dayNames[i].substr(0,2).c_str());
+        this->weekList[i].setX((float)i*this->bounds.width()/7.0f);
+        this->weekList[i].setY(y);
+        this->weekList[i].setHeightFont(font);
+        this->weekList[i].Render(skia_canvas, font);
+    }
+    y+=this->weekList[0].getHeight();
     for(int i=0;i<this->numDays;i++)
     {
         if((i+firstDay)%7==0 && i)

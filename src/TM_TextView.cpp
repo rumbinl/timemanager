@@ -68,6 +68,16 @@ void TM_TextView::setWidth(SkScalar newWidth)
     this->bounds.setWH(newWidth, this->bounds.height());
 }
 
+void TM_TextView::setX(SkScalar x)
+{
+    this->bounds.offsetTo(x,this->bounds.y());
+}
+
+void TM_TextView::setY(SkScalar y)
+{
+    this->bounds.offsetTo(this->bounds.x(),y);
+}
+
 std::string TM_TextView::getText()
 {
     return this->text;
