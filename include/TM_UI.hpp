@@ -72,11 +72,11 @@ class TM_CalendarDayView
         bool PollEvents(float x, float y, float scrollY, bool pressed);
         ~TM_CalendarDayView();
     private:
-        TM_ViewSetting viewSettings;
-        SkRect bounds;
-        SkScalar hourHeight,yOff;
-        int scrollY=0.0f, pressIndexStart=-1, pressIndexEnd=-1;
-        bool selected=false;
+	TM_ViewSetting viewSettings;
+	SkRect bounds;
+	SkScalar hourHeight;
+	int scrollY=0.0f, pressIndexStart=-1, pressIndexEnd=-1;
+	bool selected=false;
 };
 
 class TM_CalendarWeekView
