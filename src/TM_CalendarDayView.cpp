@@ -20,6 +20,17 @@ void TM_CalendarDayView::Render(SkCanvas* skia_canvas, SkFont* font)
 	font->setSize(this->viewSettings.fontSize);
 	SkFontMetrics fontMetrics;
 	font->getMetrics(&fontMetrics);
+	SkRect text_bounds;
+	font->measureText("XX:XX", 5*sizeof(char), SkTextEncoding::kUTF8, &text_bounds, &paint);
+	SkScalar xOff = text_bounds.width();
+	if(this->selected)
+	{
+		paint.setColor(this->viewSettings.backgroundColor);
+		SkScalar topY=this->yOff + (this->hourHeight/12.0f)*round((this->pressIndexStart+this->scrollY-this->yOff)/(this->hourHeight/12.0f)),height = (this->hourHeight/12.0f)*round((this->pressIndexEnd-this->pressIndexStart)/(this->hourHeight/12.0f));
+		SkRRect rect = SkRRect::MakeRectXY(SkRect::MakeXYWH(this->bounds.x()+xOff, topY, this->bounds.width()-xOff, height),20,20);
+		skia_canvas->drawRRect(rect, paint);
+	}
+	paint.setColor(this->viewSettings.borderColor);
 
 	SkScalar yOff = -this->scrollY;
 	for(int i=0;i<24;i++)

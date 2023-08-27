@@ -63,8 +63,9 @@ void TM_ApplicationManager::PollEvents()
 		else
 		{
 			float mouseX,mouseY,scrollY=0.0f;
+			bool pressed = SDL_event_ptr.type==SDL_EVENT_MOUSE_BUTTON_DOWN;
 			SDL_PumpEvents(); 
-			pressed = SDL_GetMouseState(&mouseX,&mouseY)&1>0;
+			bool held = (SDL_GetMouseState(&mouseX,&mouseY)&1)>0; 
 			if(this->SDL_event_ptr.type == SDL_EVENT_MOUSE_WHEEL)
 				scrollY = this->SDL_event_ptr.wheel.y;
 			if(this->calendar_month_view->PollEvents(
@@ -76,7 +77,7 @@ void TM_ApplicationManager::PollEvents()
 				mouseX*this->window_ptr.getDPI(),
 				mouseY*this->window_ptr.getDPI(),
 				scrollY*scrollSensFactor*(this->SDL_event_ptr.wheel.direction==SDL_MOUSEWHEEL_FLIPPED?-1:1),
-				pressed))
+				pressed||held))
 				should_render_update = true;
 		}
     }

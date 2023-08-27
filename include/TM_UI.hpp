@@ -74,7 +74,7 @@ class TM_CalendarDayView
     private:
 	TM_ViewSetting viewSettings;
 	SkRect bounds;
-	SkScalar hourHeight;
+	SkScalar hourHeight,yOff;
 	int scrollY=0.0f, pressIndexStart=-1, pressIndexEnd=-1;
 	bool selected=false;
 };
