@@ -70,13 +70,15 @@ class TM_CalendarDayView
         TM_CalendarDayView(SkScalar x, SkScalar y, SkScalar width, SkScalar height, SkScalar hourHeight = 80.0, TM_ViewSetting viewSettings={colorScheme[1],colorScheme[2],colorScheme[3],1,16,1});
         void Render(SkCanvas* skia_canvas, SkFont* font);
         bool PollEvents(float x, float y, float scrollY, bool pressed);
+        
         ~TM_CalendarDayView();
+    protected:
+        TM_ViewSetting viewSettings;
+        SkRect bounds,srcBounds;
+        SkScalar hourHeight,yOff,xOff=0.0f;
+        int scrollY=0.0f, pressIndexStart=-1, pressIndexEnd=-1;
     private:
-	TM_ViewSetting viewSettings;
-	SkRect bounds,srcBounds;
-	SkScalar hourHeight,yOff;
-	int scrollY=0.0f, pressIndexStart=-1, pressIndexEnd=-1;
-	bool selected=false;
+        bool selected=false;
 };
 
 class TM_CalendarWeekView : public TM_CalendarDayView
@@ -84,9 +86,10 @@ class TM_CalendarWeekView : public TM_CalendarDayView
     public:
         TM_CalendarWeekView(SkScalar x, SkScalar y, SkScalar width, SkScalar height, SkScalar hourHeight = 80.0, TM_ViewSetting viewSettings={colorScheme[1],colorScheme[2],colorScheme[3],1,16,1});
         void Render(SkCanvas* skia_canvas, SkFont* font);
-        bool PollEvents(float, x, float y, float scrollY, bool pressed);
+        bool PollEvents(float x, float y, float scrollY, bool pressed);
         ~TM_CalendarWeekView();
     private:
+        int pressWeekIndexStart = -1, pressWeekIndexEnd = -1;
 };
 
 class TM_TextBox : public TM_TextView

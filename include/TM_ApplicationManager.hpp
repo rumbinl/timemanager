@@ -26,6 +26,7 @@ class TM_ApplicationManager
 		int defaultFont=-1;
 		TM_TextView* text_view_1;
 		TM_CalendarMonthView* calendar_month_view;
+		TM_CalendarWeekView* calendar_week_view;
 		TM_CalendarDayView* calendar_day_view;
 
         // Pointers to Timeman classes

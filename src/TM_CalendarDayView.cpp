@@ -23,7 +23,7 @@ void TM_CalendarDayView::Render(SkCanvas* skia_canvas, SkFont* font)
 	font->getMetrics(&fontMetrics);
 	SkRect text_bounds;
 	font->measureText("XX:XX", 5*sizeof(char), SkTextEncoding::kUTF8, &text_bounds, &paint);
-	SkScalar xOff = text_bounds.width();
+	this->xOff = text_bounds.width();
 	if(this->selected)
 	{
 		paint.setColor(this->viewSettings.backgroundColor);
@@ -36,7 +36,6 @@ void TM_CalendarDayView::Render(SkCanvas* skia_canvas, SkFont* font)
 	SkScalar yOff = -this->scrollY, y = this->bounds.y();
 	for(int i=0;i<24;i++)
 	{
-
 		std::string timeString = std::to_string(i)+":00";
 		font->measureText(timeString.c_str(), timeString.size()*sizeof(char), SkTextEncoding::kUTF8, &text_bounds, &paint);
 
@@ -45,6 +44,7 @@ void TM_CalendarDayView::Render(SkCanvas* skia_canvas, SkFont* font)
 			this->viewSettings.padding = text_bounds.height()-fontMetrics.fBottom;
 			y += this->viewSettings.padding;
 		}
+
 		skia_canvas->drawString(timeString.c_str(), xOff-text_bounds.width()+this->bounds.x(), y+yOff+fontMetrics.fBottom, *font, paint);
 		skia_canvas->drawLine(this->bounds.x()+xOff, y+yOff, this->bounds.x()+this->bounds.width(), y+yOff, paint);
 		y += this->hourHeight;
@@ -70,7 +70,7 @@ bool TM_CalendarDayView::PollEvents(float x, float y, float scrollY, bool presse
 			this->selected = true;
 		}
 		if(pressed)
-		this->pressIndexEnd = y-this->scrollY;
+			this->pressIndexEnd = y-this->scrollY;
 		else
 			selected = false;
 		return true;
