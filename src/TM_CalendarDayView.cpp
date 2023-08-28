@@ -85,6 +85,12 @@ bool TM_CalendarDayView::PollEvents(float x, float y, float scrollY, bool presse
 	return false;
 }
 
+void TM_CalendarDayView::unsetSelect()
+{
+	this->pressIndexEnd = -1;
+	this->pressIndexStart = -1;
+}
+
 TM_CalendarDayView::~TM_CalendarDayView()
 {
 }

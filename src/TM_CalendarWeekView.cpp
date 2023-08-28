@@ -22,7 +22,39 @@ void TM_CalendarWeekView::Render(SkCanvas* skia_canvas, SkFont* font)
 
 bool TM_CalendarWeekView::PollEvents(float x, float y, float scrollY, bool pressed)
 {
-    return TM_CalendarDayView::PollEvents(x,y,scrollY,pressed);
+    if(this->bounds.contains(x,y))
+    {
+        if(scrollY!=0)
+		{
+			this->scrollY+=scrollY;
+			SkScalar scrollLimitY = this->srcBounds.height()-this->bounds.height();
+			this->scrollY = fmin(scrollLimitY, fmax(0, this->scrollY));
+        }
+        if(pressed&&this->selected == false)
+		{
+			this->pressIndexStart = y-this->scrollY;
+            this->pressWeekIndexStart = x;
+		}
+        this->selected = pressed;
+
+		if(pressed)
+        {
+			this->pressIndexEnd = y-this->scrollY;
+            this->pressWeekIndexEnd = x;
+        }
+
+		return true;
+    }
+    if(this->selected && !pressed)
+	{
+		this->selected = false;
+		this->pressIndexStart = 
+		this->pressIndexEnd = 
+        this->pressWeekIndexStart = 
+        this->pressWeekIndexEnd = -1;
+		return true;
+	}
+    return false;
 }
 
 TM_CalendarWeekView::~TM_CalendarWeekView()
