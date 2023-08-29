@@ -6,3 +6,4 @@ timeman
 *.obj
 *.exe
 *.dll
+src/gl3w.c
