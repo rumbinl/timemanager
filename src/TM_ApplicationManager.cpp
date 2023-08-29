@@ -19,8 +19,7 @@ TM_ApplicationManager::TM_ApplicationManager() : window_ptr("Timeman", 960, 540)
 	this->skia_canvas_clear_color = colorScheme[BACKGROUND_COLOR_INDEX];
 
 	this->calendar_month_view = new TM_CalendarMonthView(0, 0, 1,2024,640,480);
-	this->calendar_week_view = new TM_CalendarWeekView(640, 0, 1024, 840);
-	this->calendar_day_view = new TM_CalendarDayView(640, 0, 640, 840);
+	this->calendar_week_view = new TM_CalendarWeekView(640, 0, 1024, 840,3);
 }
 
 void TM_ApplicationManager::Run()
@@ -41,7 +40,6 @@ void TM_ApplicationManager::Render()
 	this->skia_canvas->resetMatrix();
 	this->skia_canvas->clear(this->skia_canvas_clear_color);
 
-	//this->calendar_day_view->Render(this->skia_canvas, this->skia_fontList[this->defaultFont]);
 	this->calendar_month_view->Render(this->skia_canvas, this->skia_fontList[this->defaultFont]);
 	this->calendar_week_view->Render(this->skia_canvas, this->skia_fontList[this->defaultFont]);
 

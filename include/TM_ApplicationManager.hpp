@@ -27,7 +27,6 @@ class TM_ApplicationManager
 		TM_TextView* text_view_1;
 		TM_CalendarMonthView* calendar_month_view;
 		TM_CalendarWeekView* calendar_week_view;
-		TM_CalendarDayView* calendar_day_view;
 
         // Pointers to Timeman classes
 		TM_Graphics_Window window_ptr;
