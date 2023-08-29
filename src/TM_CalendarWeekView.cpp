@@ -7,7 +7,7 @@ TM_CalendarWeekView::TM_CalendarWeekView(SkScalar x, SkScalar y, SkScalar width,
 
 void TM_CalendarWeekView::Render(SkCanvas* skia_canvas, SkFont* font)
 {
-    int numDays = 1;
+    int numDays = 7;
     TM_CalendarDayView::Render(skia_canvas, font);
     SkScalar dayWidth = (this->bounds.width() - this->xOff)/((SkScalar)numDays);
     SkScalar x = this->bounds.x() + this->xOff;
@@ -25,8 +25,8 @@ void TM_CalendarWeekView::Render(SkCanvas* skia_canvas, SkFont* font)
     if(startDayIdx>endDayIdx) { std::swap(startDayIdx, endDayIdx); std::swap(firstY,secondY); };
     SkScalar startDayX = this->bounds.x()+xOff+dayWidth*startDayIdx
     ,endDayX = this->bounds.x()+xOff+dayWidth*endDayIdx;
-    SkScalar topY=-this->scrollY+this->yOff + (this->hourHeight/12.0f)*floor((firstY-this->yOff)/(this->hourHeight/12.0f)),
-    botY = -this->scrollY+this->yOff + (this->hourHeight/12.0f)*floor((secondY-this->yOff)/(this->hourHeight/12.0f)),
+    SkScalar topY=this->yOff -this->scrollY+ (this->hourHeight/12.0f)*floor((firstY-this->yOff)/(this->hourHeight/12.0f)),
+    botY = this->yOff -this->scrollY + (this->hourHeight/12.0f)*floor((secondY-this->yOff)/(this->hourHeight/12.0f)),
             height = (this->hourHeight/12.0f)*floor((secondY-firstY)/(this->hourHeight/12.0f));
             paint.setColor(this->viewSettings.backgroundColor);
     if(startDayIdx == endDayIdx)
@@ -56,14 +56,14 @@ bool TM_CalendarWeekView::PollEvents(float x, float y, float scrollY, bool press
         }
         if(pressed&&this->selected == false)
 		{
-			this->pressDayIndexStart = y-this->scrollY;
+			this->pressDayIndexStart = y+this->scrollY;
             this->pressWeekIndexStart = x;
 		}
         this->selected = pressed;
 
 		if(pressed)
         {
-			this->pressDayIndexEnd = y-this->scrollY;
+			this->pressDayIndexEnd = y+this->scrollY;
             this->pressWeekIndexEnd = x;
         }
 
