@@ -17,6 +17,7 @@ void TM_CalendarDayView::Render(SkCanvas* skia_canvas, SkFont* font)
 	skia_canvas->drawRect(this->bounds, paint);
 	skia_canvas->save();
 	skia_canvas->clipRect(this->bounds);
+	skia_canvas->setMatrix(SkMatrix::Translate(this->bounds.x(), this->bounds.y()));
 	paint.setStyle(SkPaint::kStrokeAndFill_Style);
 	font->setSize(this->viewSettings.fontSize);
 	SkFontMetrics fontMetrics;
@@ -28,12 +29,12 @@ void TM_CalendarDayView::Render(SkCanvas* skia_canvas, SkFont* font)
 	{
 		paint.setColor(this->viewSettings.backgroundColor);
 		SkScalar topY=this->yOff + (this->hourHeight/12.0f)*round((this->pressIndexStart+this->scrollY-this->yOff)/(this->hourHeight/12.0f)),height = (this->hourHeight/12.0f)*round((this->pressIndexEnd-this->pressIndexStart)/(this->hourHeight/12.0f));
-		SkRRect rect = SkRRect::MakeRectXY(SkRect::MakeXYWH(this->bounds.x()+xOff, topY, this->bounds.width()-xOff, height),20,20);
+		SkRRect rect = SkRRect::MakeRectXY(SkRect::MakeXYWH(xOff, topY, this->bounds.width()-xOff, height),20,20);
 		skia_canvas->drawRRect(rect, paint);
 	}
 	paint.setColor(this->viewSettings.borderColor);
 
-	SkScalar yOff = -this->scrollY, y = this->bounds.y();
+	SkScalar yOff = -this->scrollY, y = 0.0f;
 	for(int i=0;i<24;i++)
 	{
 		std::string timeString = std::to_string(i)+":00";
@@ -45,8 +46,8 @@ void TM_CalendarDayView::Render(SkCanvas* skia_canvas, SkFont* font)
 			y += this->viewSettings.padding;
 		}
 
-		skia_canvas->drawString(timeString.c_str(), xOff-text_bounds.width()+this->bounds.x(), y+yOff+fontMetrics.fBottom, *font, paint);
-		skia_canvas->drawLine(this->bounds.x()+xOff, y+yOff, this->bounds.x()+this->bounds.width(), y+yOff, paint);
+		skia_canvas->drawString(timeString.c_str(), xOff-text_bounds.width(), y+yOff+fontMetrics.fBottom, *font, paint);
+		skia_canvas->drawLine(xOff, y+yOff, this->bounds.width(), y+yOff, paint);
 		y += this->hourHeight;
 	}
 	this->srcBounds.setWH(this->srcBounds.width(), y);

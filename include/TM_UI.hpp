@@ -75,8 +75,8 @@ class TM_CalendarDayView
     protected:
         TM_ViewSetting viewSettings;
         SkRect bounds,srcBounds;
-        SkScalar hourHeight,yOff,xOff=0.0f;
         int scrollY=0.0f, pressIndexStart=-1, pressIndexEnd=-1;
+        SkScalar hourHeight,yOff,xOff=0.0f;
         bool selected=false;
 };
 
@@ -88,7 +88,7 @@ class TM_CalendarWeekView : public TM_CalendarDayView
         bool PollEvents(float x, float y, float scrollY, bool pressed);
         ~TM_CalendarWeekView();
     private:
-        int pressWeekIndexStart = -1, pressWeekIndexEnd = -1;
+        int pressWeekIndexStart = -1, pressWeekIndexEnd = -1,pressDayIndexStart = -1, pressDayIndexEnd = -1;
 };
 
 class TM_TextBox : public TM_TextView
