@@ -1,12 +1,10 @@
 #include <TM_UI.hpp>
 
-TM_CalendarWeekView::TM_CalendarWeekView(SkScalar x, SkScalar y, SkScalar width, SkScalar height, int numDays, SkScalar hourHeight, TM_ViewSetting viewSettings)
+TM_CalendarWeekView::TM_CalendarWeekView(SkRect bounds, int numDays, SkScalar hourHeight, TM_ViewSetting viewSettings) : TM_RenderObject(bounds)
 {
-    this->bounds = SkRect::MakeXYWH(x,y,width,height);
 	this->viewSettings = viewSettings;
 	this->hourHeight = hourHeight;
 	this->scrollY = 0;
-	this->srcBounds = this->bounds;
     this->numDays = numDays;
 }
 
@@ -108,9 +106,9 @@ void TM_CalendarWeekView::Render(SkCanvas* skia_canvas, SkFont* font)
     skia_canvas->restore();
 }
 
-bool TM_CalendarWeekView::PollEvents(float x, float y, float scrollY, bool pressed)
+bool TM_CalendarWeekView::PollEvents(SkScalar mouseX, SkScalar mouseY, SkScalar scrollX, SkScalar scrollY, bool pressed)
 {
-    if(this->bounds.contains(x,y))
+    if(this->bounds.contains(mouseX,mouseY))
     {
         if(scrollY!=0)
 		{
@@ -120,15 +118,15 @@ bool TM_CalendarWeekView::PollEvents(float x, float y, float scrollY, bool press
         }
         if(pressed&&this->selected == false)
 		{
-			this->pressDayIndexStart = y+this->scrollY;
-            this->pressWeekIndexStart = x-this->bounds.x();
+			this->pressDayIndexStart = mouseY+this->scrollY;
+            this->pressWeekIndexStart = mouseX-this->bounds.x();
 		}
         this->selected = pressed;
 
 		if(pressed)
         {
-			this->pressDayIndexEnd = y+this->scrollY;
-            this->pressWeekIndexEnd = x-this->bounds.x();
+			this->pressDayIndexEnd = mouseY+this->scrollY;
+            this->pressWeekIndexEnd = mouseX-this->bounds.x();
         }
 
 		return true;

@@ -1,17 +1,16 @@
 #include <TM_UI.hpp>
 
-TM_CalendarMonthView::TM_CalendarMonthView(SkScalar x, SkScalar y, int month, int year, SkScalar width, SkScalar height)
+TM_CalendarMonthView::TM_CalendarMonthView(SkRect bounds, int month, int year) : TM_RenderObject(bounds)
 {
-    this->dayViewList = std::vector(31, TM_Button("0", 0.0f, 0.0f, width/7.0f, 0));
-    this->dataView = new TM_TextView("January 1981", width, 0, x,y,{colorScheme[3],colorScheme[2],colorScheme[0],0,36});
+    this->dayViewList = std::vector(31, TM_Button("0", SkRect::MakeWH(bounds.width()/7.0f, 0)));
+    this->dataView = new TM_TextView("January 1981", bounds, {colorScheme[3],colorScheme[2],colorScheme[0],0,36});
     this->firstDay = 2; 
     this->numDays = 31;
     this->numRows = (numDays+firstDay+6)/7;
     this->numColumns = 7.0f;
     this->month = month;
     this->year = year;
-    this->bounds = SkRect::MakeXYWH(x,y,width,height);
-    this->weekList = std::vector(7, TM_TextView("XX", width/7.0f, 0.0f));
+    this->weekList = std::vector(7, TM_TextView("XX", SkRect::MakeWH(this->bounds.width()/7.0f, 0.0f)));
 }
 
 void TM_CalendarMonthView::Render(SkCanvas* skia_canvas, SkFont* font)
@@ -51,18 +50,19 @@ void TM_CalendarMonthView::Render(SkCanvas* skia_canvas, SkFont* font)
     }
 }
 
-bool TM_CalendarMonthView::PollEvents(float x, float y, bool isPressed)
+bool TM_CalendarMonthView::PollEvents(SkScalar mouseX, SkScalar mouseY, SkScalar scrollX, SkScalar scrollY, bool pressed)
+
 {
     bool select=false;
-    if(this->bounds.contains(x,y))
+    if(this->bounds.contains(mouseX,mouseY))
     {
         for(int i = 0; i<this->dayViewList.size(); i++)
         {
-            if(this->dayViewList[i].PollEvent(x,y,isPressed))
+            if(this->dayViewList[i].PollEvents(mouseX, mouseY, scrollX, scrollY, pressed))
             {
                 this->hoverDayButton = i;
                 select = true;
-                if(isPressed)
+                if(pressed)
                 {
                     if(this->selectDayButton==i)
                         this->selectDayButton = -1;

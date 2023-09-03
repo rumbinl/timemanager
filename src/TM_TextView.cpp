@@ -1,10 +1,8 @@
 #include <TM_UI.hpp>
 
-TM_TextView::TM_TextView(std::string text, SkScalar width, SkScalar height, SkScalar x, SkScalar y, TM_ViewSetting viewSetting, bool centered)
+TM_TextView::TM_TextView(std::string text, SkRect bounds, TM_ViewSetting viewSetting, bool centered) : TM_RenderObject(bounds)
 {
     this->text = text;
-    this->bounds = SkRect::MakeXYWH(x,y,width,height);
-    this->src_bounds = SkRect::MakeXYWH(x,y,width,height);
     this->viewSetting = viewSetting;
     this->centered = centered;
     this->textXOffset = 0;
@@ -34,7 +32,7 @@ void TM_TextView::Render(SkCanvas* skia_canvas, SkFont* font)
     SkScalar fontHeight = font_metrics.fDescent,textX,textY;
     SkRect text_bounds;
     font->measureText(this->text.c_str(), this->text.length()*sizeof(char), SkTextEncoding::kUTF8, &text_bounds, &paint);
-    this->src_bounds.setWH(text_bounds.width(), this->bounds.height());
+    srcBounds.setWH(text_bounds.width(), this->bounds.height());
     if(this->centered)
         textX = this->bounds.x()+this->bounds.width()/2 - text_bounds.width()/2, textY = this->bounds.y()+this->bounds.height()/2+fontHeight;
     else 
@@ -44,9 +42,20 @@ void TM_TextView::Render(SkCanvas* skia_canvas, SkFont* font)
     skia_canvas->restore();
 }
 
+void TM_TextView::setTextXOffset(SkScalar scrollX)
+{
+    SkScalar newTextXOffset = this->textXOffset + scrollX;
+    this->textXOffset = fmin(fmax(newTextXOffset, 0), fmax(0,srcBounds.width()-this->bounds.width()));
+}
+
 void TM_TextView::setText(std::string newText)
 {
     this->text = newText;
+}
+
+void TM_TextView::setColorOpacity(uint8_t opacity)
+{
+    this->viewSetting.textColor = SkColorSetA(this->viewSetting.textColor, opacity);
 }
 
 SkScalar TM_TextView::getWidth()
@@ -90,11 +99,6 @@ void TM_TextView::setY(SkScalar y)
 std::string TM_TextView::getText()
 {
     return this->text;
-}
-
-void TM_TextView::setTextXOffset(SkScalar newTextXOffset)
-{
-    this->textXOffset = newTextXOffset;
 }
 
 SkScalar TM_TextView::getTextXOffset()

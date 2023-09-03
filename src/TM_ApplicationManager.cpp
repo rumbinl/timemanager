@@ -18,8 +18,9 @@ TM_ApplicationManager::TM_ApplicationManager() : window_ptr("Timeman", 960, 540)
 	this->should_render_update = true;
 	this->skia_canvas_clear_color = colorScheme[BACKGROUND_COLOR_INDEX];
 
-	this->calendar_month_view = new TM_CalendarMonthView(0, 0, 1,2024,640,480);
-	this->calendar_week_view = new TM_CalendarWeekView(640, 0, 1024, 840,3);
+	this->calendar_month_view = new TM_CalendarMonthView(SkRect::MakeXYWH(0,0,640,480), 1,2024);
+	this->calendar_week_view = new TM_CalendarWeekView(SkRect::MakeXYWH(640, 0, 1024, 840),3);
+	this->test_text_box = new TM_TextBox(SkRect::MakeXYWH(0, 480, 100, 30), "Write something");
 }
 
 void TM_ApplicationManager::Run()
@@ -42,6 +43,7 @@ void TM_ApplicationManager::Render()
 
 	this->calendar_month_view->Render(this->skia_canvas, this->skia_fontList[this->defaultFont]);
 	this->calendar_week_view->Render(this->skia_canvas, this->skia_fontList[this->defaultFont]);
+	this->test_text_box->Render(this->skia_canvas, this->skia_fontList[this->defaultFont]);
 
 	this->skia_canvas->flush();
 	this->window_ptr.Swap_buffers();
@@ -60,24 +62,38 @@ void TM_ApplicationManager::PollEvents()
 			this->skia_canvas = this->window_ptr.Get_skia_canvas_ptr();
 			this->should_render_update = true;
 		}
+		else if(this->SDL_event_ptr.type == SDL_EVENT_KEY_DOWN)
+		{
+		}
 		else
 		{
-			float mouseX,mouseY,scrollY=0.0f;
+			float mouseX,mouseY,scrollY=0.0f,scrollX=0.0f;
 			bool pressed = SDL_event_ptr.type==SDL_EVENT_MOUSE_BUTTON_DOWN;
 			SDL_PumpEvents(); 
 			bool held = (SDL_GetMouseState(&mouseX,&mouseY)&1)>0; 
 			if(this->SDL_event_ptr.type == SDL_EVENT_MOUSE_WHEEL)
-				scrollY = this->SDL_event_ptr.wheel.y;
-			if(this->calendar_month_view->PollEvents(
-				mouseX*this->window_ptr.getDPI(),
-				mouseY*this->window_ptr.getDPI(),
-				pressed) 
+				scrollY = this->SDL_event_ptr.wheel.y, scrollX = this->SDL_event_ptr.wheel.x;
+			if( this->calendar_month_view->PollEvents(
+					mouseX*this->window_ptr.getDPI(),
+					mouseY*this->window_ptr.getDPI(),
+					scrollX*scrollSensFactor,
+					scrollY*scrollSensFactor*(this->SDL_event_ptr.wheel.direction==SDL_MOUSEWHEEL_FLIPPED?-1:1),
+					pressed) 
 								||
 				this->calendar_week_view->PollEvents(
-				mouseX*this->window_ptr.getDPI(),
-				mouseY*this->window_ptr.getDPI(),
-				scrollY*scrollSensFactor*(this->SDL_event_ptr.wheel.direction==SDL_MOUSEWHEEL_FLIPPED?-1:1),
-				pressed||held))
+					mouseX*this->window_ptr.getDPI(),
+					mouseY*this->window_ptr.getDPI(),
+					scrollX*scrollSensFactor,
+					scrollY*scrollSensFactor*(this->SDL_event_ptr.wheel.direction==SDL_MOUSEWHEEL_FLIPPED?-1:1),
+					pressed||held)
+								||
+				this->test_text_box->PollEvents(
+					mouseX*this->window_ptr.getDPI(), 
+					mouseY*this->window_ptr.getDPI(), 
+					scrollX*scrollSensFactor,
+					scrollY*scrollSensFactor*(this->SDL_event_ptr.wheel.direction==SDL_MOUSEWHEEL_FLIPPED?-1:1),
+					pressed)
+				)
 				should_render_update = true;
 		}
     }
