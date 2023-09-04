@@ -1,22 +1,25 @@
 #include <TM_UI.hpp>
 
-TM_Button::TM_Button(std::string text, SkRect bounds, TM_ViewSetting viewSettings) : TM_TextView(text, bounds, viewSettings)
+TM_Button::TM_Button(std::string text, SkRect bounds, void (*actionFunc)()) : TM_TextView(text, bounds)
 {
-    this->select = false;
+    this->actionFunc = actionFunc;
 }
 
-bool TM_Button::PollEvents(SkScalar mouseX, SkScalar mouseY, SkScalar scrollX, SkScalar scrollY, bool pressed, bool held)
+bool TM_Button::PollEvents(TM_EventInput eventInput) 
 {
-    return this->bounds.contains(mouseX,mouseY);
+    if(this->bounds.contains(eventInput.mouseX, eventInput.mouseY) && eventInput.mousePressed)
+    {
+        if(actionFunc != NULL)
+            (*actionFunc)();
+    }
 }
 
-SkScalar TM_Button::getX()
+void TM_Button::setActionFunc(void (*actionFunc)())
 {
-    return this->bounds.x();
+    this->actionFunc = actionFunc;
 }
 
-
-void TM_Button::invertColors()
+TM_Button::~TM_Button()
 {
-    std::swap(this->viewSetting.backgroundColor, this->viewSetting.textColor);
+
 }

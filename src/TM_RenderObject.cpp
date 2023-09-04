@@ -11,9 +11,9 @@ void TM_RenderObject::Render(SkCanvas* skia_canvas, SkFont* font)
 
 }
 
-bool TM_RenderObject::PollEvents(SkScalar mouseX, SkScalar mouseY, SkScalar scrollX, SkScalar scrollY, bool pressed, bool held)
+bool TM_RenderObject::PollEvents(TM_EventInput eventInput)
 {
-    return this->bounds.contains(mouseX,mouseY);
+    return this->bounds.contains(eventInput.mouseX,eventInput.mouseY);
 }
 
 SkRect TM_RenderObject::getBounds()
@@ -29,6 +29,16 @@ SkRect TM_RenderObject::getSrcBounds()
 void TM_RenderObject::setBounds(SkRect newBounds)
 {
     this->bounds = newBounds;
+}
+
+bool TM_RenderObject::exists()
+{
+    return this->existence;
+}
+
+void TM_RenderObject::setExistence(bool existence)
+{
+    this->existence = existence;
 }
 
 TM_RenderObject::~TM_RenderObject()

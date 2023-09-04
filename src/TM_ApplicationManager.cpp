@@ -18,10 +18,8 @@ TM_ApplicationManager::TM_ApplicationManager() : window_ptr("Timeman", 960, 540)
 	this->should_render_update = true;
 	this->skia_canvas_clear_color = colorScheme[BACKGROUND_COLOR_INDEX];
 
-	/*this->calendar_month_view = new TM_CalendarMonthView(SkRect::MakeXYWH(0,0,640,480), 1,2024);
-	this->calendar_week_view = new TM_CalendarWeekView(SkRect::MakeXYWH(640, 0, 1024, 840),3);
-	this->test_text_box = new TM_TextBox(SkRect::MakeXYWH(0, 480, 100, 30), "Write something");*/
-	this->test_view = new TM_View(SkRect::MakeXYWH(50, 50, 640, 840), {new TM_CalendarMonthView(SkRect::MakeXYWH(0,0,640,480), 1,2024), new TM_CalendarWeekView(SkRect::MakeXYWH(0, 0, 820, 640),3), /*new TM_TextBox(SkRect::MakeXYWH(0, 480, 100, 30), "Write something")*/});
+	this->testView = new TM_View(SkRect::MakeXYWH(50, 50, 640, 840), {new TM_CalendarMonthView(SkRect::MakeXYWH(0,0,640,480), 1,2024), new TM_CalendarWeekView(SkRect::MakeXYWH(0, 0, 820, 640),3), /*new TM_TextBox(SkRect::MakeXYWH(0, 480, 100, 30), "Write something")*/});
+	this->testCalendarView = new TM_CalendarView(SkRect::MakeXYWH(690, 50, 640, 840));
 }
 
 void TM_ApplicationManager::Run()
@@ -42,10 +40,8 @@ void TM_ApplicationManager::Render()
 	this->skia_canvas->resetMatrix();
 	this->skia_canvas->clear(this->skia_canvas_clear_color);
 
-	/*this->calendar_month_view->Render(this->skia_canvas, this->skia_fontList[this->defaultFont]);
-	this->calendar_week_view->Render(this->skia_canvas, this->skia_fontList[this->defaultFont]);
-	this->test_text_box->Render(this->skia_canvas, this->skia_fontList[this->defaultFont]);*/
-	this->test_view->Render(this->skia_canvas, this->skia_fontList[this->defaultFont]);
+	this->testView->Render(this->skia_canvas, this->skia_fontList[this->defaultFont]);
+	this->testCalendarView->Render(this->skia_canvas, this->skia_fontList[this->defaultFont]);
 
 	this->skia_canvas->flush();
 	this->window_ptr.Swap_buffers();
@@ -77,12 +73,12 @@ void TM_ApplicationManager::PollEvents()
 			if(this->SDL_event_ptr.type == SDL_EVENT_MOUSE_WHEEL)
 				scrollY = this->SDL_event_ptr.wheel.y, scrollX = this->SDL_event_ptr.wheel.x;
 			if(
-				this->test_view->PollEvents(
+				this->testView->PollEvents({
 					mouseX*this->window_ptr.getDPI(), 
 					mouseY*this->window_ptr.getDPI(), 
 					scrollX*scrollSensFactor,
 					scrollY*scrollSensFactor*(this->SDL_event_ptr.wheel.direction==SDL_MOUSEWHEEL_FLIPPED?-1:1),
-					pressed,held)
+					pressed,held})
 				)
 				should_render_update = true;
 		}

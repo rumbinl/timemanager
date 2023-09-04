@@ -37,7 +37,7 @@ void TM_CalendarWeekView::RenderTimes(SkCanvas* skia_canvas, SkFont* font)
 	}
 	this->srcBounds.setWH(this->srcBounds.width(), y);
     SkScalar dayWidth = (this->bounds.width() - this->xOff)/((SkScalar)this->numDays);
-    for(int i=1;i<=numDays;i++)
+    for(int i=1;i<numDays;i++)
     {
         SkScalar x = xOff + i*dayWidth;
         skia_canvas->drawLine(x, 0, x, this->bounds.height(),paint);
@@ -104,33 +104,33 @@ void TM_CalendarWeekView::Render(SkCanvas* skia_canvas, SkFont* font)
     skia_canvas->restore();
 }
 
-bool TM_CalendarWeekView::PollEvents(SkScalar mouseX, SkScalar mouseY, SkScalar scrollX, SkScalar scrollY, bool pressed, bool held)
+bool TM_CalendarWeekView::PollEvents(TM_EventInput eventInput)
 {
-    pressed = pressed || held;
-    if(this->bounds.contains(mouseX,mouseY))
+    eventInput.mousePressed = eventInput.mousePressed || eventInput.mouseHeld;
+    if(this->bounds.contains(eventInput.mouseX,eventInput.mouseY))
     {
-        if(scrollY!=0)
+        if(eventInput.scrollY!=0)
 		{
-			this->scrollY+=scrollY;
+			this->scrollY+=eventInput.scrollY;
 			SkScalar scrollLimitY = this->srcBounds.height()-this->bounds.height();
 			this->scrollY = fmin(scrollLimitY, fmax(0, this->scrollY));
         }
-        if(pressed&&this->selected == false)
+        if(eventInput.mousePressed&&this->selected == false)
 		{
-			this->pressDayIndexStart = mouseY-this->bounds.y()+this->scrollY;
-            this->pressWeekIndexStart = mouseX-this->bounds.x();
+			this->pressDayIndexStart = eventInput.mouseY-this->bounds.y()+this->scrollY;
+            this->pressWeekIndexStart = eventInput.mouseX-this->bounds.x();
 		}
-        this->selected = pressed;
+        this->selected = eventInput.mousePressed;
 
-		if(pressed)
+		if(eventInput.mousePressed)
         {
-			this->pressDayIndexEnd = mouseY-this->bounds.y()+this->scrollY;
-            this->pressWeekIndexEnd = mouseX-this->bounds.x();
+			this->pressDayIndexEnd = eventInput.mouseY-this->bounds.y()+this->scrollY;
+            this->pressWeekIndexEnd = eventInput.mouseX-this->bounds.x();
         }
 
 		return true;
     }
-    if(this->selected && !pressed)
+    if(this->selected && !eventInput.mousePressed)
 	{
 		this->selected = false;
 		this->pressDayIndexStart = 

@@ -20,13 +20,13 @@ void TM_TextBox::Render(SkCanvas* skia_canvas, SkFont* font)
     TM_TextView::Render(skia_canvas, font);
 }
 
-bool TM_TextBox::PollEvents(SkScalar mouseX, SkScalar mouseY, SkScalar scrollX, SkScalar scrollY, bool pressed, bool held)
+bool TM_TextBox::PollEvents(TM_EventInput eventInput)
 {
-    if(TM_TextView::getBounds().contains(mouseX,mouseY)) 
+    if(TM_TextView::getBounds().contains(eventInput.mouseX,eventInput.mouseY)) 
     {
-        if(scrollX != 0)
+        if(eventInput.scrollX != 0)
         {
-            TM_TextView::setTextXOffset(scrollX);
+            TM_TextView::setTextXOffset(eventInput.scrollX);
             return true;
         }
     }

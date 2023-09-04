@@ -58,6 +58,11 @@ void TM_TextView::setColorOpacity(uint8_t opacity)
     this->viewSetting.textColor = SkColorSetA(this->viewSetting.textColor, opacity);
 }
 
+void TM_TextView::invertColors()
+{
+    std::swap(this->viewSetting.backgroundColor, this->viewSetting.textColor);
+}
+
 SkScalar TM_TextView::getWidth()
 {
     return this->bounds.width();

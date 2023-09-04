@@ -2,7 +2,7 @@
 
 TM_CalendarMonthView::TM_CalendarMonthView(SkRect bounds, int month, int year, TM_ViewSetting viewSetting) : TM_RenderObject(bounds, viewSetting)
 {
-    this->dayViewList = std::vector(31, TM_Button("0", SkRect::MakeWH(bounds.width()/7.0f, 0)));
+    this->dayViewList = std::vector(31, TM_TextView("0", SkRect::MakeWH(bounds.width()/7.0f, 0)));
     this->dataView = new TM_TextView("January 1981", bounds, {colorScheme[3],colorScheme[2],colorScheme[0],0,36});
     this->firstDay = 2; 
     this->numDays = 31;
@@ -55,18 +55,18 @@ void TM_CalendarMonthView::Render(SkCanvas* skia_canvas, SkFont* font)
     }
 }
 
-bool TM_CalendarMonthView::PollEvents(SkScalar mouseX, SkScalar mouseY, SkScalar scrollX, SkScalar scrollY, bool pressed, bool held)
+bool TM_CalendarMonthView::PollEvents(TM_EventInput eventInput)
 {
     bool select=false;
-    if(this->bounds.contains(mouseX,mouseY))
+    if(this->bounds.contains(eventInput.mouseX,eventInput.mouseY))
     {
         for(int i = 0; i<this->dayViewList.size(); i++)
         {
-            if(this->dayViewList[i].PollEvents(mouseX, mouseY, scrollX, scrollY, pressed,held))
+            if(this->dayViewList[i].PollEvents(eventInput))
             {
                 this->hoverDayButton = i;
                 select = true;
-                if(pressed)
+                if(eventInput.mousePressed)
                 {
                     if(this->selectDayButton==i)
                         this->selectDayButton = -1;
