@@ -34,14 +34,18 @@ void TM_View::Render(SkCanvas* skia_canvas, SkFont* font)
     skia_canvas->restoreToCount(restore);
 }
 
-bool TM_View::PollEvents(SkScalar mouseX, SkScalar mouseY, SkScalar scrollX, SkScalar scrollY, bool pressed)
+bool TM_View::PollEvents(SkScalar mouseX, SkScalar mouseY, SkScalar scrollX, SkScalar scrollY, bool pressed, bool held)
 {
     bool select = false;
     if(this->bounds.contains(mouseX,mouseY))
     {
         for(TM_RenderObject* renderObject : this->renderObjects)
         {
-            select = select || renderObject->PollEvents(mouseX-this->bounds.x(),mouseY-this->bounds.y(),scrollX,scrollY,pressed);
+            select = select || renderObject->PollEvents(mouseX-this->bounds.x(),mouseY-this->bounds.y(),scrollX,scrollY,pressed,held);
+        }
+        if(!select)
+        {
+            this->yOffset += scrollY;
         }
     }
     return select;

@@ -85,8 +85,7 @@ void TM_CalendarWeekView::Render(SkCanvas* skia_canvas, SkFont* font)
     SkScalar topY = this->viewSetting.padding - this->scrollY + (timeStep)*floor((firstY  - this->yOff)/(timeStep)),
              botY = this->viewSetting.padding - this->scrollY + (timeStep)*floor((secondY - this->yOff)/(timeStep));
 
-    paint.setColor(this->viewSetting.backgroundColor);
-    paint.setAlpha(100);
+    paint.setColor(this->viewSetting.textColor);
 
     if(startDayIdx == endDayIdx)
     {
@@ -105,8 +104,9 @@ void TM_CalendarWeekView::Render(SkCanvas* skia_canvas, SkFont* font)
     skia_canvas->restore();
 }
 
-bool TM_CalendarWeekView::PollEvents(SkScalar mouseX, SkScalar mouseY, SkScalar scrollX, SkScalar scrollY, bool pressed)
+bool TM_CalendarWeekView::PollEvents(SkScalar mouseX, SkScalar mouseY, SkScalar scrollX, SkScalar scrollY, bool pressed, bool held)
 {
+    pressed = pressed || held;
     if(this->bounds.contains(mouseX,mouseY))
     {
         if(scrollY!=0)

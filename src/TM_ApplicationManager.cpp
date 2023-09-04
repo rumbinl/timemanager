@@ -82,7 +82,7 @@ void TM_ApplicationManager::PollEvents()
 					mouseY*this->window_ptr.getDPI(), 
 					scrollX*scrollSensFactor,
 					scrollY*scrollSensFactor*(this->SDL_event_ptr.wheel.direction==SDL_MOUSEWHEEL_FLIPPED?-1:1),
-					pressed)
+					pressed,held)
 				)
 				should_render_update = true;
 		}

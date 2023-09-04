@@ -11,7 +11,7 @@ void TM_RenderObject::Render(SkCanvas* skia_canvas, SkFont* font)
 
 }
 
-bool TM_RenderObject::PollEvents(SkScalar mouseX, SkScalar mouseY, SkScalar scrollX, SkScalar scrollY, bool pressed)
+bool TM_RenderObject::PollEvents(SkScalar mouseX, SkScalar mouseY, SkScalar scrollX, SkScalar scrollY, bool pressed, bool held)
 {
     return this->bounds.contains(mouseX,mouseY);
 }

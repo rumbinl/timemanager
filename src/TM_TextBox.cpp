@@ -20,7 +20,7 @@ void TM_TextBox::Render(SkCanvas* skia_canvas, SkFont* font)
     TM_TextView::Render(skia_canvas, font);
 }
 
-bool TM_TextBox::PollEvents(SkScalar mouseX, SkScalar mouseY, SkScalar scrollX, SkScalar scrollY, bool pressed)
+bool TM_TextBox::PollEvents(SkScalar mouseX, SkScalar mouseY, SkScalar scrollX, SkScalar scrollY, bool pressed, bool held)
 {
     if(TM_TextView::getBounds().contains(mouseX,mouseY)) 
     {

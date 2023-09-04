@@ -5,7 +5,7 @@ TM_Button::TM_Button(std::string text, SkRect bounds, TM_ViewSetting viewSetting
     this->select = false;
 }
 
-bool TM_Button::PollEvents(SkScalar mouseX, SkScalar mouseY, SkScalar scrollX, SkScalar scrollY, bool pressed)
+bool TM_Button::PollEvents(SkScalar mouseX, SkScalar mouseY, SkScalar scrollX, SkScalar scrollY, bool pressed, bool held)
 {
     return this->bounds.contains(mouseX,mouseY);
 }
