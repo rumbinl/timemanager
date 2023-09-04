@@ -83,7 +83,7 @@ void TM_TextView::setHeightFont(SkFont* font)
 
 void TM_TextView::setWidth(SkScalar newWidth)
 {
-    this->bounds.setWH(newWidth, this->bounds.height());
+    this->bounds.setXYWH(this->bounds.x(), this->bounds.y(), newWidth, this->bounds.height());
 }
 
 void TM_TextView::setX(SkScalar x)

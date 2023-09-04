@@ -17,13 +17,17 @@ void TM_CalendarMonthView::Render(SkCanvas* skia_canvas, SkFont* font)
 {
     SkFontMetrics fontMetrics;
     font->getMetrics(&fontMetrics);
+    this->dataView->setX(this->bounds.x());
+    this->dataView->setY(this->bounds.y());
     this->dataView->setText(monthNames[this->month-1]+' '+std::to_string(this->year));
+    this->dataView->setWidth(this->bounds.width());
     this->dataView->setHeightFont(font);
     this->dataView->Render(skia_canvas, font);
-    SkScalar x=this->firstDay*(this->dayViewList[0].getWidth())+this->bounds.x(),y=this->dataView->getHeight()+this->bounds.y();
+    SkScalar x=this->firstDay*(this->bounds.width()/7.0f)+this->bounds.x(),y=this->dataView->getHeight()+this->bounds.y();
     for(int i=0;i<7;i++)
     {
         this->weekList[i].setText(dayNames[i].substr(0,2).c_str());
+        this->weekList[i].setWidth(this->bounds.width()/7.0f);
         this->weekList[i].setX((float)i*this->bounds.width()/7.0f);
         this->weekList[i].setY(y);
         this->weekList[i].setHeightFont(font);
@@ -41,12 +45,13 @@ void TM_CalendarMonthView::Render(SkCanvas* skia_canvas, SkFont* font)
         this->dayViewList[i].setX(x);
         this->dayViewList[i].setY(y);
         this->dayViewList[i].setText(std::to_string(i+1));
+        this->dayViewList[i].setWidth(this->bounds.width()/7.0f);
         if(i == hoverDayButton || i == selectDayButton)
             this->dayViewList[i].invertColors();
         this->dayViewList[i].Render(skia_canvas, font);
         if(i == hoverDayButton || i == selectDayButton)
             this->dayViewList[i].invertColors();
-        x+=this->dayViewList[0].getWidth();
+        x+=this->bounds.width()/7.0f;
     }
 }
 
@@ -55,6 +60,7 @@ bool TM_CalendarMonthView::PollEvents(SkScalar mouseX, SkScalar mouseY, SkScalar
     bool select=false;
     if(this->bounds.contains(mouseX,mouseY))
     {
+        std::cout<<"Here"<<std::endl;
         for(int i = 0; i<this->dayViewList.size(); i++)
         {
             if(this->dayViewList[i].PollEvents(mouseX, mouseY, scrollX, scrollY, pressed))

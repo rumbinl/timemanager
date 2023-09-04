@@ -56,7 +56,7 @@ void TM_CalendarWeekView::Render(SkCanvas* skia_canvas, SkFont* font)
 
 	skia_canvas->save();
 	skia_canvas->clipRect(this->bounds);
-	skia_canvas->setMatrix(SkMatrix::Translate(this->bounds.x(), this->bounds.y()));
+	skia_canvas->translate(this->bounds.x(), this->bounds.y());
 
     RenderTimes(skia_canvas, font);
     
@@ -75,8 +75,8 @@ void TM_CalendarWeekView::Render(SkCanvas* skia_canvas, SkFont* font)
 
     if(startDayIdx>endDayIdx) { std::swap(startDayIdx, endDayIdx); std::swap(firstY,secondY); }
 
-    startDayIdx = std::min(std::max(startDayIdx,0),this->numDays);
-    endDayIdx = std::min(std::max(endDayIdx,0),this->numDays);
+    startDayIdx = min(max(startDayIdx,0),this->numDays);
+    endDayIdx = min(max(endDayIdx,0),this->numDays);
 
     SkScalar startDayX = this->xOff+dayWidth*startDayIdx
             ,endDayX   = this->xOff+dayWidth*endDayIdx;

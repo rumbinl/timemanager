@@ -115,9 +115,9 @@ class TM_NumberBox : public TM_TextView
 class TM_View : public TM_RenderObject
 {
     public:
-        TM_View(SkRect bounds, std::vector<TM_RenderObject*> objects, TM_ViewSetting viewSetting={colorScheme[1],colorScheme[2],colorScheme[3],1,16,5});
+        TM_View(SkRect bounds, std::vector<TM_RenderObject*> objects, TM_ViewSetting viewSetting={colorScheme[1],colorScheme[2],colorScheme[3],1,16,50});
         void Render(SkCanvas* skia_canvas, SkFont* font);
-        void PollEvents(SkScalar mouseX, SkScalar mouseY, SkScalar scrollX, SkScalar scrollY, bool pressed);
+        bool PollEvents(SkScalar mouseX, SkScalar mouseY, SkScalar scrollX, SkScalar scrollY, bool pressed);
         ~TM_View();
     private:
         std::vector<TM_RenderObject*> renderObjects;

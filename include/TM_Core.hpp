@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include <SDL3/SDL.h>
 
 #include <iostream>
@@ -29,3 +28,11 @@ static SkColor colorScheme[4] = {SkColorSetRGB(0xee,0xf3,0xf9),SkColorSetRGB(0xb
 static std::string monthNames[12] = {"January","February","March","April","May","June","July","August","September","November","October","December"};
 static std::string dayNames[7] = {"Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"};
 static SkScalar scrollSensFactor = 5.0;
+
+#ifndef max
+#define max(a,b) ((a>b)?(a):(b))
+#endif
+
+#ifndef min
+#define min(a,b) ((a<b)?(a):(b))
+#endif
