@@ -1,6 +1,6 @@
 #include <TM_UI.hpp>
 
-TM_TextView::TM_TextView(std::string text, SkRect bounds, TM_ViewSetting viewSetting, bool centered) : TM_RenderObject(bounds)
+TM_TextView::TM_TextView(std::string text, SkRect bounds, TM_ViewSetting viewSetting, bool centered) : TM_RenderObject(bounds, viewSetting)
 {
     this->text = text;
     this->viewSetting = viewSetting;
@@ -19,7 +19,7 @@ void TM_TextView::Render(SkCanvas* skia_canvas, SkFont* font)
     paint.setStrokeWidth(this->viewSetting.borderThickness);
     skia_canvas->drawRect(this->bounds,paint);
 
-    skia_canvas->save();
+    int restore = skia_canvas->save();
 	skia_canvas->clipRect(this->bounds);
     skia_canvas->translate(-this->textXOffset,0);
 
@@ -39,7 +39,7 @@ void TM_TextView::Render(SkCanvas* skia_canvas, SkFont* font)
         textX = this->bounds.x(), textY = this->bounds.y()+font_metrics.fCapHeight;
 
     skia_canvas->drawString(this->text.c_str(), textX, textY, *font, paint);
-    skia_canvas->restore();
+    skia_canvas->restoreToCount(restore);
 }
 
 void TM_TextView::setTextXOffset(SkScalar scrollX)

@@ -1,8 +1,9 @@
 #include <TM_UI.hpp>
 
-TM_RenderObject::TM_RenderObject(SkRect bounds)
+TM_RenderObject::TM_RenderObject(SkRect bounds, TM_ViewSetting viewSetting)
 {
     this->bounds = bounds;
+    this->viewSetting = viewSetting;
 }
 
 void TM_RenderObject::Render(SkCanvas* skia_canvas, SkFont* font)
@@ -23,6 +24,11 @@ SkRect TM_RenderObject::getBounds()
 SkRect TM_RenderObject::getSrcBounds()
 {
     return this->srcBounds;
+}
+
+void TM_RenderObject::setBounds(SkRect newBounds)
+{
+    this->bounds = newBounds;
 }
 
 TM_RenderObject::~TM_RenderObject()

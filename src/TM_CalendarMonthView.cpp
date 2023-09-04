@@ -1,6 +1,6 @@
 #include <TM_UI.hpp>
 
-TM_CalendarMonthView::TM_CalendarMonthView(SkRect bounds, int month, int year) : TM_RenderObject(bounds)
+TM_CalendarMonthView::TM_CalendarMonthView(SkRect bounds, int month, int year, TM_ViewSetting viewSetting) : TM_RenderObject(bounds, viewSetting)
 {
     this->dayViewList = std::vector(31, TM_Button("0", SkRect::MakeWH(bounds.width()/7.0f, 0)));
     this->dataView = new TM_TextView("January 1981", bounds, {colorScheme[3],colorScheme[2],colorScheme[0],0,36});
@@ -51,7 +51,6 @@ void TM_CalendarMonthView::Render(SkCanvas* skia_canvas, SkFont* font)
 }
 
 bool TM_CalendarMonthView::PollEvents(SkScalar mouseX, SkScalar mouseY, SkScalar scrollX, SkScalar scrollY, bool pressed)
-
 {
     bool select=false;
     if(this->bounds.contains(mouseX,mouseY))

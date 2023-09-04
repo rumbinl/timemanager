@@ -1,8 +1,7 @@
 #include <TM_UI.hpp>
 
-TM_CalendarWeekView::TM_CalendarWeekView(SkRect bounds, int numDays, SkScalar hourHeight, TM_ViewSetting viewSettings) : TM_RenderObject(bounds)
+TM_CalendarWeekView::TM_CalendarWeekView(SkRect bounds, int numDays, SkScalar hourHeight, TM_ViewSetting viewSetting) : TM_RenderObject(bounds, viewSetting)
 {
-	this->viewSettings = viewSettings;
 	this->hourHeight = hourHeight;
 	this->scrollY = 0;
     this->numDays = numDays;
@@ -11,13 +10,13 @@ TM_CalendarWeekView::TM_CalendarWeekView(SkRect bounds, int numDays, SkScalar ho
 void TM_CalendarWeekView::RenderTimes(SkCanvas* skia_canvas, SkFont* font)
 {
     SkPaint paint;
-	font->setSize(this->viewSettings.fontSize);
+	font->setSize(this->viewSetting.fontSize);
 	SkFontMetrics fontMetrics;
 	font->getMetrics(&fontMetrics);
 	SkRect text_bounds;
 	font->measureText("XX:XX", 5*sizeof(char), SkTextEncoding::kUTF8, &text_bounds, &paint);
 	this->xOff = text_bounds.width();
-	paint.setColor(this->viewSettings.borderColor);
+	paint.setColor(this->viewSetting.borderColor);
 
 	SkScalar yOff = -this->scrollY, y = 0.0f;
 
@@ -28,8 +27,8 @@ void TM_CalendarWeekView::RenderTimes(SkCanvas* skia_canvas, SkFont* font)
 
 		if(!i)
 		{
-			this->viewSettings.padding = text_bounds.height()-fontMetrics.fBottom;
-			y += this->viewSettings.padding;
+			this->viewSetting.padding = text_bounds.height()-fontMetrics.fBottom;
+			y += this->viewSetting.padding;
 		}
 
 		skia_canvas->drawString(timeString.c_str(), xOff-text_bounds.width(), y+yOff+fontMetrics.fBottom, *font, paint);
@@ -49,7 +48,7 @@ void TM_CalendarWeekView::Render(SkCanvas* skia_canvas, SkFont* font)
 {
     SkPaint paint;
 	paint.setStyle(SkPaint::kStroke_Style);
-	paint.setColor(this->viewSettings.borderColor);
+	paint.setColor(this->viewSetting.borderColor);
 
 	skia_canvas->drawRect(this->bounds, paint);
 
@@ -83,10 +82,10 @@ void TM_CalendarWeekView::Render(SkCanvas* skia_canvas, SkFont* font)
             ,endDayX   = this->xOff+dayWidth*endDayIdx;
 
     SkScalar timeStep = this->hourHeight/12.0f;
-    SkScalar topY = this->viewSettings.padding - this->scrollY + (timeStep)*floor((firstY  - this->yOff)/(timeStep)),
-             botY = this->viewSettings.padding - this->scrollY + (timeStep)*floor((secondY - this->yOff)/(timeStep));
+    SkScalar topY = this->viewSetting.padding - this->scrollY + (timeStep)*floor((firstY  - this->yOff)/(timeStep)),
+             botY = this->viewSetting.padding - this->scrollY + (timeStep)*floor((secondY - this->yOff)/(timeStep));
 
-    paint.setColor(this->viewSettings.backgroundColor);
+    paint.setColor(this->viewSetting.backgroundColor);
     paint.setAlpha(100);
 
     if(startDayIdx == endDayIdx)
