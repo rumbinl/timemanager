@@ -37,7 +37,7 @@ void TM_CalendarMonthView::Render(SkCanvas* skia_canvas, SkFont* font)
             x-=this->bounds.width();
             y+=this->dayViewList[0].getHeight();
         }
-        this->dayViewList[i].setHeight((this->bounds.height()-this->dataView->getHeight())/numRows);
+        this->dayViewList[i].setHeight((this->bounds.height()-this->dataView->getHeight()-this->weekList[0].getHeight())/numRows);
         this->dayViewList[i].setX(x);
         this->dayViewList[i].setY(y);
         this->dayViewList[i].setText(std::to_string(i+1));
