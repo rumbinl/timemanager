@@ -117,14 +117,14 @@ bool TM_CalendarWeekView::PollEvents(SkScalar mouseX, SkScalar mouseY, SkScalar 
         }
         if(pressed&&this->selected == false)
 		{
-			this->pressDayIndexStart = mouseY+this->scrollY;
+			this->pressDayIndexStart = mouseY-this->bounds.y()+this->scrollY;
             this->pressWeekIndexStart = mouseX-this->bounds.x();
 		}
         this->selected = pressed;
 
 		if(pressed)
         {
-			this->pressDayIndexEnd = mouseY+this->scrollY;
+			this->pressDayIndexEnd = mouseY-this->bounds.y()+this->scrollY;
             this->pressWeekIndexEnd = mouseX-this->bounds.x();
         }
 

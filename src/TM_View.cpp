@@ -19,17 +19,19 @@ void TM_View::Render(SkCanvas* skia_canvas, SkFont* font)
 
     int restore = skia_canvas->save();
     skia_canvas->clipRect(this->bounds);
-	skia_canvas->setMatrix(SkMatrix::Translate(this->bounds.x(), this->bounds.y()));
+	skia_canvas->setMatrix(SkMatrix::Translate(this->bounds.x(), this->bounds.y()-this->yOffset));
 
-    SkScalar yOffset = this->viewSetting.padding;
+    SkScalar y = this->viewSetting.padding;
 
     for(TM_RenderObject* renderObject : this->renderObjects)
     {
-        renderObject->setBounds(SkRect::MakeXYWH(this->viewSetting.padding, yOffset, this->bounds.width()-this->viewSetting.padding*2, renderObject->getBounds().height()));
+        renderObject->setBounds(SkRect::MakeXYWH(this->viewSetting.padding, y, this->bounds.width()-this->viewSetting.padding*2, renderObject->getBounds().height()));
         renderObject->Render(skia_canvas, font);
 
-        yOffset += renderObject->getBounds().height() + this->viewSetting.padding;
+        y += renderObject->getBounds().height() + this->viewSetting.padding;
     }
+
+    this->srcBounds.setWH(this->bounds.width(), y);
 
     skia_canvas->restoreToCount(restore);
 }
@@ -41,11 +43,13 @@ bool TM_View::PollEvents(SkScalar mouseX, SkScalar mouseY, SkScalar scrollX, SkS
     {
         for(TM_RenderObject* renderObject : this->renderObjects)
         {
-            select = select || renderObject->PollEvents(mouseX-this->bounds.x(),mouseY-this->bounds.y(),scrollX,scrollY,pressed,held);
+            select = select || renderObject->PollEvents(mouseX-this->bounds.x(),mouseY-this->bounds.y()+this->yOffset,scrollX,scrollY,pressed,held);
         }
         if(!select)
         {
-            this->yOffset += scrollY;
+            SkScalar newY = this->yOffset+scrollY;
+            this->yOffset = fmin(fmax(0, newY),fmax(0, this->srcBounds.height()-this->bounds.height()));
+            select = true;
         }
     }
     return select;
