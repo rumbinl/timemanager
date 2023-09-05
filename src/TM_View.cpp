@@ -38,6 +38,7 @@ void TM_View::Render(SkCanvas* skia_canvas, SkFont* font)
     skia_canvas->restoreToCount(restore);
 }
 
+
 bool TM_View::PollEvents(TM_EventInput eventInput)
 {
     bool select = false;
@@ -58,6 +59,12 @@ bool TM_View::PollEvents(TM_EventInput eventInput)
         }
     }
     return select;
+}
+
+void TM_View::setRenderObjectExistence(int index, bool existence)
+{
+    if(index < this->renderObjects.size() && index>=0)
+        this->renderObjects[index]->setExistence(existence);
 }
 
 TM_View::~TM_View()

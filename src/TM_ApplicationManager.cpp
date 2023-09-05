@@ -4,15 +4,15 @@ TM_ApplicationManager::TM_ApplicationManager() : window_ptr("Timeman", 960, 540)
 {
 	if(!this->window_ptr.Was_init_success())
 	{
-	std::cout<<"Window failed to initialize! Aborting..."<<std::endl;
-	this->should_terminate = true;
-	return;
+		std::cout<<"Window failed to initialize! Aborting..."<<std::endl;
+		this->should_terminate = true;
+		return;
 	}
 
 	this->skia_canvas = this->window_ptr.Get_skia_canvas_ptr();
 	if(!this->skia_canvas)
 	{
-	std::cout<<"Failed to create Skia canvas!"<<std::endl;
+		std::cout<<"Failed to create Skia canvas!"<<std::endl;
 	}
 
 	this->should_render_update = true;
@@ -72,14 +72,14 @@ void TM_ApplicationManager::PollEvents()
 			bool held = (SDL_GetMouseState(&mouseX,&mouseY)&1)>0; 
 			if(this->SDL_event_ptr.type == SDL_EVENT_MOUSE_WHEEL)
 				scrollY = this->SDL_event_ptr.wheel.y, scrollX = this->SDL_event_ptr.wheel.x;
-			if(
-				this->testView->PollEvents({
+			TM_EventInput eventInput = {
 					mouseX*this->window_ptr.getDPI(), 
 					mouseY*this->window_ptr.getDPI(), 
-					scrollX*scrollSensFactor,
+					scrollX*scrollSensFactor*(this->SDL_event_ptr.wheel.direction==SDL_MOUSEWHEEL_FLIPPED?-1:1),
 					scrollY*scrollSensFactor*(this->SDL_event_ptr.wheel.direction==SDL_MOUSEWHEEL_FLIPPED?-1:1),
-					pressed,held})
-				)
+					pressed,held
+				};
+			if(this->testView->PollEvents(eventInput) || this->testCalendarView->PollEvents(eventInput))
 				should_render_update = true;
 		}
     }

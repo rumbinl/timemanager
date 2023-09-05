@@ -99,15 +99,33 @@ class TM_TextBox : public TM_TextView
         int cursorIndex=0;
 };
 
-class TM_Button : public TM_TextView 
+template<class T> class TM_Button : public TM_TextView 
 {
     public:
-        TM_Button(std::string text, SkRect bounds, void (*actionFunc)());
-        bool PollEvents(TM_EventInput eventInput) override;
-        void setActionFunc(void (*actionFunc)());
-        ~TM_Button();
+        TM_Button(std::string text, SkRect bounds, void (*actionFunc)(T* context), T* context) : TM_TextView(text, bounds)
+        {
+            this->actionFunc = actionFunc;
+            this->context = context;
+        }
+
+        bool PollEvents(TM_EventInput eventInput) 
+        {
+            if(this->bounds.contains(eventInput.mouseX, eventInput.mouseY) && eventInput.mousePressed)
+            {
+                if(actionFunc != NULL)
+                    (*actionFunc)(this->context);
+                return true;
+            }
+            return false;
+        }
+
+        ~TM_Button()
+        {
+
+        }
     private:
-        void (*actionFunc)();
+        T* context;
+        void (*actionFunc)(T* context);
 };
 
 class TM_NumberBox : public TM_TextView
@@ -122,6 +140,7 @@ class TM_View : public TM_RenderObject
     public:
         TM_View(SkRect bounds, std::vector<TM_RenderObject*> objects, TM_ViewSetting viewSetting={colorScheme[1],colorScheme[2],colorScheme[3],1,16,50});
         void Render(SkCanvas* skia_canvas, SkFont* font) override;
+        void setRenderObjectExistence(int index, bool existence);
         bool PollEvents(TM_EventInput eventInput) override;
         ~TM_View();
     protected:
@@ -133,7 +152,6 @@ class TM_CalendarView : public TM_View
 {
     public:
         TM_CalendarView(SkRect bounds);
-        bool PollEvents(TM_EventInput eventInput) override;
         ~TM_CalendarView();
     private:
 };
