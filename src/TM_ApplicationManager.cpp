@@ -18,8 +18,7 @@ TM_ApplicationManager::TM_ApplicationManager() : window_ptr("Timeman", 960, 540)
 	this->should_render_update = true;
 	this->skia_canvas_clear_color = colorScheme[BACKGROUND_COLOR_INDEX];
 
-	this->testView = new TM_View(SkRect::MakeXYWH(50, 50, 640, 840), {new TM_CalendarMonthView(SkRect::MakeXYWH(0,0,640,480), 1,2024), new TM_CalendarWeekView(SkRect::MakeXYWH(0, 0, 820, 640),3), /*new TM_TextBox(SkRect::MakeXYWH(0, 480, 100, 30), "Write something")*/});
-	this->testCalendarView = new TM_CalendarView(SkRect::MakeXYWH(690, 50, 640, 840));
+	this->calendarView = new TM_CalendarView(SkRect::MakeXYWH(50, 50, 840, 840));
 }
 
 void TM_ApplicationManager::Run()
@@ -40,8 +39,7 @@ void TM_ApplicationManager::Render()
 	this->skia_canvas->resetMatrix();
 	this->skia_canvas->clear(this->skia_canvas_clear_color);
 
-	this->testView->Render(this->skia_canvas, this->skia_fontList[this->defaultFont]);
-	this->testCalendarView->Render(this->skia_canvas, this->skia_fontList[this->defaultFont]);
+	this->calendarView->Render(this->skia_canvas, this->skia_fontList[this->defaultFont]);
 
 	this->skia_canvas->flush();
 	this->window_ptr.Swap_buffers();
@@ -79,7 +77,7 @@ void TM_ApplicationManager::PollEvents()
 					scrollY*scrollSensFactor*(this->SDL_event_ptr.wheel.direction==SDL_MOUSEWHEEL_FLIPPED?-1:1),
 					pressed,held
 				};
-			if(this->testView->PollEvents(eventInput) || this->testCalendarView->PollEvents(eventInput))
+			if(this->calendarView->PollEvents(eventInput))
 				should_render_update = true;
 		}
     }

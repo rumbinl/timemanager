@@ -21,6 +21,8 @@
 #include <include/core/SkTypeface.h>
 #include <include/core/SkTextBlob.h>
 
+#include <TM_DateTime.hpp>
+
 #include <GL/gl3w.h>
 
 #define BACKGROUND_COLOR_INDEX 0

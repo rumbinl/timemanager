@@ -42,6 +42,36 @@ void TM_TextView::Render(SkCanvas* skia_canvas, SkFont* font)
     skia_canvas->restoreToCount(restore);
 }
 
+void TM_TextView::Render(std::string text, SkRect bounds, SkCanvas* skia_canvas, SkFont* font, TM_ViewSetting viewSetting, bool centered)
+{
+    font->setSize(viewSetting.fontSize);
+    SkFontMetrics font_metrics;
+    font->getMetrics(&font_metrics);
+    SkScalar fontHeight = font_metrics.fDescent,textX,textY;
+
+    SkPaint paint;
+    paint.setColor(viewSetting.backgroundColor);
+    paint.setStyle(SkPaint::kFill_Style);
+    skia_canvas->drawRect(bounds,paint);
+    paint.setStyle(SkPaint::kStroke_Style);
+    paint.setColor(viewSetting.borderColor);
+    paint.setStrokeWidth(viewSetting.borderThickness);
+    skia_canvas->drawRect(bounds,paint);
+
+    int restore = skia_canvas->save();
+	skia_canvas->clipRect(bounds);
+
+    paint.setColor(viewSetting.textColor);
+    paint.setStyle(SkPaint::kFill_Style);
+    
+    SkRect text_bounds;
+    font->measureText(text.c_str(), text.length()*sizeof(char), SkTextEncoding::kUTF8, &text_bounds, &paint);
+    textX = bounds.x()+bounds.width()/2 - text_bounds.width()/2, textY = bounds.y()+bounds.height()/2+fontHeight;
+
+    skia_canvas->drawString(text.c_str(), textX, textY, *font, paint);
+    skia_canvas->restoreToCount(restore);
+}
+
 void TM_TextView::setTextXOffset(SkScalar scrollX)
 {
     SkScalar newTextXOffset = this->textXOffset + scrollX;

@@ -19,6 +19,9 @@ void TM_CalendarWeekView::RenderTimes(SkCanvas* skia_canvas, SkFont* font)
 	paint.setColor(this->viewSetting.borderColor);
 
 	SkScalar yOff = -this->scrollY, y = 0.0f;
+    SkScalar dayWidth = (this->bounds.width()-xOff)/(SkScalar)numDays;
+    
+    yOff+=fontMetrics.fDescent-fontMetrics.fAscent;
 
 	for(int i=0;i<24;i++)
 	{
@@ -36,7 +39,6 @@ void TM_CalendarWeekView::RenderTimes(SkCanvas* skia_canvas, SkFont* font)
 		y += this->hourHeight;
 	}
 	this->srcBounds.setWH(this->srcBounds.width(), y);
-    SkScalar dayWidth = (this->bounds.width() - this->xOff)/((SkScalar)this->numDays);
     for(int i=1;i<numDays;i++)
     {
         SkScalar x = xOff + i*dayWidth;
@@ -52,16 +54,24 @@ void TM_CalendarWeekView::Render(SkCanvas* skia_canvas, SkFont* font)
 
 	skia_canvas->drawRect(this->bounds, paint);
 
-	paint.setStyle(SkPaint::kStrokeAndFill_Style);
+	paint.setStyle(SkPaint::kFill_Style);
+
+    font->setSize(this->viewSetting.fontSize);
+	SkFontMetrics fontMetrics;
+	font->getMetrics(&fontMetrics);
+
+    SkScalar dayWidth = (this->bounds.width() - this->xOff)/((SkScalar)this->numDays);
+    SkScalar labelHeight = fontMetrics.fDescent-fontMetrics.fAscent;
+
+    for(int i=0;i<numDays;i++)
+        TM_TextView::Render("1 Ja", SkRect::MakeXYWH(this->bounds.x()+xOff+i*dayWidth,this->bounds.y(),dayWidth,labelHeight),skia_canvas,font,{colorScheme[1],colorScheme[2],colorScheme[3],1,this->viewSetting.fontSize,5});
 
 	skia_canvas->save();
-	skia_canvas->clipRect(this->bounds);
+	skia_canvas->clipRect(SkRect::MakeXYWH(this->bounds.x(),this->bounds.y()+labelHeight,this->bounds.width(),this->bounds.height()-labelHeight));
 	skia_canvas->translate(this->bounds.x(), this->bounds.y());
 
     RenderTimes(skia_canvas, font);
     
-    SkScalar dayWidth = (this->bounds.width() - this->xOff)/((SkScalar)this->numDays);
-
     if(pressWeekIndexStart == -1) 
     { 
         skia_canvas->restore();

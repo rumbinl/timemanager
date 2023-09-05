@@ -35,6 +35,7 @@ class TM_TextView : public TM_RenderObject
     public:
         TM_TextView(std::string text, SkRect bounds, TM_ViewSetting viewSetting={colorScheme[1],colorScheme[2],colorScheme[3],1,16,5}, bool centered=true);
         void Render(SkCanvas* skia_canvas, SkFont* font);
+        static void Render(std::string text, SkRect bounds, SkCanvas* skia_canvas, SkFont* font, TM_ViewSetting viewSetting={colorScheme[1],colorScheme[2],colorScheme[3],1,16,5}, bool centered=true);
         void setText(std::string newText);
         SkScalar getWidth();
         SkScalar getHeight();
@@ -65,9 +66,10 @@ class TM_CalendarMonthView : public TM_RenderObject
         bool PollEvents(TM_EventInput eventInput) override;
         ~TM_CalendarMonthView();
     private:
-        int month,year,firstDay,numDays,numRows,numColumns,hoverDayButton=-1,selectDayButton=-1;
+        int firstDay,numDays,numRows,numColumns,hoverDayButton=-1,selectDayButton=-1;
         TM_TextView* dataView;
         std::vector<TM_TextView> weekList,dayViewList;
+        std::chrono::year_month_day date;
 };
 
 class TM_CalendarWeekView : public TM_RenderObject
@@ -81,11 +83,12 @@ class TM_CalendarWeekView : public TM_RenderObject
         int getDaySpan();
         ~TM_CalendarWeekView();
     private:
+        std::vector<TM_TextView> dayLabels;
         int pressWeekIndexStart = -1, pressWeekIndexEnd = -1,pressDayIndexStart = -1, pressDayIndexEnd = -1;
         int scrollY=0.0f, pressIndexStart=-1, pressIndexEnd=-1,numDays=1;
         SkScalar hourHeight,yOff,xOff=0.0f;
         bool selected=false;
-
+        std::chrono::year_month_day date;
 };
 
 class TM_TextBox : public TM_TextView
