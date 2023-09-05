@@ -142,6 +142,16 @@ bool TM_CalendarWeekView::PollEvents(TM_EventInput eventInput)
     return false;
 }
 
+void TM_CalendarWeekView::setDaySpan(int daySpan)
+{
+    this->numDays = max(daySpan,0);
+}
+
+int TM_CalendarWeekView::getDaySpan()
+{
+    return this->numDays;
+}
+
 TM_CalendarWeekView::~TM_CalendarWeekView()
 {
 

@@ -2,6 +2,8 @@
 
 TM_CalendarView::TM_CalendarView(SkRect bounds) : TM_View(bounds, {})
 {
+    this->monthView = new TM_CalendarMonthView(SkRect::MakeXYWH(0, 0, 0, 480), 9, 2023);
+    this->weekView = new TM_CalendarWeekView(SkRect::MakeXYWH(0, 0, 0, 480), 7);
     this->renderObjects.push_back(new TM_Button<TM_CalendarView>("Month View", SkRect::MakeXYWH(0,0,0,40), 
 
         [](TM_CalendarView* context) 
@@ -21,10 +23,20 @@ TM_CalendarView::TM_CalendarView(SkRect bounds) : TM_View(bounds, {})
             context->setRenderObjectExistence(5,true);
         }, this));
 
-    this->renderObjects.push_back(new TM_TextView("Increase View Range", SkRect::MakeXYWH(0,0,0,40)));
-    this->renderObjects.push_back(new TM_TextView("Decrease View Range", SkRect::MakeXYWH(0,0,0,40)));
-    this->renderObjects.push_back(new TM_CalendarMonthView(SkRect::MakeXYWH(0, 0, 0, 480), 9, 2023));
-    this->renderObjects.push_back(new TM_CalendarWeekView(SkRect::MakeXYWH(0, 0, 0, 480), 7));
+    this->renderObjects.push_back(new TM_Button<TM_CalendarWeekView>("Increase View Range", SkRect::MakeXYWH(0,0,0,40), 
+        [](TM_CalendarWeekView* context)
+        {
+            context->setDaySpan(context->getDaySpan()+1);
+        }
+    , this->weekView));
+    this->renderObjects.push_back(new TM_Button<TM_CalendarWeekView>("Decrease View Range", SkRect::MakeXYWH(0,0,0,40),
+        [](TM_CalendarWeekView* context)
+        {
+            context->setDaySpan(context->getDaySpan()-1);
+        }, this->weekView
+    ));
+    this->renderObjects.push_back(this->monthView);
+    this->renderObjects.push_back(this->weekView);
 }
 
 TM_CalendarView::~TM_CalendarView()

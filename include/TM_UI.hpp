@@ -77,6 +77,8 @@ class TM_CalendarWeekView : public TM_RenderObject
         void Render(SkCanvas* skia_canvas, SkFont* font) override;
         void RenderTimes(SkCanvas* skia_canvas, SkFont* font);
         bool PollEvents(TM_EventInput eventInput) override;
+        void setDaySpan(int daySpan);
+        int getDaySpan();
         ~TM_CalendarWeekView();
     private:
         int pressWeekIndexStart = -1, pressWeekIndexEnd = -1,pressDayIndexStart = -1, pressDayIndexEnd = -1;
@@ -154,5 +156,7 @@ class TM_CalendarView : public TM_View
         TM_CalendarView(SkRect bounds);
         ~TM_CalendarView();
     private:
+        TM_CalendarMonthView* monthView;
+        TM_CalendarWeekView* weekView;
 };
 
