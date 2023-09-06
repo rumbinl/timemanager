@@ -107,9 +107,15 @@ template<class T> bool TM_CalendarMonthView<T>::PollEvents(TM_EventInput eventIn
                 if(eventInput.mousePressed)
                 {
                     if(this->selectDayButton==i)
+                    {
                         this->selectDayButton = -1;
+                        (action)(this->context,{this->ym_date.year(),this->ym_date.month(),std::chrono::day{1}});
+                    }
                     else
+                    {
                         this->selectDayButton = i;
+                        (action)(this->context,{this->ym_date.year(),this->ym_date.month(),std::chrono::day{(unsigned)i+1}});
+                    }
                 }
             }
         }
