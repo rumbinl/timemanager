@@ -2,23 +2,28 @@
 
 #include <iostream>
 #include <vector>
+#include <set>
+#include <chrono>
+
+#include <TM_DateTime.hpp>
 
 class TM_Task 
 {
     public:
-        TM_Task(std::string name, /* date-time variable, */std::vector<TM_Task> sub_tasks={});
-        void changeDate(/*date-time variable*/);
-        void changeName(std::string name);
-        void rescheduleSubtasks();
+        TM_Task(std::string name, std::chrono::year_month_day date, TM_Time time);
+        void addSubtask(TM_Task& subtask);
+        void setDate(std::chrono::year_month_day date);
+        void setTime(TM_Time time);
+        TM_Time getTime();
+        std::chrono::year_month_day getDate();
+        std::string setName(std::string name);
+        void scheduleSubtasks(std::chrono::year_month_day currentDay);
+        bool operator<(const TM_Task& b) const;
         ~TM_Task();
     private:
         std::string name; // once it has subtasks the date time variable automatically becomes the deadline for all subtasks
-        // date time data variable 
+        std::chrono::year_month_day date;
+        TM_Time time;
         TM_Task* rootTask;
-        std::vector<TM_Task> sub_tasks();
-};
-
-struct TM_TaskComp
-{
-        bool operator()(TM_Task* a, TM_Task* b);
+        std::set<TM_Task> sub_tasks;
 };

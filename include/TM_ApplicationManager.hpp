@@ -4,6 +4,7 @@
 #include <TM_Window.hpp>
 #include <TM_UI.hpp>
 #include <TM_CalendarView.hpp>
+#include <map>
 
 class TM_ApplicationManager
 {
@@ -37,5 +38,6 @@ class TM_ApplicationManager
 
         // Runtime attributes
 		bool should_render_update, should_terminate, pressed=false;
+		std::map<std::chrono::year_month_day,int> freeTimeMap;
         SkColor skia_canvas_clear_color;
 };

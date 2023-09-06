@@ -68,7 +68,7 @@ void TM_CalendarWeekView::Render(SkCanvas* skia_canvas, SkFont* font)
     {
         std::chrono::year_month_day currentDate = std::chrono::sys_days{*focusDate} + std::chrono::days{i};
         std::string date = std::to_string(static_cast<unsigned>(currentDate.day()))+"/"+std::to_string(static_cast<unsigned>(currentDate.month()));
-        TM_TextView::Render(date, SkRect::MakeXYWH(this->bounds.x()+xOff+i*dayWidth,this->bounds.y(),dayWidth,labelHeight),skia_canvas,font,{colorScheme[1],colorScheme[2],colorScheme[3],1,this->viewSetting.fontSize,5});
+        TM_TextView::Render(date, SkRect::MakeXYWH(this->bounds.x()+xOff+i*dayWidth,this->bounds.y(),dayWidth,labelHeight),skia_canvas,font,{colorScheme[3],colorScheme[2],colorScheme[1],1,this->viewSetting.fontSize,5});
     }
 
 	skia_canvas->save();
