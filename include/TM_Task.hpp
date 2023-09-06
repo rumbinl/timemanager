@@ -14,6 +14,7 @@ class TM_Task
     private:
         std::string name; // once it has subtasks the date time variable automatically becomes the deadline for all subtasks
         // date time data variable 
+        TM_Task* rootTask;
         std::vector<TM_Task> sub_tasks();
 };
 

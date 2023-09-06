@@ -3,6 +3,7 @@
 #include <TM_Core.hpp>
 #include <TM_Window.hpp>
 #include <TM_UI.hpp>
+#include <TM_CalendarView.hpp>
 
 class TM_ApplicationManager
 {

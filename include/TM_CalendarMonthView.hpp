@@ -1,24 +1,63 @@
+#pragma once
+
 #include <TM_UI.hpp>
 
-TM_CalendarMonthView::TM_CalendarMonthView(SkRect bounds, int month, int year, TM_ViewSetting viewSetting) : TM_RenderObject(bounds, viewSetting)
+template<class T> class TM_CalendarMonthView : public TM_RenderObject
+{
+    public:
+        TM_CalendarMonthView(SkRect bounds, void (*action)(T* context, std::chrono::year_month_day date), T* context, TM_ViewSetting viewSetting={colorScheme[1],colorScheme[2],colorScheme[3],1,16,1});
+        void Render(SkCanvas* skia_canvas, SkFont* font) override;
+        bool PollEvents(TM_EventInput eventInput) override;
+        void setMonth(std::chrono::year_month ym);
+        std::chrono::year_month getMonthYear();
+        ~TM_CalendarMonthView();
+    private:
+        int firstDay,numDays,numRows,numColumns,hoverDayButton=-1,selectDayButton=-1;
+        TM_TextView* dataView;
+        T* context;
+        void (*action)(T* context, std::chrono::year_month_day date);
+        std::vector<TM_TextView> weekList,dayViewList;
+        std::chrono::year_month ym_date;
+};
+
+template<class T> TM_CalendarMonthView<T>::TM_CalendarMonthView(SkRect bounds, void (*action)(T* context, std::chrono::year_month_day date), T* context, TM_ViewSetting viewSetting) : TM_RenderObject(bounds, viewSetting)
 {
     this->dayViewList = std::vector(31, TM_TextView("0", SkRect::MakeWH(bounds.width()/7.0f, 0)));
     this->dataView = new TM_TextView("January 1981", bounds, {colorScheme[3],colorScheme[2],colorScheme[0],0,36});
     this->numColumns = 7.0f;
-    this->date = TM_YMD(1,month,year);
-    this->firstDay = weekDayFromDate(TM_YMD(1,month,year)); 
-    this->numDays = TM_NumMonthDays(this->date);
-    this->numRows = (numDays+firstDay+6)/7;
+
+    std::chrono::time_point now{std::chrono::system_clock::now()};
+    std::chrono::year_month_day currentDate{std::chrono::floor<std::chrono::days>(now)};
+
+    this->action = action;
+    this->context = context;
+
+    this->setMonth({currentDate.year(),currentDate.month()});
+
     this->weekList = std::vector(7, TM_TextView("XX", SkRect::MakeWH(this->bounds.width()/7.0f, 0.0f)));
 }
 
-void TM_CalendarMonthView::Render(SkCanvas* skia_canvas, SkFont* font)
+template<class T> void TM_CalendarMonthView<T>::setMonth(std::chrono::year_month ym)
+{
+    this->ym_date = ym;
+    this->firstDay = weekDayFromDate({ym.year(),ym.month(),std::chrono::day{1}});
+    this->numDays = TM_NumMonthDays(this->ym_date);
+    this->numRows = (this->numDays+this->firstDay+6)/7;
+    (*this->action)(this->context, {ym.year(),ym.month(),std::chrono::day{1}});
+}
+
+template <class T> std::chrono::year_month TM_CalendarMonthView<T>::getMonthYear()
+{
+    return ym_date;
+}
+
+template <class T> void TM_CalendarMonthView<T>::Render(SkCanvas* skia_canvas, SkFont* font)
 {
     SkFontMetrics fontMetrics;
     font->getMetrics(&fontMetrics);
     this->dataView->setX(this->bounds.x());
     this->dataView->setY(this->bounds.y());
-    this->dataView->setText(monthNames[static_cast<unsigned>(this->date.month())-1]+' '+std::to_string(static_cast<int>(this->date.year())));
+    this->dataView->setText(monthNames[static_cast<unsigned>(this->ym_date.month())-1]+' '+std::to_string(static_cast<int>(this->ym_date.year())));
     this->dataView->setWidth(this->bounds.width());
     this->dataView->setHeightFont(font);
     this->dataView->Render(skia_canvas, font);
@@ -54,7 +93,7 @@ void TM_CalendarMonthView::Render(SkCanvas* skia_canvas, SkFont* font)
     }
 }
 
-bool TM_CalendarMonthView::PollEvents(TM_EventInput eventInput)
+template<class T> bool TM_CalendarMonthView<T>::PollEvents(TM_EventInput eventInput)
 {
     bool select=false;
     if(this->bounds.contains(eventInput.mouseX,eventInput.mouseY))
@@ -83,7 +122,7 @@ bool TM_CalendarMonthView::PollEvents(TM_EventInput eventInput)
     return select;
 }
 
-TM_CalendarMonthView::~TM_CalendarMonthView()
+template<class T> TM_CalendarMonthView<T>::~TM_CalendarMonthView()
 {
 
 }

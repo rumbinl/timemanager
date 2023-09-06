@@ -1,9 +1,12 @@
-#include <TM_UI.hpp>
+#include <TM_CalendarView.hpp>
 
 TM_CalendarView::TM_CalendarView(SkRect bounds) : TM_View(bounds, {})
 {
-    this->monthView = new TM_CalendarMonthView(SkRect::MakeXYWH(0, 0, 0, 480), 9, 2023);
-    this->weekView = new TM_CalendarWeekView(SkRect::MakeXYWH(0, 0, 0, 480), 7);
+    this->monthView = new TM_CalendarMonthView<TM_CalendarView>(SkRect::MakeXYWH(0, 0, 0, 480), [](TM_CalendarView* context, std::chrono::year_month_day date)
+    {
+        context->currentDate = date;
+    },this);
+    this->weekView = new TM_CalendarWeekView(SkRect::MakeXYWH(0, 0, 0, 480), &this->currentDate);
     this->renderObjects.push_back(new TM_Button<TM_CalendarView>("Month View", SkRect::MakeXYWH(0,0,0,40), 
 
         [](TM_CalendarView* context) 

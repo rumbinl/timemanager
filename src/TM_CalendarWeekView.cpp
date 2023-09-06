@@ -1,10 +1,11 @@
 #include <TM_UI.hpp>
 
-TM_CalendarWeekView::TM_CalendarWeekView(SkRect bounds, int numDays, SkScalar hourHeight, TM_ViewSetting viewSetting) : TM_RenderObject(bounds, viewSetting)
+TM_CalendarWeekView::TM_CalendarWeekView(SkRect bounds, std::chrono::year_month_day* focusDate, int numDays, SkScalar hourHeight, TM_ViewSetting viewSetting) : TM_RenderObject(bounds, viewSetting)
 {
 	this->hourHeight = hourHeight;
 	this->scrollY = 0;
     this->numDays = numDays;
+    this->focusDate = focusDate;
 }
 
 void TM_CalendarWeekView::RenderTimes(SkCanvas* skia_canvas, SkFont* font)
@@ -64,7 +65,11 @@ void TM_CalendarWeekView::Render(SkCanvas* skia_canvas, SkFont* font)
     SkScalar labelHeight = fontMetrics.fDescent-fontMetrics.fAscent;
 
     for(int i=0;i<numDays;i++)
-        TM_TextView::Render("1 Ja", SkRect::MakeXYWH(this->bounds.x()+xOff+i*dayWidth,this->bounds.y(),dayWidth,labelHeight),skia_canvas,font,{colorScheme[1],colorScheme[2],colorScheme[3],1,this->viewSetting.fontSize,5});
+    {
+        std::chrono::year_month_day currentDate = std::chrono::sys_days{*focusDate} + std::chrono::days{i};
+        std::string date = std::to_string(static_cast<unsigned>(currentDate.day()));
+        TM_TextView::Render(date, SkRect::MakeXYWH(this->bounds.x()+xOff+i*dayWidth,this->bounds.y(),dayWidth,labelHeight),skia_canvas,font,{colorScheme[1],colorScheme[2],colorScheme[3],1,this->viewSetting.fontSize,5});
+    }
 
 	skia_canvas->save();
 	skia_canvas->clipRect(SkRect::MakeXYWH(this->bounds.x(),this->bounds.y()+labelHeight,this->bounds.width(),this->bounds.height()-labelHeight));
@@ -97,18 +102,19 @@ void TM_CalendarWeekView::Render(SkCanvas* skia_canvas, SkFont* font)
 
     paint.setColor(this->viewSetting.textColor);
 
+    SkScalar r = 10;
     if(startDayIdx == endDayIdx)
     {
-		SkRRect rect = SkRRect::MakeRectXY(SkRect::MakeXYWH(startDayX, topY, dayWidth, botY-topY),20,20);
+		SkRRect rect = SkRRect::MakeRectXY(SkRect::MakeXYWH(startDayX, topY, dayWidth, botY-topY),r,r);
         skia_canvas->drawRRect(rect, paint);
     }
     else 
     {
-		SkRRect startDay = SkRRect::MakeRectXY(SkRect::MakeXYWH(startDayX, topY, dayWidth, this->bounds.height()-topY),20,20);
+		SkRRect startDay = SkRRect::MakeRectXY(SkRect::MakeXYWH(startDayX, topY, dayWidth, this->bounds.height()-topY),r,r);
         skia_canvas->drawRRect(startDay, paint);
         SkRRect coverDays = SkRRect::MakeRectXY(SkRect::MakeXYWH(endDayX, 0, dayWidth, botY),20,20);
         skia_canvas->drawRRect(coverDays, paint);
-        SkRRect endDay = SkRRect::MakeRectXY(SkRect::MakeXYWH(startDayX+dayWidth, 0, dayWidth*(endDayIdx-startDayIdx-1), this->bounds.height()),20,20);
+        SkRRect endDay = SkRRect::MakeRectXY(SkRect::MakeXYWH(startDayX+dayWidth, 0, dayWidth*(endDayIdx-startDayIdx-1), this->bounds.height()),r,r);
         skia_canvas->drawRRect(endDay, paint);
     }
     skia_canvas->restore();
