@@ -19,6 +19,7 @@ TM_ApplicationManager::TM_ApplicationManager() : window_ptr("Timeman", 960, 540)
 	this->skia_canvas_clear_color = colorScheme[BACKGROUND_COLOR_INDEX];
 
 	this->calendarView = new TM_CalendarView(SkRect::MakeXYWH(50, 50, 840, 840));
+	this->taskView = new TM_TaskView(SkRect::MakeXYWH(920,50,840,840));
 }
 
 void TM_ApplicationManager::Run()
@@ -40,6 +41,7 @@ void TM_ApplicationManager::Render()
 	this->skia_canvas->clear(this->skia_canvas_clear_color);
 
 	this->calendarView->Render(this->skia_canvas, this->skia_fontList[this->defaultFont]);
+	this->taskView->Render(this->skia_canvas, this->skia_fontList[this->defaultFont]);
 
 	this->skia_canvas->flush();
 	this->window_ptr.Swap_buffers();
@@ -77,8 +79,7 @@ void TM_ApplicationManager::PollEvents()
 					scrollY*scrollSensFactor*(this->SDL_event_ptr.wheel.direction==SDL_MOUSEWHEEL_FLIPPED?-1:1),
 					pressed,held
 				};
-			if(this->calendarView->PollEvents(eventInput))
-				should_render_update = true;
+			should_render_update = this->calendarView->PollEvents(eventInput) || this->taskView->PollEvents(eventInput);
 		}
     }
 }

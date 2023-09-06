@@ -2,6 +2,7 @@
 
 TM_CalendarView::TM_CalendarView(SkRect bounds) : TM_View(bounds, {})
 {
+    this->currentDate = getCurrentDate();
     this->monthView = new TM_CalendarMonthView<TM_CalendarView>(SkRect::MakeXYWH(0, 0, 0, 480), [](TM_CalendarView* context, std::chrono::year_month_day date)
     {
         context->currentDate = date;

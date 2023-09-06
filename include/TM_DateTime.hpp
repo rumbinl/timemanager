@@ -9,4 +9,6 @@ std::chrono::year_month_day TM_YMD(int d, int m, int y);
 
 int weekDayFromDate(std::chrono::year_month_day ymd);
 
+std::chrono::year_month_day getCurrentDate();
+
 unsigned TM_NumMonthDays(std::chrono::year_month ymd);

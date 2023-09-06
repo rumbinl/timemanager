@@ -102,7 +102,7 @@ void TM_CalendarWeekView::Render(SkCanvas* skia_canvas, SkFont* font)
 
     paint.setColor(this->viewSetting.textColor);
 
-    SkScalar r = 10;
+    SkScalar r = 0;
     if(startDayIdx == endDayIdx)
     {
 		SkRRect rect = SkRRect::MakeRectXY(SkRect::MakeXYWH(startDayX, topY, dayWidth, botY-topY),r,r);

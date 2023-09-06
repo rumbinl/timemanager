@@ -26,13 +26,10 @@ template<class T> TM_CalendarMonthView<T>::TM_CalendarMonthView(SkRect bounds, v
     this->dataView = new TM_TextView("January 1981", bounds, {colorScheme[3],colorScheme[2],colorScheme[0],0,36});
     this->numColumns = 7.0f;
 
-    std::chrono::time_point now{std::chrono::system_clock::now()};
-    std::chrono::year_month_day currentDate{std::chrono::floor<std::chrono::days>(now)};
-
     this->action = action;
     this->context = context;
 
-    this->setMonth({currentDate.year(),currentDate.month()});
+    this->setMonth({getCurrentDate().year(),getCurrentDate().month()});
 
     this->weekList = std::vector(7, TM_TextView("XX", SkRect::MakeWH(this->bounds.width()/7.0f, 0.0f)));
 }
@@ -110,12 +107,14 @@ template<class T> bool TM_CalendarMonthView<T>::PollEvents(TM_EventInput eventIn
                     if(this->selectDayButton==i)
                     {
                         this->selectDayButton = -1;
-                        (action)(this->context,{this->ym_date.year(),this->ym_date.month(),std::chrono::day{1}});
+                        if(action != NULL)
+                            (action)(this->context,{this->ym_date.year(),this->ym_date.month(),std::chrono::day{1}});
                     }
                     else
                     {
                         this->selectDayButton = i;
-                        (action)(this->context,{this->ym_date.year(),this->ym_date.month(),std::chrono::day{(unsigned)i+1}});
+                        if(action != NULL)
+                            (action)(this->context,{this->ym_date.year(),this->ym_date.month(),std::chrono::day{(unsigned)i+1}});
                     }
                 }
             }

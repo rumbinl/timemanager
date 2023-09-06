@@ -7,9 +7,9 @@ TM_Task::TM_Task(std::string name, std::chrono::year_month_day date, TM_Time tim
     this->time = time;
 }
 
-void TM_Task::addSubtask(TM_Task& subtask)
+void TM_Task::addSubtask(std::string name, TM_Time duration)
 {
-    this->sub_tasks.insert(subtask);
+    
 }
 
 void TM_Task::setDate(std::chrono::year_month_day date)

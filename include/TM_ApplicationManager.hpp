@@ -4,6 +4,7 @@
 #include <TM_Window.hpp>
 #include <TM_UI.hpp>
 #include <TM_CalendarView.hpp>
+#include <TM_TaskView.hpp>
 #include <map>
 
 class TM_ApplicationManager
@@ -27,6 +28,7 @@ class TM_ApplicationManager
 		std::vector<SkFont*> skia_fontList;
 		int defaultFont=-1;
 		TM_CalendarView* calendarView;
+		TM_TaskView* taskView;
 
         // Pointers to Timeman classes
 		TM_Graphics_Window window_ptr;
