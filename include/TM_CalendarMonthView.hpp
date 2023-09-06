@@ -5,7 +5,7 @@
 template<class T> class TM_CalendarMonthView : public TM_RenderObject
 {
     public:
-        TM_CalendarMonthView(SkRect bounds, void (*action)(T* context, std::chrono::year_month_day date), T* context, TM_ViewSetting viewSetting={colorScheme[1],colorScheme[2],colorScheme[3],1,16,1});
+        TM_CalendarMonthView(SkRect bounds, void (*action)(T* context, std::chrono::year_month_day date)=NULL, T* context=NULL, TM_ViewSetting viewSetting={colorScheme[1],colorScheme[2],colorScheme[3],1,16,1});
         void Render(SkCanvas* skia_canvas, SkFont* font) override;
         bool PollEvents(TM_EventInput eventInput) override;
         void setMonth(std::chrono::year_month ym);
@@ -43,7 +43,8 @@ template<class T> void TM_CalendarMonthView<T>::setMonth(std::chrono::year_month
     this->firstDay = weekDayFromDate({ym.year(),ym.month(),std::chrono::day{1}});
     this->numDays = TM_NumMonthDays(this->ym_date);
     this->numRows = (this->numDays+this->firstDay+6)/7;
-    (*this->action)(this->context, {ym.year(),ym.month(),std::chrono::day{1}});
+    if(this->action != NULL)
+        (*this->action)(this->context, {ym.year(),ym.month(),std::chrono::day{1}});
 }
 
 template <class T> std::chrono::year_month TM_CalendarMonthView<T>::getMonthYear()

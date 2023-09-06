@@ -93,7 +93,7 @@ class TM_TextBox : public TM_TextView
 template<class T> class TM_Button : public TM_TextView 
 {
     public:
-        TM_Button(std::string text, SkRect bounds, void (*actionFunc)(T* context), T* context) : TM_TextView(text, bounds)
+        TM_Button(std::string text, SkRect bounds, void (*actionFunc)(T* context)=NULL, T* context=NULL) : TM_TextView(text, bounds)
         {
             this->actionFunc = actionFunc;
             this->context = context;
