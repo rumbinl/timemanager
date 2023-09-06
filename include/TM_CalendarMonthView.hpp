@@ -40,8 +40,6 @@ template<class T> void TM_CalendarMonthView<T>::setMonth(std::chrono::year_month
     this->firstDay = weekDayFromDate({ym.year(),ym.month(),std::chrono::day{1}});
     this->numDays = TM_NumMonthDays(this->ym_date);
     this->numRows = (this->numDays+this->firstDay+6)/7;
-    if(this->action != NULL)
-        (*this->action)(this->context, {ym.year(),ym.month(),std::chrono::day{1}});
 }
 
 template <class T> std::chrono::year_month TM_CalendarMonthView<T>::getMonthYear()

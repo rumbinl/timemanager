@@ -25,5 +25,5 @@ class TM_Task
         std::chrono::year_month_day date;
         TM_Time time,duration;
         TM_Task* rootTask;
-        std::set<TM_Task> sub_tasks;
+        std::vector<TM_Task*> sub_tasks;
 };

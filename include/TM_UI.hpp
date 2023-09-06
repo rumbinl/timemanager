@@ -1,6 +1,7 @@
 #pragma once
 
 #include <TM_Core.hpp>
+#include <TM_Task.hpp>
 
 typedef struct { SkColor backgroundColor, borderColor, textColor; SkScalar borderThickness, fontSize, padding; } TM_ViewSetting;
 
@@ -14,7 +15,7 @@ typedef struct { SkScalar mouseX, mouseY, scrollX, scrollY; bool mousePressed, m
 class TM_RenderObject 
 {
     public:
-        TM_RenderObject(SkRect bounds, TM_ViewSetting viewSetting={colorScheme[1],colorScheme[2],colorScheme[3],1,16,5});
+        TM_RenderObject(SkRect bounds, TM_ViewSetting viewSetting={colorScheme[1],colorScheme[2],colorScheme[3],1,24,5});
         virtual void Render(SkCanvas* skia_canvas, SkFont* font);
         virtual bool PollEvents(TM_EventInput eventInput);
         SkRect getBounds();
@@ -33,7 +34,7 @@ class TM_RenderObject
 class TM_TextView : public TM_RenderObject
 {
     public:
-        TM_TextView(std::string text, SkRect bounds, TM_ViewSetting viewSetting={colorScheme[1],colorScheme[2],colorScheme[3],1,16,5}, bool centered=true);
+        TM_TextView(std::string text, SkRect bounds, TM_ViewSetting viewSetting={colorScheme[1],colorScheme[2],colorScheme[3],1,24,5}, bool centered=true);
         void Render(SkCanvas* skia_canvas, SkFont* font);
         static void Render(std::string text, SkRect bounds, SkCanvas* skia_canvas, SkFont* font, TM_ViewSetting viewSetting={colorScheme[1],colorScheme[2],colorScheme[3],1,16,5}, bool centered=true);
         void setText(std::string newText);
@@ -61,7 +62,7 @@ class TM_TextView : public TM_RenderObject
 class TM_CalendarWeekView : public TM_RenderObject
 {
     public:
-        TM_CalendarWeekView(SkRect bounds, std::chrono::year_month_day* focusDate, int numDays = 7, SkScalar hourHeight = 50.0, TM_ViewSetting viewSettings={colorScheme[1],colorScheme[2],colorScheme[3],1,16,1});
+        TM_CalendarWeekView(SkRect bounds, std::chrono::year_month_day* focusDate, std::set<TM_Task>* tasks, int numDays = 7, SkScalar hourHeight = 50.0, TM_ViewSetting viewSettings={colorScheme[1],colorScheme[2],colorScheme[3],1,24,1});
         void Render(SkCanvas* skia_canvas, SkFont* font) override;
         void RenderTimes(SkCanvas* skia_canvas, SkFont* font);
         bool PollEvents(TM_EventInput eventInput) override;
@@ -69,6 +70,7 @@ class TM_CalendarWeekView : public TM_RenderObject
         int getDaySpan();
         ~TM_CalendarWeekView();
     private:
+        std::set<TM_Task>* tasks;
         std::vector<TM_TextView> dayLabels;
         int pressWeekIndexStart = -1, pressWeekIndexEnd = -1,pressDayIndexStart = -1, pressDayIndexEnd = -1;
         int scrollY=0.0f, pressIndexStart=-1, pressIndexEnd=-1,numDays=1;
@@ -80,7 +82,7 @@ class TM_CalendarWeekView : public TM_RenderObject
 class TM_TextBox : public TM_TextView
 {
     public:
-        TM_TextBox(SkRect bounds, std::string placeholder, TM_ViewSetting viewSetting ={colorScheme[1],colorScheme[2],colorScheme[3],1,16,5});
+        TM_TextBox(SkRect bounds, std::string placeholder, TM_ViewSetting viewSetting ={colorScheme[1],colorScheme[2],colorScheme[3],1,24,5});
         void Render(SkCanvas* skia_canvas, SkFont* font) override;
         bool PollEvents(TM_EventInput eventInput) override;
         ~TM_TextBox();
@@ -129,7 +131,7 @@ class TM_NumberBox : public TM_TextView
 class TM_View : public TM_RenderObject
 {
     public:
-        TM_View(SkRect bounds, std::vector<TM_RenderObject*> objects, TM_ViewSetting viewSetting={colorScheme[1],colorScheme[2],colorScheme[3],1,16,10});
+        TM_View(SkRect bounds, std::vector<TM_RenderObject*> objects, TM_ViewSetting viewSetting={colorScheme[1],colorScheme[2],colorScheme[3],1,24,10});
         void Render(SkCanvas* skia_canvas, SkFont* font) override;
         void setRenderObjectExistence(int index, bool existence);
         bool PollEvents(TM_EventInput eventInput) override;

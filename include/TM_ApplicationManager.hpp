@@ -39,7 +39,8 @@ class TM_ApplicationManager
 		SkCanvas* skia_canvas;
 
         // Runtime attributes
-		bool should_render_update, should_terminate, pressed=false;
+		bool should_render_update=true, should_terminate=false, pressed=false;
 		std::map<std::chrono::year_month_day,int> freeTimeMap;
+		std::set<TM_Task> tasks;
         SkColor skia_canvas_clear_color;
 };

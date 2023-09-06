@@ -1,14 +1,18 @@
 #include <TM_TaskView.hpp>
 
-TM_TaskView::TM_TaskView(SkRect bounds) : TM_View(bounds, {})
+TM_TaskView::TM_TaskView(SkRect bounds) : TM_View(bounds, {}, {colorScheme[1],colorScheme[2],colorScheme[3],1,24,30})
 {
-    this->textBox = new TM_TextBox(SkRect::MakeWH(0,40),"Untitled");
+    this->textBox = new TM_TextBox(SkRect::MakeWH(0,40),"New Task");
     this->taskList = new TM_View(SkRect::MakeWH(0,200), {});
     this->addSubtaskButton = new TM_Button<TM_TaskView>("Add Subtask", SkRect::MakeWH(0,50), [](TM_TaskView* context) {
         if(context->getTask())
             context->getTask()->addSubtask("Subtask", {0,30});
     },this);
-    //this->newTaskButton = new TM_Button<TM_TaskView>("Create Task", SkRect::MakeWH(0,50));
+
+    this->newTaskButton = new TM_Button<TM_TaskView>("Create Task", SkRect::MakeWH(0,50), [](TM_TaskView* context) {
+        context->setTask(new TM_Task("Name", getCurrentDate()));
+    },this);
+
     this->monthView = new TM_CalendarMonthView<TM_TaskView>(SkRect::MakeWH(0,480), 
         [](TM_TaskView* context, std::chrono::year_month_day date) {
             if(context->getTask())
@@ -16,6 +20,7 @@ TM_TaskView::TM_TaskView(SkRect bounds) : TM_View(bounds, {})
         },
     this);
 
+    this->renderObjects.push_back(this->newTaskButton);
     this->renderObjects.push_back(this->textBox);
     this->renderObjects.push_back(this->taskList);
     this->renderObjects.push_back(this->addSubtaskButton);

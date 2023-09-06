@@ -41,14 +41,14 @@ void TM_Task::scheduleSubtasks(std::chrono::year_month_day currentDay)
 {
     if(this->sub_tasks.empty())
         return;
-    for(const TM_Task& subtask : this->sub_tasks)
+    for(TM_Task* subtask : this->sub_tasks)
     {
     }
 }
 
 bool TM_Task::operator<(const TM_Task& b) const 
 {
-    return false;
+    return true;
 }
 
 TM_Task::~TM_Task()
