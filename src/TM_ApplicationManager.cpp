@@ -18,14 +18,8 @@ TM_ApplicationManager::TM_ApplicationManager() : window_ptr("Timeman", 960, 540)
 	this->should_render_update = true;
 	this->skia_canvas_clear_color = colorScheme[BACKGROUND_COLOR_INDEX];
 
-	this->tasks.insert(TM_Task("New Task", getCurrentDate()));
-	this->tasks.insert(TM_Task("Another Task", getCurrentDate()));
-	this->tasks.insert(TM_Task("Another Task", getCurrentDate()));
-	this->tasks.insert(TM_Task("Another Task", getCurrentDate()));
-	this->tasks.insert(TM_Task("Another Task", getCurrentDate()));
-	this->tasks.insert(TM_Task("Another Task", getCurrentDate()));
 	this->calendarView = new TM_CalendarView(SkRect::MakeXYWH(50, 50, 840, 840), &this->tasks);
-	this->taskView = new TM_TaskView(SkRect::MakeXYWH(920,50,840,840));
+	this->taskView = new TM_TaskView(SkRect::MakeXYWH(920,50,840,840), &this->tasks, &this->freeTimeMap);
 }
 
 void TM_ApplicationManager::Run()

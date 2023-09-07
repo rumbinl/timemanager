@@ -4,19 +4,22 @@
 #include <vector>
 #include <set>
 #include <chrono>
+#include <map>
 
 #include <TM_DateTime.hpp>
 
 class TM_Task 
 {
     public:
-        TM_Task(std::string name, std::chrono::year_month_day date, TM_Time time={0,0});
+        TM_Task(std::string name, std::chrono::year_month_day date, TM_Time time);
+        TM_Task(std::string name, std::chrono::year_month_day deadline,std::map<std::chrono::year_month_day,int>* calendarPtr);
         void addSubtask(std::string name, TM_Time duration);
         void setDate(std::chrono::year_month_day date);
         void setTime(TM_Time time);
         TM_Time getTime();
         std::chrono::year_month_day getDate();
-        std::string setName(std::string name);
+        void setName(std::string name);
+        std::string getName();
         void scheduleSubtasks(std::chrono::year_month_day currentDay);
         bool operator<(const TM_Task& b) const;
         ~TM_Task();

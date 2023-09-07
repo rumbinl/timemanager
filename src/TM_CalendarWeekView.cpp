@@ -87,9 +87,14 @@ void TM_CalendarWeekView::Render(SkCanvas* skia_canvas, SkFont* font)
         {
             if(task.getDate()==currentDate)
             {
-                std::cout<<y<<std::endl;
                 SkScalar minutes = 30.0f;
                 SkRect rect = SkRect::MakeXYWH(this->xOff + dayWidth*i, y, dayWidth, this->hourHeight/(60.0f/minutes));
+                
+                paint.setStyle(SkPaint::kFill_Style);
+                paint.setColor(this->viewSetting.textColor);
+                skia_canvas->drawRect(rect, paint);
+                paint.setStyle(SkPaint::kStroke_Style);
+                paint.setColor(this->viewSetting.backgroundColor);
                 skia_canvas->drawRect(rect, paint);
                 y+=this->hourHeight/(60.0f/minutes);
             }
@@ -118,6 +123,7 @@ void TM_CalendarWeekView::Render(SkCanvas* skia_canvas, SkFont* font)
     SkScalar topY = this->viewSetting.padding - this->scrollY + (timeStep)*floor((firstY  - this->yOff)/(timeStep)),
              botY = this->viewSetting.padding - this->scrollY + (timeStep)*floor((secondY - this->yOff)/(timeStep));
 
+    paint.setStyle(SkPaint::kFill_Style);
     paint.setColor(this->viewSetting.textColor);
     paint.setAlpha(100);
 

@@ -7,6 +7,28 @@ TM_Task::TM_Task(std::string name, std::chrono::year_month_day date, TM_Time tim
     this->time = time;
 }
 
+TM_Task::TM_Task(std::string name, std::chrono::year_month_day date, std::map<std::chrono::year_month_day,int>* calendarPtr)
+{
+    int numDays = (std::chrono::sys_days(date) - std::chrono::sys_days(getCurrentDate())).count();
+    std::cout<<numDays<<std::endl;
+    std::chrono::year_month_day optimalDate = getCurrentDate();
+    int optimalCost = (*calendarPtr)[optimalDate];
+    for(int i=1;i<numDays;i++)
+    {
+        std::chrono::year_month_day currentDate = std::chrono::sys_days(getCurrentDate()) + std::chrono::days{i};
+        std::cout<<(*calendarPtr)[currentDate]<<std::endl;
+        if((*calendarPtr)[currentDate]<=optimalCost)
+        {
+            optimalDate=currentDate;
+            optimalCost=(*calendarPtr)[currentDate];
+        }
+    }
+    this->name = name;
+    this->date = optimalDate;
+    this->time = {0,0};
+    (*calendarPtr)[optimalDate] += 30;
+}
+
 void TM_Task::addSubtask(std::string name, TM_Time duration)
 {
     
@@ -32,7 +54,12 @@ std::chrono::year_month_day TM_Task::getDate()
     return this->date;
 }
 
-std::string TM_Task::setName(std::string name)
+void TM_Task::setName(std::string name)
+{
+    this->name = name;
+}
+
+std::string TM_Task::getName()
 {
     return this->name;
 }
