@@ -11,6 +11,7 @@ class TM_TaskView : public TM_View
         void setTask(TM_Task* task);
         void setDate(std::chrono::year_month_day date);
         std::chrono::year_month_day getDate();
+		std::string getText();
         std::map<std::chrono::year_month_day,int>* getCalendarPtr();
         TM_Task* getTask();
     private:

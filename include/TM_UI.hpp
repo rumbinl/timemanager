@@ -5,7 +5,7 @@
 
 typedef struct { SkColor backgroundColor, borderColor, textColor; SkScalar borderThickness, fontSize, padding; } TM_ViewSetting;
 
-typedef struct { SkScalar mouseX, mouseY, scrollX, scrollY; bool mousePressed, mouseHeld; std::string inputText; } TM_EventInput;
+typedef struct { SkScalar mouseX, mouseY, scrollX, scrollY, dpi; bool mousePressed, mouseHeld,keyPressed; std::string inputText; SkFont* font; SDL_Scancode key; } TM_EventInput;
 
 // Render order:
 // 1. Background
@@ -48,11 +48,12 @@ class TM_TextView : public TM_RenderObject
         void setHeightFont(SkFont* font);
         void setWidth(SkScalar newWidth);
         void setTextXOffset(SkScalar scrollX);
+		void setSelect(bool selectStatus);
         void setX(SkScalar x);
         void setY(SkScalar y);
         ~TM_TextView();
     protected:
-        bool centered;
+        bool centered,select=false;
         SkSurface* renderSurface;
         SkScalar textXOffset=0.0f;
     private:
@@ -85,6 +86,7 @@ class TM_TextBox : public TM_TextView
         TM_TextBox(SkRect bounds, std::string placeholder, TM_ViewSetting viewSetting ={colorScheme[1],colorScheme[2],colorScheme[3],1,24,5});
         void Render(SkCanvas* skia_canvas, SkFont* font) override;
         bool PollEvents(TM_EventInput eventInput) override;
+		SkScalar getCharWidth(char a, SkFont* font);
         ~TM_TextBox();
     private:
 		void locatePosition(SkScalar mouseX, std::string text, SkFont* font);
@@ -105,12 +107,16 @@ template<class T> class TM_Button : public TM_TextView
 
         bool PollEvents(TM_EventInput eventInput) 
         {
-            if(this->bounds.contains(eventInput.mouseX, eventInput.mouseY) && eventInput.mousePressed)
+            if(this->bounds.contains(eventInput.mouseX, eventInput.mouseY))
             {
-                if(actionFunc != NULL)
-                    (*actionFunc)(this->context);
-                return true;
+				this->setSelect(true);
+				if(eventInput.mousePressed)
+					if(actionFunc != NULL)
+						(*actionFunc)(this->context);
+				return true;
             }
+			this->setSelect(false);
+			
             return false;
         }
 

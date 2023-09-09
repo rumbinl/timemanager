@@ -78,7 +78,10 @@ void TM_ApplicationManager::PollEvents()
 					mouseY*this->window_ptr.getDPI(), 
 					scrollX*scrollSensFactor*(this->SDL_event_ptr.wheel.direction==SDL_MOUSEWHEEL_FLIPPED?-1:1),
 					scrollY*scrollSensFactor*(this->SDL_event_ptr.wheel.direction==SDL_MOUSEWHEEL_FLIPPED?-1:1),
-					pressed,held,inputText
+					this->window_ptr.getDPI(),
+					pressed,held,
+					SDL_event_ptr.type == SDL_EVENT_KEY_DOWN, 
+					inputText,this->skia_fontList[this->defaultFont],SDL_event_ptr.key.keysym.scancode
 				};
 			should_render_update = this->calendarView->PollEvents(eventInput) || this->taskView->PollEvents(eventInput);
 		}

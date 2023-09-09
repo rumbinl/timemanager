@@ -3,7 +3,7 @@
 TM_TaskView::TM_TaskView(SkRect bounds, std::set<TM_Task>* tasksPtr, std::map<std::chrono::year_month_day,int>* calendarPtr) : TM_View(bounds, {}, {colorScheme[1],colorScheme[2],colorScheme[3],1,24,30})
 {
     this->tasksPtr = tasksPtr;
-    this->textBox = new TM_TextBox(SkRect::MakeWH(0,40),"New Task");
+    this->textBox = new TM_TextBox(SkRect::MakeWH(0,48),"New Task", {colorScheme[1],colorScheme[2],colorScheme[3],1,48,5});
     this->taskList = new TM_View(SkRect::MakeWH(0,200), {});
     this->calendarPtr = calendarPtr;
     this->addSubtaskButton = new TM_Button<TM_TaskView>("Add Subtask", SkRect::MakeWH(0,50), [](TM_TaskView* context) {
@@ -12,7 +12,7 @@ TM_TaskView::TM_TaskView(SkRect bounds, std::set<TM_Task>* tasksPtr, std::map<st
     },this);
 
     this->newTaskButton = new TM_Button<TM_TaskView>("Create Task", SkRect::MakeWH(0,50), [](TM_TaskView* context) {
-        context->tasksPtr->insert(TM_Task("New Task", context->getDate(), context->getCalendarPtr()));
+        context->tasksPtr->insert(TM_Task(context->getText(), context->getDate(), context->getCalendarPtr()));
     },this);
 
     this->monthView = new TM_CalendarMonthView<TM_TaskView>(SkRect::MakeWH(0,480), 
@@ -36,6 +36,11 @@ void TM_TaskView::setDate(std::chrono::year_month_day date)
 std::chrono::year_month_day TM_TaskView::getDate()
 {
     return this->date;
+}
+
+std::string TM_TaskView::getText()
+{
+	return this->textBox->getText();
 }
 
 std::map<std::chrono::year_month_day,int>* TM_TaskView::getCalendarPtr()

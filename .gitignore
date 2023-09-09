@@ -7,3 +7,4 @@ timeman
 *.exe
 *.dll
 src/gl3w.c
+*.swp

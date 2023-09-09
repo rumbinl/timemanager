@@ -168,11 +168,13 @@ bool TM_CalendarWeekView::PollEvents(TM_EventInput eventInput)
 			SkScalar scrollLimitY = this->srcBounds.height()-this->bounds.height();
 			this->scrollY = fmin(scrollLimitY, fmax(0, this->scrollY));
         }
+
         if(eventInput.mousePressed&&this->selected == false)
 		{
 			this->pressDayIndexStart = eventInput.mouseY-this->bounds.y()-this->viewSetting.padding-this->yOff+this->scrollY;
             this->pressWeekIndexStart = eventInput.mouseX-this->bounds.x();
 		}
+
         this->selected = eventInput.mousePressed;
 
 		if(eventInput.mousePressed)

@@ -22,33 +22,40 @@ void TM_TextBox::Render(SkCanvas* skia_canvas, SkFont* font)
 	{
 		TM_TextView::setText(this->content);
         TM_TextView::setColorOpacity(255);
-		
 	}
+	SkFontMetrics fontMetrics;
+	font->getMetrics(&fontMetrics);
     TM_TextView::Render(skia_canvas, font);
+	TM_TextView::setColorOpacity(255);
+
 	SkPaint paint;
 	paint.setColor(this->viewSetting.textColor);
-	paint.setStrokeWidth(5);
+	paint.setStrokeWidth(2);
 	paint.setStyle(SkPaint::kStrokeAndFill_Style);
-	skia_canvas->drawLine(this->bounds.x()+this->cursorX, this->bounds.y(), this->bounds.x()+this->cursorX, this->bounds.y()+this->viewSetting.fontSize, paint);
+	SkRect textBounds;
+	font->measureText(this->content.substr(0,this->cursorIndex).c_str(), this->cursorIndex*sizeof(char), SkTextEncoding::kUTF8, &textBounds);
+	this->cursorX = textBounds.width();
+	skia_canvas->drawLine(this->bounds.x()+this->cursorX, this->bounds.y(), this->bounds.x()+this->cursorX, this->bounds.y()+this->viewSetting.fontSize-fontMetrics.fDescent, paint);
 }
 
 void TM_TextBox::locatePosition(SkScalar mouseX, std::string text, SkFont* font)
 {
-	std::vector<SkGlyphID> textGlyphs(text.size());
-	std::vector<SkScalar> xPos(text.size());
-	font->textToGlyphs(text.c_str(), text.size()*sizeof(char), SkTextEncoding::kUTF8, &textGlyphs[0],512);
-	font->getXPos(&textGlyphs[0], text.size(), &xPos[0], 0);
-	
-	this->cursorIndex = 0;	
-	this->cursorX = 0.0f;
-	for(int i=1; i<textGlyphs.size(); i++)
+	SkRect textBounds;
+	int l=0,h=text.size()-1;
+	while(h-l>1)
 	{
-		SkScalar newX = textGlyphs[i];
-		if(fabs(newX-mouseX)>=fabs(this->cursorIndex-mouseX))
-			break;
-		cursorIndex = i;
-		cursorX = newX;
+		int mid = (l+h)/2;
+		font->measureText(text.c_str(), (mid)*sizeof(char), SkTextEncoding::kUTF8, &textBounds);
+		if(textBounds.width()>=mouseX)
+			h = mid;
+		else
+			l = mid;
 	}
+	int lb = fabs(mouseX-font->measureText(text.c_str(),(l)*sizeof(char),SkTextEncoding::kUTF8,&textBounds));
+	int ub = fabs(mouseX-font->measureText(text.c_str(),(h)*sizeof(char),SkTextEncoding::kUTF8,&textBounds));
+	cursorIndex = h;
+	if(lb<ub)
+		cursorIndex = l;
 }
 
 bool TM_TextBox::PollEvents(TM_EventInput eventInput)
@@ -59,9 +66,13 @@ bool TM_TextBox::PollEvents(TM_EventInput eventInput)
 		this->selected = false;
 		return true;
 	}
-    if((contains && eventInput.mousePressed) || this->selected)
-    {
+	if(contains && eventInput.mousePressed)
+	{
+		this->locatePosition(eventInput.mouseX-this->bounds.x(),this->content+" ",eventInput.font);
 		this->selected = true;
+	}
+    if(this->selected)
+    {
 		bool ret = false;
 		if(eventInput.scrollX != 0)
 		{
@@ -69,12 +80,21 @@ bool TM_TextBox::PollEvents(TM_EventInput eventInput)
 			ret = true;
 		}
 
-		if(eventInput.inputText.size()>0)
+		if(eventInput.inputText.size()>0 && this->content.size()<512)
 		{
-			TM_TextView::setText(TM_TextView::getText()+eventInput.inputText);
+			std::string s0 = this->content.substr(this->cursorIndex,this->content.size()), s1 = this->content.substr(0,cursorIndex);
+			this->content = s1 + eventInput.inputText + s0;
+			this->cursorIndex ++;
 			ret = true;
 		}
-		return false;
+		else if(eventInput.keyPressed && eventInput.key == SDL_SCANCODE_BACKSPACE && cursorIndex)
+		{
+			std::string s0 = this->content.substr(this->cursorIndex,this->content.size()),s1 = this->content.substr(0,cursorIndex-1);
+			this->content = s1+s0;
+			this->cursorIndex --;
+			ret = true;
+		}
+		return ret;
     }
 	if( this->selected == true)
 	{
@@ -82,4 +102,13 @@ bool TM_TextBox::PollEvents(TM_EventInput eventInput)
 		return true;
 	}
     return false;
+}
+
+SkScalar TM_TextBox::getCharWidth(char a, SkFont* font)
+{
+	SkGlyphID glyph;
+	font->textToGlyphs(&a, sizeof(char), SkTextEncoding::kUTF8, &glyph, 1);
+	SkScalar width;
+	font->getWidths(&glyph, 1, &width);
+	return width;
 }
