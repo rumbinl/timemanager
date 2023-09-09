@@ -47,7 +47,7 @@ void TM_TextView::Render(std::string text, SkRect bounds, SkCanvas* skia_canvas,
     font->setSize(viewSetting.fontSize);
     SkFontMetrics font_metrics;
     font->getMetrics(&font_metrics);
-    SkScalar fontHeight = font_metrics.fDescent,textX,textY;
+    SkScalar fontHeight = viewSetting.fontSize,textX,textY;
 
     SkPaint paint;
     paint.setColor(viewSetting.backgroundColor);
@@ -66,7 +66,10 @@ void TM_TextView::Render(std::string text, SkRect bounds, SkCanvas* skia_canvas,
     
     SkRect text_bounds;
     font->measureText(text.c_str(), text.length()*sizeof(char), SkTextEncoding::kUTF8, &text_bounds, &paint);
-    textX = bounds.x()+bounds.width()/2 - text_bounds.width()/2, textY = bounds.y()+bounds.height()/2+fontHeight;
+	if(centered)
+		textX = bounds.x()+bounds.width()/2 - text_bounds.width()/2, textY = bounds.y()+bounds.height()/2+fontHeight/2;
+	else
+		textX = bounds.x(), textY = bounds.y() + fontHeight;
 
     skia_canvas->drawString(text.c_str(), textX, textY, *font, paint);
     skia_canvas->restoreToCount(restore);

@@ -40,7 +40,9 @@ void TM_ApplicationManager::Render()
 	this->skia_canvas->resetMatrix();
 	this->skia_canvas->clear(this->skia_canvas_clear_color);
 
+	this->calendarView->setBounds(SkRect::MakeXYWH(0,0,(SkScalar)this->window_ptr.getWindowWidth() * 0.5, this->window_ptr.getWindowHeight()));
 	this->calendarView->Render(this->skia_canvas, this->skia_fontList[this->defaultFont]);
+	this->taskView->setBounds(SkRect::MakeXYWH((SkScalar)this->window_ptr.getWindowWidth() * 0.5,0,(SkScalar)this->window_ptr.getWindowWidth() * 0.5, this->window_ptr.getWindowHeight()));
 	this->taskView->Render(this->skia_canvas, this->skia_fontList[this->defaultFont]);
 
 	this->skia_canvas->flush();
@@ -60,14 +62,13 @@ void TM_ApplicationManager::PollEvents()
 			this->skia_canvas = this->window_ptr.Get_skia_canvas_ptr();
 			this->should_render_update = true;
 		}
-		else if(this->SDL_event_ptr.type == SDL_EVENT_KEY_DOWN)
-		{
-
-		}
 		else
 		{
 			float mouseX,mouseY,scrollY=0.0f,scrollX=0.0f;
 			bool pressed = SDL_event_ptr.type==SDL_EVENT_MOUSE_BUTTON_DOWN;
+			std::string inputText = "";
+			if(SDL_event_ptr.type == SDL_EVENT_TEXT_INPUT)
+				inputText = SDL_event_ptr.text.text;
 			SDL_PumpEvents(); 
 			bool held = (SDL_GetMouseState(&mouseX,&mouseY)&1)>0; 
 			if(this->SDL_event_ptr.type == SDL_EVENT_MOUSE_WHEEL)
@@ -77,7 +78,7 @@ void TM_ApplicationManager::PollEvents()
 					mouseY*this->window_ptr.getDPI(), 
 					scrollX*scrollSensFactor*(this->SDL_event_ptr.wheel.direction==SDL_MOUSEWHEEL_FLIPPED?-1:1),
 					scrollY*scrollSensFactor*(this->SDL_event_ptr.wheel.direction==SDL_MOUSEWHEEL_FLIPPED?-1:1),
-					pressed,held
+					pressed,held,inputText
 				};
 			should_render_update = this->calendarView->PollEvents(eventInput) || this->taskView->PollEvents(eventInput);
 		}

@@ -15,9 +15,7 @@ void TM_CalendarWeekView::RenderTimes(SkCanvas* skia_canvas, SkFont* font)
 	font->setSize(this->viewSetting.fontSize);
 	SkFontMetrics fontMetrics;
 	font->getMetrics(&fontMetrics);
-	SkRect text_bounds;
-	font->measureText("XX:XX", 5*sizeof(char), SkTextEncoding::kUTF8, &text_bounds, &paint);
-	this->xOff = text_bounds.width();
+	
 	paint.setColor(this->viewSetting.borderColor);
 
 	SkScalar yOff = -this->scrollY, y = 0.0f;
@@ -26,6 +24,7 @@ void TM_CalendarWeekView::RenderTimes(SkCanvas* skia_canvas, SkFont* font)
 	for(int i=0;i<24;i++)
 	{
 		std::string timeString = std::to_string(i)+":00";
+		SkRect text_bounds;
 		font->measureText(timeString.c_str(), timeString.size()*sizeof(char), SkTextEncoding::kUTF8, &text_bounds, &paint);
 
 		if(!i)
@@ -49,6 +48,10 @@ void TM_CalendarWeekView::RenderTimes(SkCanvas* skia_canvas, SkFont* font)
 void TM_CalendarWeekView::Render(SkCanvas* skia_canvas, SkFont* font)
 {
     SkPaint paint;
+	SkRect text_bounds;
+	font->measureText("XX:XX", 5*sizeof(char), SkTextEncoding::kUTF8, &text_bounds, &paint);
+	this->xOff = text_bounds.width();
+
 	paint.setStyle(SkPaint::kStroke_Style);
 	paint.setColor(this->viewSetting.borderColor);
 
@@ -57,11 +60,10 @@ void TM_CalendarWeekView::Render(SkCanvas* skia_canvas, SkFont* font)
 	paint.setStyle(SkPaint::kFill_Style);
 
     font->setSize(this->viewSetting.fontSize);
-	SkFontMetrics fontMetrics;
-	font->getMetrics(&fontMetrics);
 
     SkScalar dayWidth = (this->bounds.width() - this->xOff)/((SkScalar)this->numDays);
-    SkScalar labelHeight = fontMetrics.fDescent-fontMetrics.fAscent;
+    SkScalar labelHeight = this->viewSetting.fontSize;
+	this->yOff = labelHeight;
 
     for(int i=0;i<numDays;i++)
     {
@@ -78,6 +80,9 @@ void TM_CalendarWeekView::Render(SkCanvas* skia_canvas, SkFont* font)
 
     paint.setColor(this->viewSetting.textColor);
 
+	SkFontMetrics fontMetrics;
+	font->getMetrics(&fontMetrics);
+
     for(int i=0;i<numDays;i++)
     {
         std::chrono::year_month_day currentDate = std::chrono::sys_days{*focusDate} + std::chrono::days{i};
@@ -89,10 +94,16 @@ void TM_CalendarWeekView::Render(SkCanvas* skia_canvas, SkFont* font)
             {
                 SkScalar minutes = 30.0f;
                 SkRect rect = SkRect::MakeXYWH(this->xOff + dayWidth*i, y, dayWidth, this->hourHeight/(60.0f/minutes));
-                
+
                 paint.setStyle(SkPaint::kFill_Style);
                 paint.setColor(this->viewSetting.textColor);
                 skia_canvas->drawRect(rect, paint);
+                paint.setColor(this->viewSetting.backgroundColor);
+				SkScalar scaleFactor = 1;
+				if(this->viewSetting.fontSize>rect.height())	
+					scaleFactor = rect.height()/this->viewSetting.fontSize;
+				font->setSize(rect.height());
+                skia_canvas->drawString(task.getName().c_str(), this->xOff+dayWidth*i, y+rect.height()-scaleFactor*fontMetrics.fDescent, *font, paint);
                 paint.setStyle(SkPaint::kStroke_Style);
                 paint.setColor(this->viewSetting.backgroundColor);
                 skia_canvas->drawRect(rect, paint);
@@ -109,7 +120,7 @@ void TM_CalendarWeekView::Render(SkCanvas* skia_canvas, SkFont* font)
     int startDayIdx=(int)floor((this->pressWeekIndexStart-this->xOff)/dayWidth),
         endDayIdx = (int)floor((this->pressWeekIndexEnd-this->xOff)/dayWidth);
 
-    SkScalar firstY=pressDayIndexStart,secondY=pressDayIndexEnd;
+    SkScalar firstY=fmax(0,pressDayIndexStart),secondY=fmax(0,pressDayIndexEnd);
 
     if(startDayIdx>endDayIdx) { std::swap(startDayIdx, endDayIdx); std::swap(firstY,secondY); }
 
@@ -120,8 +131,8 @@ void TM_CalendarWeekView::Render(SkCanvas* skia_canvas, SkFont* font)
             ,endDayX   = this->xOff+dayWidth*endDayIdx;
 
     SkScalar timeStep = this->hourHeight/4.0f;
-    SkScalar topY = this->viewSetting.padding - this->scrollY + (timeStep)*floor((firstY  - this->yOff)/(timeStep)),
-             botY = this->viewSetting.padding - this->scrollY + (timeStep)*floor((secondY - this->yOff)/(timeStep));
+    SkScalar topY = this->viewSetting.padding - this->scrollY + (timeStep)*round((firstY)/(timeStep)),
+             botY = this->viewSetting.padding - this->scrollY + (timeStep)*round((secondY)/(timeStep));
 
     paint.setStyle(SkPaint::kFill_Style);
     paint.setColor(this->viewSetting.textColor);
@@ -159,14 +170,14 @@ bool TM_CalendarWeekView::PollEvents(TM_EventInput eventInput)
         }
         if(eventInput.mousePressed&&this->selected == false)
 		{
-			this->pressDayIndexStart = eventInput.mouseY-this->bounds.y()-this->yOff-this->viewSetting.padding+this->scrollY;
+			this->pressDayIndexStart = eventInput.mouseY-this->bounds.y()-this->viewSetting.padding-this->yOff+this->scrollY;
             this->pressWeekIndexStart = eventInput.mouseX-this->bounds.x();
 		}
         this->selected = eventInput.mousePressed;
 
 		if(eventInput.mousePressed)
         {
-			this->pressDayIndexEnd = eventInput.mouseY-this->bounds.y()-this->yOff-this->viewSetting.padding+this->scrollY;
+			this->pressDayIndexEnd = eventInput.mouseY-this->bounds.y()-this->viewSetting.padding-this->yOff+this->scrollY;
             this->pressWeekIndexEnd = eventInput.mouseX-this->bounds.x();
         }
 
@@ -186,7 +197,7 @@ bool TM_CalendarWeekView::PollEvents(TM_EventInput eventInput)
 
 void TM_CalendarWeekView::setDaySpan(int daySpan)
 {
-    this->numDays = max(daySpan,0);
+    this->numDays = max(daySpan,1);
 }
 
 int TM_CalendarWeekView::getDaySpan()

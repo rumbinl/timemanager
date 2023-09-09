@@ -127,6 +127,16 @@ void TM_Graphics_Window::Destroy_skia()
 		delete this->skia_GL_context;
 }
 
+int TM_Graphics_Window::getWindowWidth()
+{
+	return this->window_width*this->SDL_window_DPI;
+}
+
+int TM_Graphics_Window::getWindowHeight()
+{
+	return this->window_height*this->SDL_window_DPI;	
+}
+
 void TM_Graphics_Window::Set_SDL_GL_attributes()
 {
 	for(auto setting:SDL_GL_setting_array)

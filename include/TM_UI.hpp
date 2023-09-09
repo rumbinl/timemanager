@@ -5,7 +5,7 @@
 
 typedef struct { SkColor backgroundColor, borderColor, textColor; SkScalar borderThickness, fontSize, padding; } TM_ViewSetting;
 
-typedef struct { SkScalar mouseX, mouseY, scrollX, scrollY; bool mousePressed, mouseHeld; } TM_EventInput;
+typedef struct { SkScalar mouseX, mouseY, scrollX, scrollY; bool mousePressed, mouseHeld; std::string inputText; } TM_EventInput;
 
 // Render order:
 // 1. Background
@@ -87,8 +87,10 @@ class TM_TextBox : public TM_TextView
         bool PollEvents(TM_EventInput eventInput) override;
         ~TM_TextBox();
     private:
+		void locatePosition(SkScalar mouseX, std::string text, SkFont* font);
         std::string placeholder, content="";
-        bool fitted = false;
+        bool fitted = false,selected = false;
+		SkScalar cursorX=0.0f;
         int cursorIndex=0;
 };
 

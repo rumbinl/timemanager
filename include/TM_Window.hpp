@@ -28,6 +28,8 @@ class TM_Graphics_Window
 		bool Was_init_success();
 		void Swap_buffers();
 		void Handle_resize(SDL_Event* window_event); // Manipulates window data in case of resize
+		int getWindowWidth();
+		int getWindowHeight();
 		float getDPI();
 
 		~TM_Graphics_Window();
