@@ -58,6 +58,9 @@ void TM_CalendarWeekView::Render(SkCanvas* skia_canvas, SkFont* font)
 	skia_canvas->drawRect(this->bounds, paint);
 
 	paint.setStyle(SkPaint::kFill_Style);
+	paint.setColor(this->viewSetting.backgroundColor);
+
+	skia_canvas->drawRect(this->bounds, paint);
 
     font->setSize(this->viewSetting.fontSize);
 
@@ -68,8 +71,8 @@ void TM_CalendarWeekView::Render(SkCanvas* skia_canvas, SkFont* font)
     for(int i=0;i<numDays;i++)
     {
         std::chrono::year_month_day currentDate = std::chrono::sys_days{*focusDate} + std::chrono::days{i};
-        std::string date = std::to_string(static_cast<unsigned>(currentDate.day()))+" "+monthNames[static_cast<unsigned>(currentDate.month())-1].substr(0,3);
-        TM_TextView::Render(date, SkRect::MakeXYWH(this->bounds.x()+xOff+i*dayWidth,this->bounds.y(),dayWidth,labelHeight),skia_canvas,font,{colorScheme[3],colorScheme[2],colorScheme[1],1,this->viewSetting.fontSize,5});
+        std::string date = dayNames[weekDayFromDate(currentDate)].substr(0,2)+" "+std::to_string(static_cast<unsigned>(currentDate.day()))+" "+monthNames[static_cast<unsigned>(currentDate.month())-1].substr(0,3);
+        TM_TextView::Render(date, SkRect::MakeXYWH(this->bounds.x()+xOff+i*dayWidth,this->bounds.y(),dayWidth,labelHeight),skia_canvas,font);
     }
 
 	skia_canvas->save();
@@ -96,7 +99,7 @@ void TM_CalendarWeekView::Render(SkCanvas* skia_canvas, SkFont* font)
                 SkRect rect = SkRect::MakeXYWH(this->xOff + dayWidth*i, y, dayWidth, this->hourHeight/(60.0f/minutes));
 
                 paint.setStyle(SkPaint::kFill_Style);
-                paint.setColor(this->viewSetting.textColor);
+                paint.setColor(this->viewSetting.borderColor);
                 skia_canvas->drawRect(rect, paint);
                 paint.setColor(this->viewSetting.backgroundColor);
 				SkScalar scaleFactor = 1;
@@ -165,7 +168,7 @@ bool TM_CalendarWeekView::PollEvents(TM_EventInput eventInput)
         if(eventInput.scrollY!=0)
 		{
 			this->scrollY+=eventInput.scrollY;
-			SkScalar scrollLimitY = this->srcBounds.height()-this->bounds.height();
+			SkScalar scrollLimitY = this->srcBounds.height()-this->bounds.height()+this->yOff;
 			this->scrollY = fmin(scrollLimitY, fmax(0, this->scrollY));
         }
 

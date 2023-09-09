@@ -34,7 +34,8 @@ void TM_TextBox::Render(SkCanvas* skia_canvas, SkFont* font)
 	paint.setStyle(SkPaint::kStrokeAndFill_Style);
 	SkRect textBounds;
 	font->measureText(this->content.substr(0,this->cursorIndex).c_str(), this->cursorIndex*sizeof(char), SkTextEncoding::kUTF8, &textBounds);
-	this->cursorX = textBounds.width();
+	this->cursorX = textBounds.width()-TM_TextView::getTextXOffset();
+
 	skia_canvas->drawLine(this->bounds.x()+this->cursorX, this->bounds.y(), this->bounds.x()+this->cursorX, this->bounds.y()+this->viewSetting.fontSize-fontMetrics.fDescent, paint);
 }
 
@@ -68,7 +69,8 @@ bool TM_TextBox::PollEvents(TM_EventInput eventInput)
 	}
 	if(contains && eventInput.mousePressed)
 	{
-		this->locatePosition(eventInput.mouseX-this->bounds.x(),this->content+" ",eventInput.font);
+		eventInput.font->setSize(this->viewSetting.fontSize);
+		this->locatePosition(eventInput.mouseX-this->bounds.x()+TM_TextView::getTextXOffset(),this->content+" ",eventInput.font);
 		this->selected = true;
 	}
     if(this->selected)

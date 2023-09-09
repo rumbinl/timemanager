@@ -5,7 +5,7 @@
 template<class T> class TM_CalendarMonthView : public TM_RenderObject
 {
     public:
-        TM_CalendarMonthView(SkRect bounds, void (*action)(T* context, std::chrono::year_month_day date)=NULL, T* context=NULL, TM_ViewSetting viewSetting={colorScheme[1],colorScheme[2],colorScheme[3],1,16,1});
+        TM_CalendarMonthView(SkRect bounds, void (*action)(T* context, std::chrono::year_month_day date)=NULL, T* context=NULL, TM_ViewSetting viewSetting={colorScheme[0],colorScheme[3],colorScheme[3],1,16,1});
         void Render(SkCanvas* skia_canvas, SkFont* font) override;
         bool PollEvents(TM_EventInput eventInput) override;
         void setMonth(std::chrono::year_month ym);
@@ -23,7 +23,7 @@ template<class T> class TM_CalendarMonthView : public TM_RenderObject
 template<class T> TM_CalendarMonthView<T>::TM_CalendarMonthView(SkRect bounds, void (*action)(T* context, std::chrono::year_month_day date), T* context, TM_ViewSetting viewSetting) : TM_RenderObject(bounds, viewSetting)
 {
     this->dayViewList = std::vector(31, TM_TextView("0", SkRect::MakeWH(bounds.width()/7.0f, 0)));
-    this->dataView = new TM_TextView("January 1981", bounds, {colorScheme[3],colorScheme[2],colorScheme[0],0,36});
+    this->dataView = new TM_TextView("January 1981", bounds, {colorScheme[1],colorScheme[2],colorScheme[3],0,36});
     this->numColumns = 7.0f;
 
     this->action = action;

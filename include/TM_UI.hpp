@@ -15,7 +15,7 @@ typedef struct { SkScalar mouseX, mouseY, scrollX, scrollY, dpi; bool mousePress
 class TM_RenderObject 
 {
     public:
-        TM_RenderObject(SkRect bounds, TM_ViewSetting viewSetting={colorScheme[1],colorScheme[2],colorScheme[3],1,24,5});
+        TM_RenderObject(SkRect bounds, TM_ViewSetting viewSetting={colorScheme[0],colorScheme[3],colorScheme[3],1,24,5});
         virtual void Render(SkCanvas* skia_canvas, SkFont* font);
         virtual bool PollEvents(TM_EventInput eventInput);
         SkRect getBounds();
@@ -63,7 +63,7 @@ class TM_TextView : public TM_RenderObject
 class TM_CalendarWeekView : public TM_RenderObject
 {
     public:
-        TM_CalendarWeekView(SkRect bounds, std::chrono::year_month_day* focusDate, std::set<TM_Task>* tasks, int numDays = 7, SkScalar hourHeight = 50.0, TM_ViewSetting viewSettings={colorScheme[1],colorScheme[2],colorScheme[3],1,24,1});
+        TM_CalendarWeekView(SkRect bounds, std::chrono::year_month_day* focusDate, std::set<TM_Task>* tasks, int numDays = 7, SkScalar hourHeight = 50.0, TM_ViewSetting viewSettings={colorScheme[1],colorScheme[3],colorScheme[3],1,24,1});
         void Render(SkCanvas* skia_canvas, SkFont* font) override;
         void RenderTimes(SkCanvas* skia_canvas, SkFont* font);
         bool PollEvents(TM_EventInput eventInput) override;
@@ -139,7 +139,7 @@ class TM_NumberBox : public TM_TextView
 class TM_View : public TM_RenderObject
 {
     public:
-        TM_View(SkRect bounds, std::vector<TM_RenderObject*> objects, TM_ViewSetting viewSetting={colorScheme[1],colorScheme[2],colorScheme[3],1,24,10});
+        TM_View(SkRect bounds, std::vector<TM_RenderObject*> objects, TM_ViewSetting viewSetting={colorScheme[0],colorScheme[2],colorScheme[3],1,24,10});
         void Render(SkCanvas* skia_canvas, SkFont* font) override;
         void setRenderObjectExistence(int index, bool existence);
         bool PollEvents(TM_EventInput eventInput) override;
@@ -148,6 +148,3 @@ class TM_View : public TM_RenderObject
         std::vector<TM_RenderObject*> renderObjects;
         SkScalar yOffset=0.0f;
 };
-
-
-
