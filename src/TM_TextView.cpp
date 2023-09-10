@@ -10,7 +10,7 @@ TM_TextView::TM_TextView(std::string text, SkRect bounds, TM_ViewSetting viewSet
 
 void TM_TextView::Render(SkCanvas* skia_canvas, SkFont* font)
 {
-	if(select) this->invertColors();
+	if(this->select) this->invertColors();
     SkPaint paint;
     paint.setColor(this->viewSetting.backgroundColor);
     paint.setStyle(SkPaint::kFill_Style);
@@ -41,7 +41,7 @@ void TM_TextView::Render(SkCanvas* skia_canvas, SkFont* font)
 
     skia_canvas->drawString(this->text.c_str(), textX, textY, *font, paint);
     skia_canvas->restoreToCount(restore);
-	if(select) this->invertColors();
+	if(this->select) this->invertColors();
 }
 
 void TM_TextView::Render(std::string text, SkRect bounds, SkCanvas* skia_canvas, SkFont* font, TM_ViewSetting viewSetting, bool centered)
@@ -144,14 +144,4 @@ std::string TM_TextView::getText()
 SkScalar TM_TextView::getTextXOffset()
 {
     return this->textXOffset;
-}
-
-void TM_TextView::setSelect(bool selectStatus)
-{
-	this->select = selectStatus;
-}
-
-TM_TextView::~TM_TextView()
-{
-
 }

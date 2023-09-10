@@ -163,7 +163,8 @@ void TM_CalendarWeekView::Render(SkCanvas* skia_canvas, SkFont* font)
 bool TM_CalendarWeekView::PollEvents(TM_EventInput eventInput)
 {
     eventInput.mousePressed = eventInput.mousePressed || eventInput.mouseHeld;
-    if(this->bounds.contains(eventInput.mouseX,eventInput.mouseY))
+	bool contains = this->bounds.contains(eventInput.mouseX,eventInput.mouseY);
+    if(contains)
     {
         if(eventInput.scrollY!=0)
 		{
@@ -172,13 +173,13 @@ bool TM_CalendarWeekView::PollEvents(TM_EventInput eventInput)
 			this->scrollY = fmin(scrollLimitY, fmax(0, this->scrollY));
         }
 
-        if(eventInput.mousePressed&&this->selected == false)
+        if(eventInput.mousePressed&&this->select == false)
 		{
 			this->pressDayIndexStart = eventInput.mouseY-this->bounds.y()-this->viewSetting.padding-this->yOff+this->scrollY;
             this->pressWeekIndexStart = eventInput.mouseX-this->bounds.x();
 		}
 
-        this->selected = eventInput.mousePressed;
+        this->select = eventInput.mousePressed;
 
 		if(eventInput.mousePressed)
         {
@@ -188,13 +189,10 @@ bool TM_CalendarWeekView::PollEvents(TM_EventInput eventInput)
 
 		return true;
     }
-    if(this->selected && !eventInput.mousePressed)
+    if(this->select && !eventInput.mousePressed)
 	{
-		this->selected = false;
-		this->pressDayIndexStart = 
-		this->pressDayIndexEnd = 
-        this->pressWeekIndexStart = 
-        this->pressWeekIndexEnd = -1;
+		this->select = false;
+		this->pressDayIndexStart = this->pressDayIndexEnd = this->pressWeekIndexStart = this->pressWeekIndexEnd = -1;
 		return true;
 	}
     return false;

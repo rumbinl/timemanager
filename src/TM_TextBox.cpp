@@ -27,16 +27,19 @@ void TM_TextBox::Render(SkCanvas* skia_canvas, SkFont* font)
 	font->getMetrics(&fontMetrics);
     TM_TextView::Render(skia_canvas, font);
 	TM_TextView::setColorOpacity(255);
-
-	SkPaint paint;
-	paint.setColor(this->viewSetting.textColor);
-	paint.setStrokeWidth(2);
-	paint.setStyle(SkPaint::kStrokeAndFill_Style);
-	SkRect textBounds;
-	font->measureText(this->content.substr(0,this->cursorIndex).c_str(), this->cursorIndex*sizeof(char), SkTextEncoding::kUTF8, &textBounds);
-	this->cursorX = textBounds.width()-TM_TextView::getTextXOffset();
-
-	skia_canvas->drawLine(this->bounds.x()+this->cursorX, this->bounds.y(), this->bounds.x()+this->cursorX, this->bounds.y()+this->viewSetting.fontSize-fontMetrics.fDescent, paint);
+	if(this->select) TM_TextView::invertColors();
+	if(this->select)
+	{
+		SkPaint paint;
+		paint.setColor(this->viewSetting.textColor);
+		paint.setStrokeWidth(2);
+		paint.setStyle(SkPaint::kStrokeAndFill_Style);
+		SkRect textBounds;
+		font->measureText(this->content.substr(0,this->cursorIndex).c_str(), this->cursorIndex*sizeof(char), SkTextEncoding::kUTF8, &textBounds);
+		this->cursorX = textBounds.width()-TM_TextView::getTextXOffset();
+		skia_canvas->drawLine(this->bounds.x()+this->cursorX, this->bounds.y(), this->bounds.x()+this->cursorX, this->bounds.y()+this->viewSetting.fontSize-fontMetrics.fDescent, paint);
+	}
+	if(this->select) TM_TextView::invertColors();
 }
 
 void TM_TextBox::locatePosition(SkScalar mouseX, std::string text, SkFont* font)
@@ -62,26 +65,32 @@ void TM_TextBox::locatePosition(SkScalar mouseX, std::string text, SkFont* font)
 bool TM_TextBox::PollEvents(TM_EventInput eventInput)
 {
 	bool contains = TM_TextView::getBounds().contains(eventInput.mouseX,eventInput.mouseY);
-	if(this->selected == true && !contains && eventInput.mousePressed)
+	bool ret = false;
+
+	if(this->select == true && !contains && eventInput.mousePressed)
 	{
-		this->selected = false;
-		return true;
+		this->select = false;
+		ret = true;
 	}
-	if(contains && eventInput.mousePressed)
+
+	if(contains)
 	{
-		eventInput.font->setSize(this->viewSetting.fontSize);
-		this->locatePosition(eventInput.mouseX-this->bounds.x()+TM_TextView::getTextXOffset(),this->content+" ",eventInput.font);
-		this->selected = true;
-	}
-    if(this->selected)
-    {
-		bool ret = false;
+		if(eventInput.mousePressed)
+		{
+			eventInput.font->setSize(this->viewSetting.fontSize);
+			this->locatePosition(eventInput.mouseX-this->bounds.x()+TM_TextView::getTextXOffset(),this->content+" ",eventInput.font);
+			this->select = true;
+			ret = true;
+		}
 		if(eventInput.scrollX != 0)
 		{
 			TM_TextView::setTextXOffset(eventInput.scrollX);
 			ret = true;
 		}
+	}
 
+    if(this->select)
+    {
 		if(eventInput.inputText.size()>0 && this->content.size()<512)
 		{
 			std::string s0 = this->content.substr(this->cursorIndex,this->content.size()), s1 = this->content.substr(0,cursorIndex);
@@ -96,14 +105,8 @@ bool TM_TextBox::PollEvents(TM_EventInput eventInput)
 			this->cursorIndex --;
 			ret = true;
 		}
-		return ret;
     }
-	if( this->selected == true)
-	{
-		this->selected = false;
-		return true;
-	}
-    return false;
+    return ret;
 }
 
 SkScalar TM_TextBox::getCharWidth(char a, SkFont* font)

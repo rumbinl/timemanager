@@ -40,8 +40,3 @@ void TM_RenderObject::setExistence(bool existence)
 {
     this->existence = existence;
 }
-
-TM_RenderObject::~TM_RenderObject()
-{
-
-}

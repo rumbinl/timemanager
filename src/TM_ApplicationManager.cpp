@@ -83,7 +83,8 @@ void TM_ApplicationManager::PollEvents()
 					SDL_event_ptr.type == SDL_EVENT_KEY_DOWN, 
 					inputText,this->skia_fontList[this->defaultFont],SDL_event_ptr.key.keysym.scancode
 				};
-			should_render_update = this->calendarView->PollEvents(eventInput) || this->taskView->PollEvents(eventInput);
+			should_render_update += this->calendarView->PollEvents(eventInput);
+			should_render_update += this->taskView->PollEvents(eventInput);
 		}
     }
 }

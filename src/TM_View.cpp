@@ -3,6 +3,8 @@
 TM_View::TM_View(SkRect bounds, std::vector<TM_RenderObject*> objects, TM_ViewSetting viewSetting) : TM_RenderObject(bounds, viewSetting)
 {
     this->renderObjects = objects;
+	for(TM_RenderObject* renderObject : this->renderObjects)
+		this->numExists += renderObject->exists();
     this->viewSetting = viewSetting;
 }
 
@@ -41,30 +43,59 @@ void TM_View::Render(SkCanvas* skia_canvas, SkFont* font)
 
 bool TM_View::PollEvents(TM_EventInput eventInput)
 {
-    bool select = false;
     if(this->bounds.contains(eventInput.mouseX,eventInput.mouseY))
     {
+		this->select = true;
         eventInput.mouseX -= this->bounds.x();
         eventInput.mouseY -= this->bounds.y() - this->yOffset;
-        for(TM_RenderObject* renderObject : this->renderObjects)
-        {
-            if(renderObject->exists())
-                select = select || renderObject->PollEvents(eventInput);
-        }
-        if(!select)
-        {
-            SkScalar newY = this->yOffset+eventInput.scrollY;
-            this->yOffset = fmin(fmax(0, newY),fmax(0, this->srcBounds.height()-this->bounds.height()));
-            select = true;
-        }
+
+		bool ret = false;
+		std::vector<bool> existTable(this->renderObjects.size());
+		for(int i=0;i<this->renderObjects.size();i++) existTable[i] = this->renderObjects[i]->exists();
+        for(int i=0;i<this->renderObjects.size();i++)
+            if(existTable[i])
+				ret += this->renderObjects[i]->PollEvents(eventInput);
+
+		if(eventInput.scrollY != 0)
+		{
+			SkScalar newY = this->yOffset+eventInput.scrollY;
+			this->yOffset = fmin(fmax(0, newY),fmax(0, this->srcBounds.height()-this->bounds.height()));
+		}
+		return ret;
     }
-    return select;
+	else if(this->select)
+	{
+		eventInput.mouseX -= this->bounds.x();
+        eventInput.mouseY -= this->bounds.y() - this->yOffset;
+		std::vector<bool> existTable(this->renderObjects.size());
+		for(int i=0;i<this->renderObjects.size();i++) existTable[i] = this->renderObjects[i]->exists();
+        for(int i=0;i<this->renderObjects.size();i++)
+            if(existTable[i])
+				this->renderObjects[i]->PollEvents(eventInput);
+		this->select = false;
+		return true;
+	}
+    return false;
+}
+
+int TM_View::getNumExists()
+{
+	return numExists;
+}
+
+void TM_View::addRenderObject(TM_RenderObject* renderObject)
+{
+	this->numExists += renderObject->exists();
+	this->renderObjects.push_back(renderObject);
 }
 
 void TM_View::setRenderObjectExistence(int index, bool existence)
 {
     if(index < this->renderObjects.size() && index>=0)
+	{
+		this->numExists += (int)existence-(int)this->renderObjects[index]->exists();
         this->renderObjects[index]->setExistence(existence);
+	}
 }
 
 TM_View::~TM_View()

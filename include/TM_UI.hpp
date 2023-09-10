@@ -24,11 +24,10 @@ class TM_RenderObject
         void setSrcBounds(SkRect srcBounds);
         bool exists();
         void setExistence(bool existence);
-        ~TM_RenderObject();
     protected:
         SkRect bounds, srcBounds;
         TM_ViewSetting viewSetting;
-        bool existence=true;
+        bool existence=true,select=false;
 };
 
 class TM_TextView : public TM_RenderObject
@@ -48,12 +47,10 @@ class TM_TextView : public TM_RenderObject
         void setHeightFont(SkFont* font);
         void setWidth(SkScalar newWidth);
         void setTextXOffset(SkScalar scrollX);
-		void setSelect(bool selectStatus);
         void setX(SkScalar x);
         void setY(SkScalar y);
-        ~TM_TextView();
     protected:
-        bool centered,select=false;
+        bool centered;
         SkSurface* renderSurface;
         SkScalar textXOffset=0.0f;
     private:
@@ -76,7 +73,6 @@ class TM_CalendarWeekView : public TM_RenderObject
         int pressWeekIndexStart = -1, pressWeekIndexEnd = -1,pressDayIndexStart = -1, pressDayIndexEnd = -1;
         int scrollY=0.0f, pressIndexStart=-1, pressIndexEnd=-1,numDays=1;
         SkScalar hourHeight,yOff,xOff=0.0f;
-        bool selected=false;
         std::chrono::year_month_day* focusDate;
 };
 
@@ -91,7 +87,7 @@ class TM_TextBox : public TM_TextView
     private:
 		void locatePosition(SkScalar mouseX, std::string text, SkFont* font);
         std::string placeholder, content="";
-        bool fitted = false,selected = false;
+        bool fitted = false;
 		SkScalar cursorX=0.0f;
         int cursorIndex=0;
 };
@@ -105,24 +101,23 @@ template<class T> class TM_Button : public TM_TextView
             this->context = context;
         }
 
-        bool PollEvents(TM_EventInput eventInput) 
+        bool PollEvents(TM_EventInput eventInput) override
         {
             if(this->bounds.contains(eventInput.mouseX, eventInput.mouseY))
             {
-				this->setSelect(true);
 				if(eventInput.mousePressed)
 					if(actionFunc != NULL)
 						(*actionFunc)(this->context);
+				this->select=true;
 				return true;
             }
-			this->setSelect(false);
+			if(this->select)
+			{
+				this->select = false;
+				return true;
+			}
 			
             return false;
-        }
-
-        ~TM_Button()
-        {
-
         }
     private:
         T* context;
@@ -143,8 +138,21 @@ class TM_View : public TM_RenderObject
         void Render(SkCanvas* skia_canvas, SkFont* font) override;
         void setRenderObjectExistence(int index, bool existence);
         bool PollEvents(TM_EventInput eventInput) override;
+		void addRenderObject(TM_RenderObject* renderObject);
+		int getNumExists();
         ~TM_View();
     protected:
         std::vector<TM_RenderObject*> renderObjects;
+		int numExists=0;
         SkScalar yOffset=0.0f;
 };
+
+class TM_HorizontalView : public TM_View 
+{
+	public:
+        TM_HorizontalView(SkRect bounds, std::vector<TM_RenderObject*> objects, bool fit, TM_ViewSetting viewSetting={colorScheme[0],colorScheme[2],colorScheme[3],1,24,10});
+        void Render(SkCanvas* skia_canvas, SkFont* font) override;
+	private:
+		bool fit;
+};
+
