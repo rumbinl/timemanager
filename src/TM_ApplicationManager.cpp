@@ -42,7 +42,7 @@ void TM_ApplicationManager::Render()
 
 	this->calendarView->setBounds(SkRect::MakeXYWH(0,0,(SkScalar)this->window_ptr.getWindowWidth() * 0.5, this->window_ptr.getWindowHeight()));
 
-	TM_RenderInfo renderInfo = {this->skia_canvas, this->skia_fontList[this->defaultFont], this->skia_fontList[this->defaultFont]};
+	TM_RenderInfo renderInfo = {this->skia_canvas, this->skia_fontList[this->defaultFont], this->skia_fontList[1]};
 
 	this->calendarView->Render(renderInfo);
 
