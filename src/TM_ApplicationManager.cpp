@@ -18,8 +18,14 @@ TM_ApplicationManager::TM_ApplicationManager() : window_ptr("Timeman", 960, 540)
 	this->should_render_update = true;
 	this->skia_canvas_clear_color = colorScheme[BACKGROUND_COLOR_INDEX];
 
-	this->calendarView = new TM_CalendarView(SkRect::MakeXYWH(50, 50, 840, 840), &this->tasks);
-	this->taskView = new TM_TaskView(SkRect::MakeXYWH(920,50,840,840), &this->tasks, &this->freeTimeMap);
+	this->mainView = new TM_View(SkRect::MakeXYWH(0,0,this->window_ptr.getWindowWidth(),this->window_ptr.getWindowHeight()), {0.1,0.8}, {
+		new TM_Button<TM_View>("Create Task", SkRect::MakeXYWH(0,0,0,10), [](TM_View* context) {}, this->mainView),
+		new TM_HorizontalView(SkRect::MakeXYWH(0,0,0,90), {
+				new TM_CalendarView(SkRect::MakeXYWH(0, 0, 840, 840), &this->tasks),
+				new TM_TaskView(SkRect::MakeXYWH(0,0,840,840), &this->tasks, &this->freeTimeMap)
+			}, 	
+		true)
+	});
 }
 
 void TM_ApplicationManager::Run()
@@ -40,15 +46,9 @@ void TM_ApplicationManager::Render()
 	this->skia_canvas->resetMatrix();
 	this->skia_canvas->clear(this->skia_canvas_clear_color);
 
-	this->calendarView->setBounds(SkRect::MakeXYWH(0,0,(SkScalar)this->window_ptr.getWindowWidth() * 0.5, this->window_ptr.getWindowHeight()));
-
 	TM_RenderInfo renderInfo = {this->skia_canvas, this->skia_fontList[this->defaultFont], this->skia_fontList[1]};
-
-	this->calendarView->Render(renderInfo);
-
-	this->taskView->setBounds(SkRect::MakeXYWH((SkScalar)this->window_ptr.getWindowWidth() * 0.5,0,(SkScalar)this->window_ptr.getWindowWidth() * 0.5, this->window_ptr.getWindowHeight()));
-
-	this->taskView->Render(renderInfo);
+	this->mainView->setBounds(SkRect::MakeXYWH(0,0,(SkScalar)this->window_ptr.getWindowWidth(), this->window_ptr.getWindowHeight()));
+	this->mainView->Render(renderInfo);
 
 	this->skia_canvas->flush();
 	this->window_ptr.Swap_buffers();
@@ -70,14 +70,21 @@ void TM_ApplicationManager::PollEvents()
 		else
 		{
 			float mouseX,mouseY,scrollY=0.0f,scrollX=0.0f;
+
 			bool pressed = SDL_event_ptr.type==SDL_EVENT_MOUSE_BUTTON_DOWN;
+
 			std::string inputText = "";
+
 			if(SDL_event_ptr.type == SDL_EVENT_TEXT_INPUT)
 				inputText = SDL_event_ptr.text.text;
+
 			SDL_PumpEvents(); 
+
 			bool held = (SDL_GetMouseState(&mouseX,&mouseY)&1)>0; 
+
 			if(this->SDL_event_ptr.type == SDL_EVENT_MOUSE_WHEEL)
 				scrollY = this->SDL_event_ptr.wheel.y, scrollX = this->SDL_event_ptr.wheel.x;
+
 			TM_EventInput eventInput = {
 					mouseX*this->window_ptr.getDPI(), 
 					mouseY*this->window_ptr.getDPI(), 
@@ -88,8 +95,8 @@ void TM_ApplicationManager::PollEvents()
 					SDL_event_ptr.type == SDL_EVENT_KEY_DOWN, 
 					inputText,this->skia_fontList[this->defaultFont],SDL_event_ptr.key.keysym.scancode
 				};
-			should_render_update += this->calendarView->PollEvents(eventInput);
-			should_render_update += this->taskView->PollEvents(eventInput);
+
+			should_render_update = this->mainView->PollEvents(eventInput);
 		}
     }
 }

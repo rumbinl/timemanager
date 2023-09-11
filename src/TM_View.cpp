@@ -8,6 +8,12 @@ TM_View::TM_View(SkRect bounds, std::vector<TM_RenderObject*> objects, TM_ViewSe
     this->viewSetting = viewSetting;
 }
 
+TM_View::TM_View(SkRect bounds, std::vector<SkScalar> proportionTable, std::vector<TM_RenderObject*> objects, TM_ViewSetting viewSetting) : TM_View(bounds, objects, viewSetting)
+{
+	this->fit = true;
+	this->proportionTable = proportionTable;	
+}
+
 void TM_View::Render(TM_RenderInfo renderInfo)
 {
     SkPaint paint;
@@ -16,7 +22,6 @@ void TM_View::Render(TM_RenderInfo renderInfo)
 
     renderInfo.canvas->drawRect(this->bounds, paint);
 
-	
 	if(this->viewSetting.borderThickness)
 	{
 		paint.setColor(this->viewSetting.borderColor);
@@ -28,19 +33,31 @@ void TM_View::Render(TM_RenderInfo renderInfo)
 
     renderInfo.canvas->clipRect(this->bounds);
 
-	renderInfo.canvas->setMatrix(SkMatrix::Translate(this->bounds.x(), this->bounds.y()-this->yOffset));
+	renderInfo.canvas->translate(this->bounds.x(), this->bounds.y()-this->yOffset);
 
     SkScalar y = this->viewSetting.padding;
+	
+	SkScalar height = this->bounds.height() - 2 * y;
 
-    for(TM_RenderObject* renderObject : this->renderObjects)
+    for(int i=0;i<renderObjects.size();i++)
     {
-        if(!renderObject->exists())
+        if(!this->renderObjects[i]->exists())
             continue; 
+		
+		if(this->fit)
+			this->renderObjects[i]->setBounds(
+				SkRect::MakeXYWH(
+					this->viewSetting.padding, 
+					y, 	
+					this->bounds.width()-this->viewSetting.padding*2,
+					this->proportionTable[i] * (this->bounds.height()-2*this->viewSetting.padding) - this->viewSetting.padding
+				)
+			);
+		else
+			this->renderObjects[i]->setBounds(SkRect::MakeXYWH(this->viewSetting.padding, y, this->bounds.width()-this->viewSetting.padding*2, renderObjects[i]->getBounds().height()));
+		this->renderObjects[i]->Render(renderInfo);
 
-        renderObject->setBounds(SkRect::MakeXYWH(this->viewSetting.padding, y, this->bounds.width()-this->viewSetting.padding*2, renderObject->getBounds().height()));
-        renderObject->Render(renderInfo);
-
-        y += renderObject->getBounds().height() + this->viewSetting.padding;
+		y += this->renderObjects[i]->getBounds().height() + this->viewSetting.padding;
     }
 
     this->srcBounds.setWH(this->bounds.width(), y);
@@ -60,9 +77,10 @@ bool TM_View::PollEvents(TM_EventInput eventInput)
 		bool ret = false;
 		std::vector<bool> existTable(this->renderObjects.size());
 		for(int i=0;i<this->renderObjects.size();i++) existTable[i] = this->renderObjects[i]->exists();
+		SkScalar y = this->viewSetting.padding;
         for(int i=0;i<this->renderObjects.size();i++)
             if(existTable[i])
-				ret += this->renderObjects[i]->PollEvents(eventInput);
+				ret += (int)this->renderObjects[i]->PollEvents(eventInput);
 
 		if(eventInput.scrollY != 0)
 		{

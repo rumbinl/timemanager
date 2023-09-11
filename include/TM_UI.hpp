@@ -135,6 +135,7 @@ class TM_View : public TM_RenderObject
 {
     public:
         TM_View(SkRect bounds, std::vector<TM_RenderObject*> objects, TM_ViewSetting viewSetting={colorScheme[0],colorScheme[2],colorScheme[3],0,24,10});
+        TM_View(SkRect bounds, std::vector<SkScalar> proportionTable, std::vector<TM_RenderObject*> objects, TM_ViewSetting viewSetting={colorScheme[0],colorScheme[2],colorScheme[3],0,24,10});
         void Render(TM_RenderInfo renderInfo) override;
         void setRenderObjectExistence(int index, bool existence);
         bool PollEvents(TM_EventInput eventInput) override;
@@ -142,6 +143,8 @@ class TM_View : public TM_RenderObject
 		int getNumExists();
     protected:
         std::vector<TM_RenderObject*> renderObjects;
+		std::vector<SkScalar> proportionTable;
+		bool fit =false;
 		int numExists=0;
         SkScalar yOffset=0.0f;
 };

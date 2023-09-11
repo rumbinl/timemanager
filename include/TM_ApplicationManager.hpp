@@ -27,8 +27,9 @@ class TM_ApplicationManager
 		// Font and UI related variables
 		std::vector<SkFont*> skia_fontList;
 		int defaultFont=-1;
-		TM_CalendarView* calendarView;
-		TM_TaskView* taskView;
+		TM_View* mainView;
+		/*TM_CalendarView* calendarView;
+		TM_TaskView* taskView;*/
 
         // Pointers to Timeman classes
 		TM_Graphics_Window window_ptr;
