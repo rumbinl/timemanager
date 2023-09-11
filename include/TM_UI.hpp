@@ -7,6 +7,8 @@ typedef struct { SkColor backgroundColor, borderColor, textColor; SkScalar borde
 
 typedef struct { SkScalar mouseX, mouseY, scrollX, scrollY, dpi; bool mousePressed, mouseHeld,keyPressed; std::string inputText; SkFont* font; SDL_Scancode key; } TM_EventInput;
 
+typedef struct { SkCanvas* canvas; SkFont* textFont, *iconFont; } TM_RenderInfo;
+
 // Render order:
 // 1. Background
 // 2. Border
@@ -16,7 +18,7 @@ class TM_RenderObject
 {
     public:
         TM_RenderObject(SkRect bounds, TM_ViewSetting viewSetting={colorScheme[0],colorScheme[3],colorScheme[3],1,24,5});
-        virtual void Render(SkCanvas* skia_canvas, SkFont* font);
+        virtual void Render(TM_RenderInfo renderInfo);
         virtual bool PollEvents(TM_EventInput eventInput);
         SkRect getBounds();
         SkRect getSrcBounds();
@@ -34,8 +36,8 @@ class TM_TextView : public TM_RenderObject
 {
     public:
         TM_TextView(std::string text, SkRect bounds, TM_ViewSetting viewSetting={colorScheme[1],colorScheme[2],colorScheme[3],1,24,5}, bool centered=true);
-        void Render(SkCanvas* skia_canvas, SkFont* font);
-        static void Render(std::string text, SkRect bounds, SkCanvas* skia_canvas, SkFont* font, TM_ViewSetting viewSetting={colorScheme[1],colorScheme[2],colorScheme[3],1,16,5}, bool centered=true);
+        void Render(TM_RenderInfo renderInfo);
+        static void Render(std::string text, SkRect bounds, TM_RenderInfo renderInfo, TM_ViewSetting viewSetting={colorScheme[1],colorScheme[2],colorScheme[3],1,16,5}, bool centered=true);
         void setText(std::string newText);
         SkScalar getWidth();
         SkScalar getHeight();
@@ -61,12 +63,11 @@ class TM_CalendarWeekView : public TM_RenderObject
 {
     public:
         TM_CalendarWeekView(SkRect bounds, std::chrono::year_month_day* focusDate, std::set<TM_Task>* tasks, int numDays = 7, SkScalar hourHeight = 50.0, TM_ViewSetting viewSettings={colorScheme[1],colorScheme[3],colorScheme[3],1,24,1});
-        void Render(SkCanvas* skia_canvas, SkFont* font) override;
-        void RenderTimes(SkCanvas* skia_canvas, SkFont* font);
+        void Render(TM_RenderInfo renderInfo) override;
+        void RenderTimes(TM_RenderInfo renderInfo);
         bool PollEvents(TM_EventInput eventInput) override;
         void setDaySpan(int daySpan);
         int getDaySpan();
-        ~TM_CalendarWeekView();
     private:
         std::set<TM_Task>* tasks;
         std::vector<TM_TextView> dayLabels;
@@ -80,10 +81,9 @@ class TM_TextBox : public TM_TextView
 {
     public:
         TM_TextBox(SkRect bounds, std::string placeholder, TM_ViewSetting viewSetting ={colorScheme[1],colorScheme[2],colorScheme[3],1,24,5});
-        void Render(SkCanvas* skia_canvas, SkFont* font) override;
+        void Render(TM_RenderInfo renderInfo) override;
         bool PollEvents(TM_EventInput eventInput) override;
 		SkScalar getCharWidth(char a, SkFont* font);
-        ~TM_TextBox();
     private:
 		void locatePosition(SkScalar mouseX, std::string text, SkFont* font);
         std::string placeholder, content="";
@@ -134,13 +134,12 @@ class TM_NumberBox : public TM_TextView
 class TM_View : public TM_RenderObject
 {
     public:
-        TM_View(SkRect bounds, std::vector<TM_RenderObject*> objects, TM_ViewSetting viewSetting={colorScheme[0],colorScheme[2],colorScheme[3],1,24,10});
-        void Render(SkCanvas* skia_canvas, SkFont* font) override;
+        TM_View(SkRect bounds, std::vector<TM_RenderObject*> objects, TM_ViewSetting viewSetting={colorScheme[0],colorScheme[2],colorScheme[3],0,24,10});
+        void Render(TM_RenderInfo renderInfo) override;
         void setRenderObjectExistence(int index, bool existence);
         bool PollEvents(TM_EventInput eventInput) override;
 		void addRenderObject(TM_RenderObject* renderObject);
 		int getNumExists();
-        ~TM_View();
     protected:
         std::vector<TM_RenderObject*> renderObjects;
 		int numExists=0;
@@ -151,7 +150,7 @@ class TM_HorizontalView : public TM_View
 {
 	public:
         TM_HorizontalView(SkRect bounds, std::vector<TM_RenderObject*> objects, bool fit, TM_ViewSetting viewSetting={colorScheme[0],colorScheme[2],colorScheme[3],1,24,10});
-        void Render(SkCanvas* skia_canvas, SkFont* font) override;
+        void Render(TM_RenderInfo renderInfo) override;
 	private:
 		bool fit;
 };

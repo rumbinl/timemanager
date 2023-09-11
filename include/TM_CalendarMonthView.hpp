@@ -6,7 +6,7 @@ template<class T> class TM_CalendarMonthView : public TM_RenderObject
 {
     public:
         TM_CalendarMonthView(SkRect bounds, void (*action)(T* context, std::chrono::year_month_day date)=NULL, T* context=NULL, TM_ViewSetting viewSetting={colorScheme[0],colorScheme[3],colorScheme[3],1,16,1});
-        void Render(SkCanvas* skia_canvas, SkFont* font) override;
+        void Render(TM_RenderInfo renderInfo) override;
         bool PollEvents(TM_EventInput eventInput) override;
         void setMonth(std::chrono::year_month ym);
         std::chrono::year_month getMonthYear();
@@ -47,16 +47,16 @@ template <class T> std::chrono::year_month TM_CalendarMonthView<T>::getMonthYear
     return ym_date;
 }
 
-template <class T> void TM_CalendarMonthView<T>::Render(SkCanvas* skia_canvas, SkFont* font)
+template <class T> void TM_CalendarMonthView<T>::Render(TM_RenderInfo renderInfo)
 {
     SkFontMetrics fontMetrics;
-    font->getMetrics(&fontMetrics);
+    renderInfo.textFont->getMetrics(&fontMetrics);
     this->dataView->setX(this->bounds.x());
     this->dataView->setY(this->bounds.y());
     this->dataView->setText(monthNames[static_cast<unsigned>(this->ym_date.month())-1]+' '+std::to_string(static_cast<int>(this->ym_date.year())));
     this->dataView->setWidth(this->bounds.width());
-    this->dataView->setHeightFont(font);
-    this->dataView->Render(skia_canvas, font);
+    this->dataView->setHeightFont(renderInfo.textFont);
+    this->dataView->Render(renderInfo);
     SkScalar x=this->firstDay*(this->bounds.width()/7.0f)+this->bounds.x(),y=this->dataView->getHeight()+this->bounds.y();
     for(int i=0;i<7;i++)
     {
@@ -64,8 +64,8 @@ template <class T> void TM_CalendarMonthView<T>::Render(SkCanvas* skia_canvas, S
         this->weekList[i].setWidth(this->bounds.width()/7.0f);
         this->weekList[i].setX(this->bounds.x()+(float)i*this->bounds.width()/7.0f);
         this->weekList[i].setY(y);
-        this->weekList[i].setHeightFont(font);
-        this->weekList[i].Render(skia_canvas, font);
+        this->weekList[i].setHeightFont(renderInfo.textFont);
+        this->weekList[i].Render(renderInfo);
     }
     y+=this->weekList[0].getHeight();
     for(int i=0;i<this->numDays;i++)
@@ -82,7 +82,7 @@ template <class T> void TM_CalendarMonthView<T>::Render(SkCanvas* skia_canvas, S
         this->dayViewList[i].setWidth(this->bounds.width()/7.0f);
         if(i == hoverDayButton || i == selectDayButton)
             this->dayViewList[i].invertColors();
-        this->dayViewList[i].Render(skia_canvas, font);
+        this->dayViewList[i].Render(renderInfo);
         if(i == hoverDayButton || i == selectDayButton)
             this->dayViewList[i].invertColors();
         x+=this->bounds.width()/7.0f;

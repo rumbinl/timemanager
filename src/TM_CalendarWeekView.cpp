@@ -9,12 +9,12 @@ TM_CalendarWeekView::TM_CalendarWeekView(SkRect bounds, std::chrono::year_month_
     this->tasks = tasks;
 }
 
-void TM_CalendarWeekView::RenderTimes(SkCanvas* skia_canvas, SkFont* font)
+void TM_CalendarWeekView::RenderTimes(TM_RenderInfo renderInfo)
 {
     SkPaint paint;
-	font->setSize(this->viewSetting.fontSize);
+	renderInfo.textFont->setSize(this->viewSetting.fontSize);
 	SkFontMetrics fontMetrics;
-	font->getMetrics(&fontMetrics);
+	renderInfo.textFont->getMetrics(&fontMetrics);
 	
 	paint.setColor(this->viewSetting.borderColor);
 
@@ -25,7 +25,7 @@ void TM_CalendarWeekView::RenderTimes(SkCanvas* skia_canvas, SkFont* font)
 	{
 		std::string timeString = std::to_string(i)+":00";
 		SkRect text_bounds;
-		font->measureText(timeString.c_str(), timeString.size()*sizeof(char), SkTextEncoding::kUTF8, &text_bounds, &paint);
+		renderInfo.textFont->measureText(timeString.c_str(), timeString.size()*sizeof(char), SkTextEncoding::kUTF8, &text_bounds, &paint);
 
 		if(!i)
 		{
@@ -33,58 +33,59 @@ void TM_CalendarWeekView::RenderTimes(SkCanvas* skia_canvas, SkFont* font)
 			y += this->viewSetting.padding;
 		}
 
-		skia_canvas->drawString(timeString.c_str(), xOff-text_bounds.width(), y+yOff+fontMetrics.fBottom, *font, paint);
-		skia_canvas->drawLine(xOff, y+yOff, this->bounds.width(), y+yOff, paint);
+		renderInfo.canvas->drawString(timeString.c_str(), xOff-text_bounds.width(), y+yOff+fontMetrics.fBottom, *renderInfo.textFont, paint);
+		renderInfo.canvas->drawLine(xOff, y+yOff, this->bounds.width(), y+yOff, paint);
 		y += this->hourHeight;
 	}
 	this->srcBounds.setWH(this->srcBounds.width(), y);
     for(int i=1;i<numDays;i++)
     {
         SkScalar x = xOff + i*dayWidth;
-        skia_canvas->drawLine(x, 0, x, this->bounds.height(),paint);
+        renderInfo.canvas->drawLine(x, 0, x, this->bounds.height(),paint);
     }
 }
 
-void TM_CalendarWeekView::Render(SkCanvas* skia_canvas, SkFont* font)
+void TM_CalendarWeekView::Render(TM_RenderInfo renderInfo)
 {
     SkPaint paint;
 	SkRect text_bounds;
-	font->measureText("XX:XX", 5*sizeof(char), SkTextEncoding::kUTF8, &text_bounds, &paint);
+	renderInfo.textFont->measureText("XX:XX", 5*sizeof(char), SkTextEncoding::kUTF8, &text_bounds, &paint);
 	this->xOff = text_bounds.width();
 
 	paint.setStyle(SkPaint::kStroke_Style);
 	paint.setColor(this->viewSetting.borderColor);
 
-	skia_canvas->drawRect(this->bounds, paint);
+	renderInfo.canvas->drawRect(this->bounds, paint);
 
 	paint.setStyle(SkPaint::kFill_Style);
 	paint.setColor(this->viewSetting.backgroundColor);
 
-	skia_canvas->drawRect(this->bounds, paint);
+	renderInfo.canvas->drawRect(this->bounds, paint);
 
-    font->setSize(this->viewSetting.fontSize);
+    renderInfo.textFont->setSize(this->viewSetting.fontSize);
 
     SkScalar dayWidth = (this->bounds.width() - this->xOff)/((SkScalar)this->numDays);
     SkScalar labelHeight = this->viewSetting.fontSize;
+
 	this->yOff = labelHeight;
 
     for(int i=0;i<numDays;i++)
     {
         std::chrono::year_month_day currentDate = std::chrono::sys_days{*focusDate} + std::chrono::days{i};
         std::string date = dayNames[weekDayFromDate(currentDate)].substr(0,2)+" "+std::to_string(static_cast<unsigned>(currentDate.day()))+" "+monthNames[static_cast<unsigned>(currentDate.month())-1].substr(0,3);
-        TM_TextView::Render(date, SkRect::MakeXYWH(this->bounds.x()+xOff+i*dayWidth,this->bounds.y(),dayWidth,labelHeight),skia_canvas,font);
+        TM_TextView::Render(date, SkRect::MakeXYWH(this->bounds.x()+xOff+i*dayWidth,this->bounds.y(),dayWidth,labelHeight),renderInfo);
     }
 
-	skia_canvas->save();
-	skia_canvas->clipRect(SkRect::MakeXYWH(this->bounds.x(),this->bounds.y()+labelHeight,this->bounds.width(),this->bounds.height()-labelHeight));
-	skia_canvas->translate(this->bounds.x(), this->bounds.y()+labelHeight);
+	renderInfo.canvas->save();
+	renderInfo.canvas->clipRect(SkRect::MakeXYWH(this->bounds.x(),this->bounds.y()+labelHeight,this->bounds.width(),this->bounds.height()-labelHeight));
+	renderInfo.canvas->translate(this->bounds.x(), this->bounds.y()+labelHeight);
 
-    RenderTimes(skia_canvas, font);
+    RenderTimes(renderInfo);
 
     paint.setColor(this->viewSetting.textColor);
 
 	SkFontMetrics fontMetrics;
-	font->getMetrics(&fontMetrics);
+	renderInfo.textFont->getMetrics(&fontMetrics);
 
     for(int i=0;i<numDays;i++)
     {
@@ -100,24 +101,24 @@ void TM_CalendarWeekView::Render(SkCanvas* skia_canvas, SkFont* font)
 
                 paint.setStyle(SkPaint::kFill_Style);
                 paint.setColor(this->viewSetting.borderColor);
-                skia_canvas->drawRect(rect, paint);
+                renderInfo.canvas->drawRect(rect, paint);
                 paint.setColor(this->viewSetting.backgroundColor);
 				SkScalar scaleFactor = 1;
 				if(this->viewSetting.fontSize>rect.height())	
 					scaleFactor = rect.height()/this->viewSetting.fontSize;
-				font->setSize(rect.height());
-                skia_canvas->drawString(task.getName().c_str(), this->xOff+dayWidth*i, y+rect.height()-scaleFactor*fontMetrics.fDescent, *font, paint);
+				renderInfo.textFont->setSize(rect.height());
+                renderInfo.canvas->drawString(task.getName().c_str(), this->xOff+dayWidth*i, y+rect.height()-scaleFactor*fontMetrics.fDescent, *renderInfo.textFont, paint);
                 paint.setStyle(SkPaint::kStroke_Style);
                 paint.setColor(this->viewSetting.backgroundColor);
-                skia_canvas->drawRect(rect, paint);
+                renderInfo.canvas->drawRect(rect, paint);
                 y+=this->hourHeight/(60.0f/minutes);
             }
         }
     }
     
-    if(pressWeekIndexStart == -1) 
+    if(!this->select) 
     { 
-        skia_canvas->restore();
+        renderInfo.canvas->restore();
         return;
     }
     int startDayIdx=(int)floor((this->pressWeekIndexStart-this->xOff)/dayWidth),
@@ -145,19 +146,19 @@ void TM_CalendarWeekView::Render(SkCanvas* skia_canvas, SkFont* font)
     if(startDayIdx == endDayIdx)
     {
 		SkRRect rect = SkRRect::MakeRectXY(SkRect::MakeXYWH(startDayX, topY, dayWidth, botY-topY),r,r);
-        skia_canvas->drawRRect(rect, paint);
+        renderInfo.canvas->drawRRect(rect, paint);
     }
     else 
     {
 		SkRRect startDay = SkRRect::MakeRectXY(SkRect::MakeXYWH(startDayX, topY, dayWidth, this->bounds.height()-topY),r,r);
-        skia_canvas->drawRRect(startDay, paint);
+        renderInfo.canvas->drawRRect(startDay, paint);
         SkRRect coverDays = SkRRect::MakeRectXY(SkRect::MakeXYWH(endDayX, 0, dayWidth, botY),r,r);
-        skia_canvas->drawRRect(coverDays, paint);
+        renderInfo.canvas->drawRRect(coverDays, paint);
         SkRRect endDay = SkRRect::MakeRectXY(SkRect::MakeXYWH(startDayX+dayWidth, 0, dayWidth*(endDayIdx-startDayIdx-1), this->bounds.height()),r,r);
-        skia_canvas->drawRRect(endDay, paint);
+        renderInfo.canvas->drawRRect(endDay, paint);
     }
     
-    skia_canvas->restore();
+    renderInfo.canvas->restore();
 }
 
 bool TM_CalendarWeekView::PollEvents(TM_EventInput eventInput)
@@ -189,10 +190,10 @@ bool TM_CalendarWeekView::PollEvents(TM_EventInput eventInput)
 
 		return true;
     }
-    if(this->select && !eventInput.mousePressed)
+    if(this->select && !eventInput.mouseHeld)
 	{
-		this->select = false;
 		this->pressDayIndexStart = this->pressDayIndexEnd = this->pressWeekIndexStart = this->pressWeekIndexEnd = -1;
+		this->select = false;
 		return true;
 	}
     return false;
@@ -206,9 +207,4 @@ void TM_CalendarWeekView::setDaySpan(int daySpan)
 int TM_CalendarWeekView::getDaySpan()
 {
     return this->numDays;
-}
-
-TM_CalendarWeekView::~TM_CalendarWeekView()
-{
-
 }

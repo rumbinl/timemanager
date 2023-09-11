@@ -8,19 +8,27 @@ TM_View::TM_View(SkRect bounds, std::vector<TM_RenderObject*> objects, TM_ViewSe
     this->viewSetting = viewSetting;
 }
 
-void TM_View::Render(SkCanvas* skia_canvas, SkFont* font)
+void TM_View::Render(TM_RenderInfo renderInfo)
 {
     SkPaint paint;
     paint.setColor(this->viewSetting.backgroundColor);
     paint.setStyle(SkPaint::kFill_Style);
-    skia_canvas->drawRect(this->bounds, paint);
-    paint.setColor(this->viewSetting.borderColor);
-    paint.setStyle(SkPaint::kStroke_Style);
-    skia_canvas->drawRect(this->bounds, paint);
 
-    int restore = skia_canvas->save();
-    skia_canvas->clipRect(this->bounds);
-	skia_canvas->setMatrix(SkMatrix::Translate(this->bounds.x(), this->bounds.y()-this->yOffset));
+    renderInfo.canvas->drawRect(this->bounds, paint);
+
+	
+	if(this->viewSetting.borderThickness)
+	{
+		paint.setColor(this->viewSetting.borderColor);
+		paint.setStyle(SkPaint::kStroke_Style);
+		renderInfo.canvas->drawRect(this->bounds, paint);
+	}
+
+    int restore = renderInfo.canvas->save();
+
+    renderInfo.canvas->clipRect(this->bounds);
+
+	renderInfo.canvas->setMatrix(SkMatrix::Translate(this->bounds.x(), this->bounds.y()-this->yOffset));
 
     SkScalar y = this->viewSetting.padding;
 
@@ -30,14 +38,14 @@ void TM_View::Render(SkCanvas* skia_canvas, SkFont* font)
             continue; 
 
         renderObject->setBounds(SkRect::MakeXYWH(this->viewSetting.padding, y, this->bounds.width()-this->viewSetting.padding*2, renderObject->getBounds().height()));
-        renderObject->Render(skia_canvas, font);
+        renderObject->Render(renderInfo);
 
         y += renderObject->getBounds().height() + this->viewSetting.padding;
     }
 
     this->srcBounds.setWH(this->bounds.width(), y);
 
-    skia_canvas->restoreToCount(restore);
+    renderInfo.canvas->restoreToCount(restore);
 }
 
 
@@ -96,9 +104,4 @@ void TM_View::setRenderObjectExistence(int index, bool existence)
 		this->numExists += (int)existence-(int)this->renderObjects[index]->exists();
         this->renderObjects[index]->setExistence(existence);
 	}
-}
-
-TM_View::~TM_View()
-{
-
 }

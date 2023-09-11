@@ -41,9 +41,14 @@ void TM_ApplicationManager::Render()
 	this->skia_canvas->clear(this->skia_canvas_clear_color);
 
 	this->calendarView->setBounds(SkRect::MakeXYWH(0,0,(SkScalar)this->window_ptr.getWindowWidth() * 0.5, this->window_ptr.getWindowHeight()));
-	this->calendarView->Render(this->skia_canvas, this->skia_fontList[this->defaultFont]);
+
+	TM_RenderInfo renderInfo = {this->skia_canvas, this->skia_fontList[this->defaultFont], this->skia_fontList[this->defaultFont]};
+
+	this->calendarView->Render(renderInfo);
+
 	this->taskView->setBounds(SkRect::MakeXYWH((SkScalar)this->window_ptr.getWindowWidth() * 0.5,0,(SkScalar)this->window_ptr.getWindowWidth() * 0.5, this->window_ptr.getWindowHeight()));
-	this->taskView->Render(this->skia_canvas, this->skia_fontList[this->defaultFont]);
+
+	this->taskView->Render(renderInfo);
 
 	this->skia_canvas->flush();
 	this->window_ptr.Swap_buffers();

@@ -6,7 +6,7 @@ TM_RenderObject::TM_RenderObject(SkRect bounds, TM_ViewSetting viewSetting)
     this->viewSetting = viewSetting;
 }
 
-void TM_RenderObject::Render(SkCanvas* skia_canvas, SkFont* font)
+void TM_RenderObject::Render(TM_RenderInfo renderInfo)
 {
 
 }

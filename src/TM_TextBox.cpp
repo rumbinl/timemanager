@@ -6,8 +6,9 @@ TM_TextBox::TM_TextBox(SkRect bounds, std::string placeholder="", TM_ViewSetting
     this->placeholder = placeholder;
 }
 
-void TM_TextBox::Render(SkCanvas* skia_canvas, SkFont* font)
+void TM_TextBox::Render(TM_RenderInfo renderInfo)
 {
+	SkFont* font = renderInfo.textFont;
     if(!this->fitted)
     {
         TM_TextView::setHeightFont(font);
@@ -25,7 +26,7 @@ void TM_TextBox::Render(SkCanvas* skia_canvas, SkFont* font)
 	}
 	SkFontMetrics fontMetrics;
 	font->getMetrics(&fontMetrics);
-    TM_TextView::Render(skia_canvas, font);
+    TM_TextView::Render(renderInfo);
 	TM_TextView::setColorOpacity(255);
 	if(this->select) TM_TextView::invertColors();
 	if(this->select)
@@ -37,7 +38,7 @@ void TM_TextBox::Render(SkCanvas* skia_canvas, SkFont* font)
 		SkRect textBounds;
 		font->measureText(this->content.substr(0,this->cursorIndex).c_str(), this->cursorIndex*sizeof(char), SkTextEncoding::kUTF8, &textBounds);
 		this->cursorX = textBounds.width()-TM_TextView::getTextXOffset();
-		skia_canvas->drawLine(this->bounds.x()+this->cursorX, this->bounds.y(), this->bounds.x()+this->cursorX, this->bounds.y()+this->viewSetting.fontSize-fontMetrics.fDescent, paint);
+		renderInfo.canvas->drawLine(this->bounds.x()+this->cursorX, this->bounds.y(), this->bounds.x()+this->cursorX, this->bounds.y()+this->viewSetting.fontSize-fontMetrics.fDescent, paint);
 	}
 	if(this->select) TM_TextView::invertColors();
 }
