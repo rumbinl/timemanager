@@ -30,3 +30,18 @@ class TM_Task
         TM_Task* rootTask;
         std::vector<TM_Task*> sub_tasks;
 };
+
+struct TM_TaskPtrCompare {
+	bool operator()(const TM_Task* a, const TM_Task* b) const
+	{
+		return *a < *b;
+	}
+};
+
+class TM_TaskManager 
+{
+	public:
+		TM_TaskManager();
+	private:
+		std::set<TM_Task*,TM_TaskPtrCompare> sortedTasks;
+};

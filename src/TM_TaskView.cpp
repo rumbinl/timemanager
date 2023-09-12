@@ -11,8 +11,11 @@ TM_TaskView::TM_TaskView(SkRect bounds, std::set<TM_Task>* tasksPtr, std::map<st
             context->getTask()->addSubtask("Subtask", {0,30});
     },this);
 
-    this->newTaskButton = new TM_Button<TM_TaskView>("Create Task", SkRect::MakeWH(0,50), [](TM_TaskView* context) {
+    this->scheduleTaskButton = new TM_Button<TM_TaskView>("Schedule", SkRect::MakeWH(0,50), [](TM_TaskView* context) {
         context->tasksPtr->insert(TM_Task(context->getText(), context->getDate(), context->getCalendarPtr()));
+	}, this);
+
+    this->deleteTaskButton = new TM_Button<TM_TaskView>("Delete this task", SkRect::MakeWH(0,50), [](TM_TaskView* context) {
     },this);
 
     this->monthView = new TM_CalendarMonthView<TM_TaskView>(SkRect::MakeWH(0,480), 
@@ -25,7 +28,8 @@ TM_TaskView::TM_TaskView(SkRect bounds, std::set<TM_Task>* tasksPtr, std::map<st
     //this->renderObjects.push_back(this->taskList);
     //this->renderObjects.push_back(this->addSubtaskButton);
     this->renderObjects.push_back(this->monthView);
-    this->renderObjects.push_back(this->newTaskButton);
+    this->renderObjects.push_back(this->scheduleTaskButton);
+    this->renderObjects.push_back(this->deleteTaskButton);
 }
 
 void TM_TaskView::setDate(std::chrono::year_month_day date)
@@ -46,6 +50,10 @@ std::string TM_TaskView::getText()
 std::map<std::chrono::year_month_day,int>* TM_TaskView::getCalendarPtr()
 {
     return this->calendarPtr;
+}
+
+void TM_TaskView::setTask(TM_Task* taskPtr)
+{
 }
 
 TM_Task* TM_TaskView::getTask()
