@@ -29,8 +29,8 @@ void TM_CalendarWeekView::RenderTimes(TM_RenderInfo renderInfo)
 
 		if(!i)
 		{
-			this->viewSetting.padding = text_bounds.height()-fontMetrics.fBottom;
-			y += this->viewSetting.padding;
+			this->viewSetting.paddingY = text_bounds.height()-fontMetrics.fBottom;
+			y += this->viewSetting.paddingY;
 		}
 
 		renderInfo.canvas->drawString(timeString.c_str(), xOff-text_bounds.width(), y+yOff+fontMetrics.fBottom, *renderInfo.textFont, paint);
@@ -87,34 +87,33 @@ void TM_CalendarWeekView::Render(TM_RenderInfo renderInfo)
 	SkFontMetrics fontMetrics;
 	renderInfo.textFont->getMetrics(&fontMetrics);
 
-    for(int i=0;i<numDays;i++)
-    {
-        std::chrono::year_month_day currentDate = std::chrono::sys_days{*focusDate} + std::chrono::days{i};
-        SkScalar y = -this->scrollY+this->viewSetting.padding;
-        int c = 0;
-        for(TM_Task task : *this->tasks) 
-        {
-            if(task.getDate()==currentDate)
-            {
-                SkScalar minutes = 30.0f;
-                SkRect rect = SkRect::MakeXYWH(this->xOff + dayWidth*i, y, dayWidth, this->hourHeight/(60.0f/minutes));
+        
+	SkScalar y = -this->scrollY+this->viewSetting.paddingY;
+	for(TM_Task task : *this->tasks) 
+	{
+		if(task.getDate()>=*this->focusDate && task.getDate() < std::chrono::sys_days{*this->focusDate} + std::chrono::days{this->numDays})
+		{
+			SkScalar minutes = 30.0f;
+			int index = (std::chrono::sys_days{task.getDate()}-std::chrono::sys_days{*this->focusDate}).count();
+			SkRect rect = SkRect::MakeXYWH(this->xOff + dayWidth*index, y, dayWidth, this->hourHeight/(60.0f/minutes));
 
-                paint.setStyle(SkPaint::kFill_Style);
-                paint.setColor(this->viewSetting.borderColor);
-                renderInfo.canvas->drawRect(rect, paint);
-                paint.setColor(this->viewSetting.backgroundColor);
-				SkScalar scaleFactor = 1;
-				if(this->viewSetting.fontSize>rect.height())	
-					scaleFactor = rect.height()/this->viewSetting.fontSize;
-				renderInfo.textFont->setSize(rect.height());
-                renderInfo.canvas->drawString(task.getName().c_str(), this->xOff+dayWidth*i, y+rect.height()-scaleFactor*fontMetrics.fDescent, *renderInfo.textFont, paint);
-                paint.setStyle(SkPaint::kStroke_Style);
-                paint.setColor(this->viewSetting.backgroundColor);
-                renderInfo.canvas->drawRect(rect, paint);
-                y+=this->hourHeight/(60.0f/minutes);
-            }
-        }
-    }
+			paint.setStyle(SkPaint::kFill_Style);
+			paint.setColor(this->viewSetting.borderColor);
+			renderInfo.canvas->drawRect(rect, paint);
+			paint.setColor(this->viewSetting.backgroundColor);
+			SkScalar scaleFactor = 1;
+			if(this->viewSetting.fontSize>rect.height())	
+				scaleFactor = rect.height()/this->viewSetting.fontSize;
+			renderInfo.textFont->setSize(rect.height());
+			renderInfo.canvas->drawString(task.getName().c_str(), this->xOff+dayWidth*index, y+rect.height()-scaleFactor*fontMetrics.fDescent, *renderInfo.textFont, paint);
+			paint.setStyle(SkPaint::kStroke_Style);
+			paint.setColor(this->viewSetting.backgroundColor);
+
+			renderInfo.canvas->drawRect(rect, paint);
+
+			y+= this->hourHeight/(60.0f/minutes);
+		}
+	}
     
     if(!this->select) 
     { 
@@ -135,8 +134,8 @@ void TM_CalendarWeekView::Render(TM_RenderInfo renderInfo)
             ,endDayX   = this->xOff+dayWidth*endDayIdx;
 
     SkScalar timeStep = this->hourHeight/4.0f;
-    SkScalar topY = this->viewSetting.padding - this->scrollY + (timeStep)*round((firstY)/(timeStep)),
-             botY = this->viewSetting.padding - this->scrollY + (timeStep)*round((secondY)/(timeStep));
+    SkScalar topY = this->viewSetting.paddingY - this->scrollY + (timeStep)*round((firstY)/(timeStep)),
+             botY = this->viewSetting.paddingY - this->scrollY + (timeStep)*round((secondY)/(timeStep));
 
     paint.setStyle(SkPaint::kFill_Style);
     paint.setColor(this->viewSetting.textColor);
@@ -176,15 +175,14 @@ bool TM_CalendarWeekView::PollEvents(TM_EventInput eventInput)
 
         if(eventInput.mousePressed&&this->select == false)
 		{
-			this->pressDayIndexStart = eventInput.mouseY-this->bounds.y()-this->viewSetting.padding-this->yOff+this->scrollY;
+			this->pressDayIndexStart = eventInput.mouseY-this->bounds.y()-this->viewSetting.paddingY-this->yOff+this->scrollY;
             this->pressWeekIndexStart = eventInput.mouseX-this->bounds.x();
+			this->select = eventInput.mousePressed;
 		}
 
-        this->select = eventInput.mousePressed;
-
-		if(eventInput.mousePressed)
+		if(this->select)
         {
-			this->pressDayIndexEnd = eventInput.mouseY-this->bounds.y()-this->viewSetting.padding-this->yOff+this->scrollY;
+			this->pressDayIndexEnd = eventInput.mouseY-this->bounds.y()-this->viewSetting.paddingY-this->yOff+this->scrollY;
             this->pressWeekIndexEnd = eventInput.mouseX-this->bounds.x();
         }
 

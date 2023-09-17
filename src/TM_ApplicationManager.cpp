@@ -18,9 +18,13 @@ TM_ApplicationManager::TM_ApplicationManager() : window_ptr("Timeman", 960, 540)
 	this->should_render_update = true;
 	this->skia_canvas_clear_color = colorScheme[BACKGROUND_COLOR_INDEX];
 
-	this->mainView = new TM_View(SkRect::MakeXYWH(0,0,this->window_ptr.getWindowWidth(),this->window_ptr.getWindowHeight()), {0.1,0.9}, {
-		new TM_Button<TM_View>("Create Task", SkRect::MakeXYWH(0,0,0,10), [](TM_View* context) {}, this->mainView),
-		new TM_HorizontalView(SkRect::MakeXYWH(0,0,0,90), {
+	this->mainView = new TM_View(SkRect::MakeXYWH(0,0,this->window_ptr.getWindowWidth(),this->window_ptr.getWindowHeight()), {0.05,0.95}, {
+		new TM_HorizontalView(SkRect::MakeEmpty(), {
+				new TM_Button<TM_View>("Create Task", SkRect::MakeEmpty(), [](TM_View* context) {}, this->mainView),
+				new TM_Button<TM_View>("Day View", SkRect::MakeEmpty(), [](TM_View* context) {}, this->mainView)
+			}, 
+		true, {}),
+		new TM_HorizontalView(SkRect::MakeEmpty(), {
 				new TM_CalendarView(SkRect::MakeXYWH(0, 0, 840, 840), &this->tasks),
 				new TM_TaskView(SkRect::MakeXYWH(0,0,840,840), &this->tasks, &this->freeTimeMap)
 			}, 	

@@ -14,13 +14,17 @@ void TM_TextView::Render(TM_RenderInfo renderInfo)
 
 	if(this->select) this->invertColors();
     SkPaint paint;
+
     paint.setColor(this->viewSetting.backgroundColor);
     paint.setStyle(SkPaint::kFill_Style);
+
     renderInfo.canvas->drawRect(this->bounds,paint);
+
     paint.setStyle(SkPaint::kStroke_Style);
     paint.setColor(this->viewSetting.borderColor);
     paint.setStrokeWidth(this->viewSetting.borderThickness);
-    renderInfo.canvas->drawRect(this->bounds,paint);
+
+    renderInfo.canvas->drawRect(SkRect::MakeXYWH(this->bounds.x(),this->bounds.y(),this->bounds.width(),this->bounds.height()),paint);
 
     int restore = renderInfo.canvas->save();
 	renderInfo.canvas->clipRect(this->bounds);

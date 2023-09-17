@@ -31,13 +31,13 @@ void TM_View::Render(TM_RenderInfo renderInfo)
 
     int restore = renderInfo.canvas->save();
 
-    renderInfo.canvas->clipRect(this->bounds);
+    renderInfo.canvas->clipRect(SkRect::MakeXYWH(this->bounds.x()-1,this->bounds.y()-1,this->bounds.width()+1,this->bounds.height()+1));
 
 	renderInfo.canvas->translate(this->bounds.x(), this->bounds.y()-this->yOffset);
 
-    SkScalar y = this->viewSetting.padding;
+    SkScalar y = 0;
 	
-	SkScalar height = this->bounds.height() - 2 * y;
+	SkScalar height = this->bounds.height() - this->viewSetting.paddingY*(this->renderObjects.size()-1);
 
     for(int i=0;i<renderObjects.size();i++)
     {
@@ -47,20 +47,21 @@ void TM_View::Render(TM_RenderInfo renderInfo)
 		if(this->fit)
 			this->renderObjects[i]->setBounds(
 				SkRect::MakeXYWH(
-					this->viewSetting.padding, 
+					0, 
 					y, 	
-					this->bounds.width()-this->viewSetting.padding*2,
-					this->proportionTable[i] * (this->bounds.height()-2*this->viewSetting.padding) - this->viewSetting.padding
+					this->bounds.width(),
+					this->proportionTable[i] * height 
 				)
 			);
 		else
-			this->renderObjects[i]->setBounds(SkRect::MakeXYWH(this->viewSetting.padding, y, this->bounds.width()-this->viewSetting.padding*2, renderObjects[i]->getBounds().height()));
+			this->renderObjects[i]->setBounds(SkRect::MakeXYWH(0, y, this->bounds.width(), renderObjects[i]->getBounds().height()));
+
 		this->renderObjects[i]->Render(renderInfo);
 
-		y += this->renderObjects[i]->getBounds().height() + this->viewSetting.padding;
+		y += this->renderObjects[i]->getBounds().height() + this->viewSetting.paddingY;
     }
 
-    this->srcBounds.setWH(this->bounds.width(), y);
+    this->srcBounds.setWH(this->bounds.width(), y - this->viewSetting.paddingY);
 
     renderInfo.canvas->restoreToCount(restore);
 }
@@ -77,7 +78,7 @@ bool TM_View::PollEvents(TM_EventInput eventInput)
 		bool ret = false;
 		std::vector<bool> existTable(this->renderObjects.size());
 		for(int i=0;i<this->renderObjects.size();i++) existTable[i] = this->renderObjects[i]->exists();
-		SkScalar y = this->viewSetting.padding;
+		SkScalar y = this->viewSetting.paddingY;
         for(int i=0;i<this->renderObjects.size();i++)
             if(existTable[i])
 				ret += (int)this->renderObjects[i]->PollEvents(eventInput);

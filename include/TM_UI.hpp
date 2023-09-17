@@ -3,9 +3,9 @@
 #include <TM_Core.hpp>
 #include <TM_Task.hpp>
 
-typedef struct { SkColor backgroundColor, borderColor, textColor; SkScalar borderThickness, fontSize, padding; } TM_ViewSetting;
+typedef struct { SkColor backgroundColor, borderColor, textColor; SkScalar borderThickness, fontSize, paddingX, paddingY; } TM_ViewSetting;
 
-typedef struct { SkScalar mouseX, mouseY, scrollX, scrollY, dpi; bool mousePressed, mouseHeld,keyPressed; std::string inputText; SkFont* font; SDL_Scancode key; } TM_EventInput;
+typedef struct { SkScalar mouseX, mouseY, scrollX, scrollY, dpi; bool mousePressed, mouseHeld, keyPressed; std::string inputText; SkFont* font; SDL_Scancode key; } TM_EventInput;
 
 typedef struct { SkCanvas* canvas; SkFont* textFont, *iconFont; } TM_RenderInfo;
 
@@ -17,7 +17,7 @@ typedef struct { SkCanvas* canvas; SkFont* textFont, *iconFont; } TM_RenderInfo;
 class TM_RenderObject 
 {
     public:
-        TM_RenderObject(SkRect bounds, TM_ViewSetting viewSetting={colorScheme[0],colorScheme[3],colorScheme[3],1,24,5});
+        TM_RenderObject(SkRect bounds, TM_ViewSetting viewSetting={colorScheme[0],colorScheme[3],colorScheme[3],1,24,5,5});
         virtual void Render(TM_RenderInfo renderInfo);
         virtual bool PollEvents(TM_EventInput eventInput);
         SkRect getBounds();
@@ -35,7 +35,7 @@ class TM_RenderObject
 class TM_TextView : public TM_RenderObject
 {
     public:
-        TM_TextView(std::string text, SkRect bounds, TM_ViewSetting viewSetting={colorScheme[1],colorScheme[2],colorScheme[3],1,24,5}, bool centered=true);
+        TM_TextView(std::string text, SkRect bounds, TM_ViewSetting viewSetting={colorScheme[1],colorScheme[2],colorScheme[3],1,24,5,5}, bool centered=true);
         void Render(TM_RenderInfo renderInfo);
         static void Render(std::string text, SkRect bounds, TM_RenderInfo renderInfo, TM_ViewSetting viewSetting={colorScheme[1],colorScheme[2],colorScheme[3],1,16,5}, bool centered=true);
         void setText(std::string newText);
@@ -62,7 +62,7 @@ class TM_TextView : public TM_RenderObject
 class TM_CalendarWeekView : public TM_RenderObject
 {
     public:
-        TM_CalendarWeekView(SkRect bounds, std::chrono::year_month_day* focusDate, std::set<TM_Task>* tasks, int numDays = 7, SkScalar hourHeight = 50.0, TM_ViewSetting viewSettings={colorScheme[1],colorScheme[3],colorScheme[3],1,24,1});
+        TM_CalendarWeekView(SkRect bounds, std::chrono::year_month_day* focusDate, std::set<TM_Task>* tasks, int numDays = 7, SkScalar hourHeight = 50.0, TM_ViewSetting viewSettings={colorScheme[1],colorScheme[3],colorScheme[3],1,24,0,0});
         void Render(TM_RenderInfo renderInfo) override;
         void RenderTimes(TM_RenderInfo renderInfo);
         bool PollEvents(TM_EventInput eventInput) override;
@@ -80,7 +80,7 @@ class TM_CalendarWeekView : public TM_RenderObject
 class TM_TextBox : public TM_TextView
 {
     public:
-        TM_TextBox(SkRect bounds, std::string placeholder, TM_ViewSetting viewSetting ={colorScheme[1],colorScheme[2],colorScheme[3],1,24,5});
+        TM_TextBox(SkRect bounds, std::string placeholder, TM_ViewSetting viewSetting ={colorScheme[1],colorScheme[2],colorScheme[3],1,24,5,5});
         void Render(TM_RenderInfo renderInfo) override;
         bool PollEvents(TM_EventInput eventInput) override;
 		SkScalar getCharWidth(char a, SkFont* font);
@@ -134,8 +134,8 @@ class TM_NumberBox : public TM_TextView
 class TM_View : public TM_RenderObject
 {
     public:
-        TM_View(SkRect bounds, std::vector<TM_RenderObject*> objects, TM_ViewSetting viewSetting={colorScheme[0],colorScheme[2],colorScheme[3],0,24,10});
-        TM_View(SkRect bounds, std::vector<SkScalar> proportionTable, std::vector<TM_RenderObject*> objects, TM_ViewSetting viewSetting={colorScheme[0],colorScheme[2],colorScheme[3],0,24,10});
+        TM_View(SkRect bounds, std::vector<TM_RenderObject*> objects, TM_ViewSetting viewSetting={colorScheme[0],colorScheme[2],colorScheme[3],0,24,10,10});
+        TM_View(SkRect bounds, std::vector<SkScalar> proportionTable, std::vector<TM_RenderObject*> objects, TM_ViewSetting viewSetting={colorScheme[0],colorScheme[2],colorScheme[3],0,24,10,10});
         void Render(TM_RenderInfo renderInfo) override;
         void setRenderObjectExistence(int index, bool existence);
         bool PollEvents(TM_EventInput eventInput) override;
@@ -152,7 +152,7 @@ class TM_View : public TM_RenderObject
 class TM_HorizontalView : public TM_View 
 {
 	public:
-        TM_HorizontalView(SkRect bounds, std::vector<TM_RenderObject*> objects, bool fit, TM_ViewSetting viewSetting={colorScheme[0],colorScheme[2],colorScheme[3],1,24,10});
+        TM_HorizontalView(SkRect bounds, std::vector<TM_RenderObject*> objects, bool fit, TM_ViewSetting viewSetting={colorScheme[0],colorScheme[2],colorScheme[3],1,24,10,0});
         void Render(TM_RenderInfo renderInfo) override;
 	private:
 		bool fit;

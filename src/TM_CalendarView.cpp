@@ -1,6 +1,6 @@
 #include <TM_CalendarView.hpp>
 
-TM_CalendarView::TM_CalendarView(SkRect bounds, std::set<TM_Task>* tasks) : TM_View(bounds, {})
+TM_CalendarView::TM_CalendarView(SkRect bounds, std::set<TM_Task>* tasks) : TM_View(bounds, {}, {colorScheme[0],colorScheme[3],colorScheme[3],0,24,0,10})
 {
     this->tasks = tasks;
     this->currentDate = getCurrentDate();
@@ -39,7 +39,7 @@ TM_CalendarView::TM_CalendarView(SkRect bounds, std::set<TM_Task>* tasks) : TM_V
 					context->setDaySpan(context->getDaySpan()-1);
 				}, this->weekView)
 		}
-		, true);
+		, true, {colorScheme[0],colorScheme[3],colorScheme[3],0,24,0,0});
 	this->addRenderObject(this->buttonBar);
     this->addRenderObject(this->monthView);
     this->addRenderObject(this->weekView);
