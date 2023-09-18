@@ -11,5 +11,5 @@ class TM_Calendar
         TM_Calendar(std::string path);
         void loadCalendarData(std::string data);
     private:
-        std::set<TM_Task*,TM_TaskComp> taskSet;
+        std::set<TM_Task*,TM_TaskPtrCompare> taskSet;
 };

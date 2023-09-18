@@ -73,7 +73,7 @@ void TM_Task::scheduleSubtasks(std::chrono::year_month_day currentDay)
 
 bool TM_Task::operator<(const TM_Task& b) const 
 {
-    return true;
+    return this->date < b.date;
 }
 
 TM_Task::~TM_Task()

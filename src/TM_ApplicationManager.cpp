@@ -22,13 +22,12 @@ TM_ApplicationManager::TM_ApplicationManager() : window_ptr("Timeman", 960, 540)
 		new TM_HorizontalView(SkRect::MakeEmpty(), {
 				new TM_Button<TM_View>("Create Task", SkRect::MakeEmpty(), [](TM_View* context) {}, this->mainView),
 				new TM_Button<TM_View>("Day View", SkRect::MakeEmpty(), [](TM_View* context) {}, this->mainView)
-			}, 
-		true, {}),
+			},
+			{}),
 		new TM_HorizontalView(SkRect::MakeEmpty(), {
 				new TM_CalendarView(SkRect::MakeXYWH(0, 0, 840, 840), &this->tasks),
 				new TM_TaskView(SkRect::MakeXYWH(0,0,840,840), &this->tasks, &this->freeTimeMap)
-			}, 	
-		true)
+			})
 	});
 }
 

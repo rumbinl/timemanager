@@ -45,14 +45,26 @@ void TM_View::Render(TM_RenderInfo renderInfo)
             continue; 
 		
 		if(this->fit)
-			this->renderObjects[i]->setBounds(
-				SkRect::MakeXYWH(
-					0, 
-					y, 	
-					this->bounds.width(),
-					this->proportionTable[i] * height 
-				)
-			);
+		{
+			if(!this->proportionTable.size())
+				this->renderObjects[i]->setBounds(
+					SkRect::MakeXYWH(
+						0, 
+						y, 	
+						this->bounds.width(),
+						height/(SkScalar)getNumExists()
+					)
+				);
+			else
+				this->renderObjects[i]->setBounds(
+					SkRect::MakeXYWH(
+						0, 
+						y, 	
+						this->bounds.width(),
+						this->proportionTable[i] * height 
+					)
+				);
+		}
 		else
 			this->renderObjects[i]->setBounds(SkRect::MakeXYWH(0, y, this->bounds.width(), renderObjects[i]->getBounds().height()));
 
@@ -103,24 +115,4 @@ bool TM_View::PollEvents(TM_EventInput eventInput)
 		return true;
 	}
     return false;
-}
-
-int TM_View::getNumExists()
-{
-	return numExists;
-}
-
-void TM_View::addRenderObject(TM_RenderObject* renderObject)
-{
-	this->numExists += renderObject->exists();
-	this->renderObjects.push_back(renderObject);
-}
-
-void TM_View::setRenderObjectExistence(int index, bool existence)
-{
-    if(index < this->renderObjects.size() && index>=0)
-	{
-		this->numExists += (int)existence-(int)this->renderObjects[index]->exists();
-        this->renderObjects[index]->setExistence(existence);
-	}
 }

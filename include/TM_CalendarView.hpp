@@ -7,12 +7,12 @@
 class TM_CalendarView : public TM_View
 {
     public:
-        TM_CalendarView(SkRect bounds, std::set<TM_Task>* tasks);
-		TM_HorizontalView* getBarView();
+        TM_CalendarView(SkRect bounds, std::multiset<TM_Task>* tasks);
     private:
         TM_CalendarMonthView<TM_CalendarView>* monthView;
         TM_CalendarWeekView* weekView;
 		TM_HorizontalView* buttonBar;
+		TM_View* vitalView;
         std::chrono::year_month_day currentDate;
-        std::set<TM_Task>* tasks;
+        std::multiset<TM_Task>* tasks;
 };

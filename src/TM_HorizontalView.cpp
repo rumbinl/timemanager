@@ -1,6 +1,6 @@
 #include <TM_UI.hpp>
 
-TM_HorizontalView::TM_HorizontalView(SkRect bounds, std::vector<TM_RenderObject*> objects, bool fit, TM_ViewSetting viewSetting) : TM_View(bounds, objects, viewSetting)
+TM_HorizontalView::TM_HorizontalView(SkRect bounds, std::vector<TM_RenderObject*> objects, TM_ViewSetting viewSetting) : TM_View(bounds, objects, viewSetting)
 {
 }
 

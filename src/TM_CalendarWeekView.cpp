@@ -1,6 +1,6 @@
 #include <TM_UI.hpp>
 
-TM_CalendarWeekView::TM_CalendarWeekView(SkRect bounds, std::chrono::year_month_day* focusDate, std::set<TM_Task>* tasks, int numDays, SkScalar hourHeight, TM_ViewSetting viewSetting) : TM_RenderObject(bounds, viewSetting)
+TM_CalendarWeekView::TM_CalendarWeekView(SkRect bounds, std::chrono::year_month_day* focusDate, std::multiset<TM_Task>* tasks, int numDays, SkScalar hourHeight, TM_ViewSetting viewSetting) : TM_RenderObject(bounds, viewSetting)
 {
 	this->hourHeight = hourHeight;
 	this->scrollY = 0;
@@ -20,6 +20,8 @@ void TM_CalendarWeekView::RenderTimes(TM_RenderInfo renderInfo)
 
 	SkScalar yOff = -this->scrollY, y = 0.0f;
     SkScalar dayWidth = (this->bounds.width()-xOff)/(SkScalar)numDays;
+
+	this->hourHeight = this->bounds.height()/12.0f;
     
 	for(int i=0;i<24;i++)
 	{
@@ -37,11 +39,12 @@ void TM_CalendarWeekView::RenderTimes(TM_RenderInfo renderInfo)
 		renderInfo.canvas->drawLine(xOff, y+yOff, this->bounds.width(), y+yOff, paint);
 		y += this->hourHeight;
 	}
+	renderInfo.canvas->drawLine(xOff, y+yOff, this->bounds.width(), y+yOff, paint);
 	this->srcBounds.setWH(this->srcBounds.width(), y);
     for(int i=1;i<numDays;i++)
     {
         SkScalar x = xOff + i*dayWidth;
-        renderInfo.canvas->drawLine(x, 0, x, this->bounds.height(),paint);
+        renderInfo.canvas->drawLine(x, 0, x, this->srcBounds.height(),paint);
     }
 }
 
@@ -149,11 +152,11 @@ void TM_CalendarWeekView::Render(TM_RenderInfo renderInfo)
     }
     else 
     {
-		SkRRect startDay = SkRRect::MakeRectXY(SkRect::MakeXYWH(startDayX, topY, dayWidth, this->bounds.height()-topY),r,r);
+		SkRRect startDay = SkRRect::MakeRectXY(SkRect::MakeXYWH(startDayX, topY, dayWidth, this->srcBounds.height()-topY),r,r);
         renderInfo.canvas->drawRRect(startDay, paint);
         SkRRect coverDays = SkRRect::MakeRectXY(SkRect::MakeXYWH(endDayX, 0, dayWidth, botY),r,r);
         renderInfo.canvas->drawRRect(coverDays, paint);
-        SkRRect endDay = SkRRect::MakeRectXY(SkRect::MakeXYWH(startDayX+dayWidth, 0, dayWidth*(endDayIdx-startDayIdx-1), this->bounds.height()),r,r);
+        SkRRect endDay = SkRRect::MakeRectXY(SkRect::MakeXYWH(startDayX+dayWidth, 0, dayWidth*(endDayIdx-startDayIdx-1), this->srcBounds.height()),r,r);
         renderInfo.canvas->drawRRect(endDay, paint);
     }
     
@@ -169,7 +172,7 @@ bool TM_CalendarWeekView::PollEvents(TM_EventInput eventInput)
         if(eventInput.scrollY!=0)
 		{
 			this->scrollY+=eventInput.scrollY;
-			SkScalar scrollLimitY = this->srcBounds.height()-this->bounds.height()+this->yOff;
+			SkScalar scrollLimitY = fmax(0,this->srcBounds.height()-this->bounds.height()+this->yOff);
 			this->scrollY = fmin(scrollLimitY, fmax(0, this->scrollY));
         }
 

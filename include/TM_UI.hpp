@@ -26,9 +26,15 @@ class TM_RenderObject
         void setSrcBounds(SkRect srcBounds);
         bool exists();
         void setExistence(bool existence);
+		void setRenderObjectExistence(int index, bool existence);
+		void addRenderObject(TM_RenderObject* renderObject);
+		TM_RenderObject* getRenderObject(int index);
+		int getNumExists();
     protected:
         SkRect bounds, srcBounds;
         TM_ViewSetting viewSetting;
+        std::vector<TM_RenderObject*> renderObjects;
+		int numExists=0;
         bool existence=true,select=false;
 };
 
@@ -62,14 +68,14 @@ class TM_TextView : public TM_RenderObject
 class TM_CalendarWeekView : public TM_RenderObject
 {
     public:
-        TM_CalendarWeekView(SkRect bounds, std::chrono::year_month_day* focusDate, std::set<TM_Task>* tasks, int numDays = 7, SkScalar hourHeight = 50.0, TM_ViewSetting viewSettings={colorScheme[1],colorScheme[3],colorScheme[3],1,24,0,0});
+        TM_CalendarWeekView(SkRect bounds, std::chrono::year_month_day* focusDate, std::multiset<TM_Task>* tasks, int numDays = 7, SkScalar hourHeight = 50.0, TM_ViewSetting viewSettings={colorScheme[1],colorScheme[3],colorScheme[3],1,24,0,0});
         void Render(TM_RenderInfo renderInfo) override;
         void RenderTimes(TM_RenderInfo renderInfo);
         bool PollEvents(TM_EventInput eventInput) override;
         void setDaySpan(int daySpan);
         int getDaySpan();
     private:
-        std::set<TM_Task>* tasks;
+        std::multiset<TM_Task>* tasks;
         std::vector<TM_TextView> dayLabels;
         int pressWeekIndexStart = -1, pressWeekIndexEnd = -1,pressDayIndexStart = -1, pressDayIndexEnd = -1;
         int scrollY=0.0f, pressIndexStart=-1, pressIndexEnd=-1,numDays=1;
@@ -137,22 +143,18 @@ class TM_View : public TM_RenderObject
         TM_View(SkRect bounds, std::vector<TM_RenderObject*> objects, TM_ViewSetting viewSetting={colorScheme[0],colorScheme[2],colorScheme[3],0,24,10,10});
         TM_View(SkRect bounds, std::vector<SkScalar> proportionTable, std::vector<TM_RenderObject*> objects, TM_ViewSetting viewSetting={colorScheme[0],colorScheme[2],colorScheme[3],0,24,10,10});
         void Render(TM_RenderInfo renderInfo) override;
-        void setRenderObjectExistence(int index, bool existence);
         bool PollEvents(TM_EventInput eventInput) override;
-		void addRenderObject(TM_RenderObject* renderObject);
-		int getNumExists();
+        
     protected:
-        std::vector<TM_RenderObject*> renderObjects;
 		std::vector<SkScalar> proportionTable;
-		bool fit =false;
-		int numExists=0;
+		bool fit = false;
         SkScalar yOffset=0.0f;
 };
 
 class TM_HorizontalView : public TM_View 
 {
 	public:
-        TM_HorizontalView(SkRect bounds, std::vector<TM_RenderObject*> objects, bool fit, TM_ViewSetting viewSetting={colorScheme[0],colorScheme[2],colorScheme[3],1,24,10,0});
+        TM_HorizontalView(SkRect bounds, std::vector<TM_RenderObject*> objects, TM_ViewSetting viewSetting={colorScheme[0],colorScheme[2],colorScheme[3],1,24,10,0});
         void Render(TM_RenderInfo renderInfo) override;
 	private:
 		bool fit;
