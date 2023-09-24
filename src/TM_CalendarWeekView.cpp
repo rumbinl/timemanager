@@ -99,7 +99,6 @@ void TM_CalendarWeekView::Render(TM_RenderInfo renderInfo)
     
     if(this->select) 
     { 
-		// Render selection
 		SkColor color = this->viewSetting.borderColor;
 		color = SkColorSetA(color, 100);
 		RenderTask(&newTask, color, renderInfo);
@@ -150,6 +149,20 @@ void TM_CalendarWeekView::RenderTask(TM_Task* task, SkColor color, TM_RenderInfo
 	paint.setColor(this->viewSetting.backgroundColor);
 }
 
+std::chrono::year_month_day TM_CalendarWeekView::getDateFromMouseX(TM_EventInput eventInput)
+{
+	int dayIdx = (int)floor((eventInput.mouseX-this->bounds.x()-this->xOff)/dayWidth);
+	return std::chrono::sys_days{*this->focusDate}+std::chrono::days{dayIdx};
+}
+
+TM_Time TM_CalendarWeekView::getTimeFromMouseY(TM_EventInput eventInput)
+{
+	SkScalar timeStep = this->hourHeight/4.0f;
+	SkScalar normY=fmax(0,eventInput.mouseY-this->bounds.y()-this->viewSetting.paddingY-this->yOff+this->scrollY);
+	int minuteCount = (int)round((normY)/timeStep)*15;
+	return {minuteCount/60,minuteCount%60};
+}
+
 bool TM_CalendarWeekView::PollEvents(TM_EventInput eventInput)
 {
     eventInput.mousePressed = eventInput.mousePressed || eventInput.mouseHeld;
@@ -163,28 +176,15 @@ bool TM_CalendarWeekView::PollEvents(TM_EventInput eventInput)
 
     if(contains && eventInput.mouseHeld)
     {
-		SkScalar timeStep = this->hourHeight/4.0f;
-
         if(!this->select)
 		{
-			int startDayIdx = (int)floor((eventInput.mouseX-this->bounds.x()-this->xOff)/dayWidth);
-			std::chrono::year_month_day startDate = std::chrono::sys_days{*this->focusDate}+std::chrono::days{startDayIdx};
-			this->newTask.setStartDate(startDate);
-
-			SkScalar firstY=fmax(0,eventInput.mouseY-this->bounds.y()-this->viewSetting.paddingY-this->yOff+this->scrollY);
-
-			int startMin = (int)round((firstY)/timeStep)*15;
-			this->newTask.setStartTime({startMin/60,startMin%60});
+			this->newTask.setStartDate(this->getDateFromMouseX(eventInput));
+			this->newTask.setStartTime(this->getTimeFromMouseY(eventInput));
 			this->select = true;
 		}
 
-		int endDayIdx = (int)floor((eventInput.mouseX-this->bounds.x()-this->xOff)/dayWidth);
-		std::chrono::year_month_day endDate = std::chrono::sys_days{*this->focusDate}+std::chrono::days{endDayIdx};
-		this->newTask.setEndDate(endDate);
-
-		SkScalar secondY=fmax(0,eventInput.mouseY-this->bounds.y()-this->viewSetting.paddingY-this->yOff+this->scrollY);
-		int endMin = (int)round((secondY)/timeStep)*15;
-		this->newTask.setEndTime({endMin/60,endMin%60});
+		this->newTask.setEndDate(this->getDateFromMouseX(eventInput));
+		this->newTask.setEndTime(this->getTimeFromMouseY(eventInput));
     }
 
     if(this->select && !eventInput.mouseHeld)

@@ -74,6 +74,8 @@ class TM_CalendarWeekView : public TM_RenderObject
         void RenderTask(TM_Task* task, SkColor color, TM_RenderInfo renderInfo);
         bool PollEvents(TM_EventInput eventInput) override;
         void setDaySpan(int daySpan);
+        std::chrono::year_month_day getDateFromMouseX(TM_EventInput eventInput);
+        TM_Time getTimeFromMouseY(TM_EventInput eventInput);
         int getDaySpan();
     private:
         std::multiset<TM_Task*, TM_TaskPtrCompare>* tasks;
