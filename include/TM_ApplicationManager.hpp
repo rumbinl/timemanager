@@ -42,6 +42,6 @@ class TM_ApplicationManager
         // Runtime attributes
 		bool should_render_update=true, should_terminate=false, pressed=false;
 		std::map<std::chrono::year_month_day,int> freeTimeMap;
-		std::multiset<TM_Task> tasks;
+		std::multiset<TM_Task*, TM_TaskPtrCompare> tasks;
         SkColor skia_canvas_clear_color;
 };

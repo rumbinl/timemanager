@@ -7,7 +7,7 @@
 class TM_TaskView : public TM_View
 {
     public:
-        TM_TaskView(SkRect bounds, std::multiset<TM_Task>* tasksPtr,std::map<std::chrono::year_month_day,int>* calendarPtr);
+        TM_TaskView(SkRect bounds, std::multiset<TM_Task*, TM_TaskPtrCompare>* tasksPtr,std::map<std::chrono::year_month_day,int>* calendarPtr);
         void setTask(TM_Task* task);
         void setDate(std::chrono::year_month_day date);
         std::chrono::year_month_day getDate();
@@ -21,6 +21,6 @@ class TM_TaskView : public TM_View
         TM_Button<TM_TaskView>* addSubtaskButton,*scheduleTaskButton,*deleteTaskButton;
         TM_CalendarMonthView<TM_TaskView>* monthView;
         std::chrono::year_month_day date;
-        std::multiset<TM_Task>* tasksPtr;
+        std::multiset<TM_Task*,TM_TaskPtrCompare>* tasksPtr;
         std::map<std::chrono::year_month_day,int>* calendarPtr;
 };

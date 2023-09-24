@@ -68,18 +68,20 @@ class TM_TextView : public TM_RenderObject
 class TM_CalendarWeekView : public TM_RenderObject
 {
     public:
-        TM_CalendarWeekView(SkRect bounds, std::chrono::year_month_day* focusDate, std::multiset<TM_Task>* tasks, int numDays = 7, SkScalar hourHeight = 50.0, TM_ViewSetting viewSettings={colorScheme[1],colorScheme[3],colorScheme[3],1,24,0,0});
+        TM_CalendarWeekView(SkRect bounds, std::chrono::year_month_day* focusDate, std::multiset<TM_Task*, TM_TaskPtrCompare>* tasksPtr, int numDays = 7, SkScalar hourHeight = 50.0, TM_ViewSetting viewSettings={colorScheme[1],colorScheme[2],colorScheme[3],1,24,0,0});
         void Render(TM_RenderInfo renderInfo) override;
         void RenderTimes(TM_RenderInfo renderInfo);
+        void RenderTask(TM_Task* task, SkColor color, TM_RenderInfo renderInfo);
         bool PollEvents(TM_EventInput eventInput) override;
         void setDaySpan(int daySpan);
         int getDaySpan();
     private:
-        std::multiset<TM_Task>* tasks;
+        std::multiset<TM_Task*, TM_TaskPtrCompare>* tasks;
+        TM_Task newTask = TM_Task("", {},{},{0,0},{0,0});
         std::vector<TM_TextView> dayLabels;
         int pressWeekIndexStart = -1, pressWeekIndexEnd = -1,pressDayIndexStart = -1, pressDayIndexEnd = -1;
         int scrollY=0.0f, pressIndexStart=-1, pressIndexEnd=-1,numDays=1;
-        SkScalar hourHeight,yOff,xOff=0.0f;
+        SkScalar hourHeight,labelHeight,dayWidth,yOff,xOff=0.0f;
         std::chrono::year_month_day* focusDate;
 };
 

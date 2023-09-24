@@ -3,9 +3,9 @@
 #include <chrono>
 #include <iostream>
 
-typedef struct { unsigned h, m; } TM_Time;
+struct TM_Time { int hours, minutes; bool operator<(const TM_Time& b) const { return hours<b.hours || (hours==b.hours&&minutes<b.minutes); } };
 
-std::chrono::year_month_day TM_YMD(int d, int m, int y);
+int TM_TimeMinutes(TM_Time time);
 
 int weekDayFromDate(std::chrono::year_month_day ymd);
 

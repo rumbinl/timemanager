@@ -1,9 +1,8 @@
 #include <TM_DateTime.hpp>
 
-std::chrono::year_month_day TM_YMD(int d, int m, int y)
+int TM_TimeMinutes(TM_Time time)
 {
-    std::chrono::year_month_day ymd{std::chrono::year(y),std::chrono::month(m),std::chrono::day(d)};
-    return ymd;
+    return time.hours * 60 + time.minutes;
 }
 
 int weekDayFromDate(std::chrono::year_month_day ymd)

@@ -1,6 +1,6 @@
 #include <TM_CalendarView.hpp>
 
-TM_CalendarView::TM_CalendarView(SkRect bounds, std::multiset<TM_Task>* tasks) : TM_View(bounds, {0.05,0.95},{}, {colorScheme[0],colorScheme[3],colorScheme[3],0,24,0,10})
+TM_CalendarView::TM_CalendarView(SkRect bounds, std::multiset<TM_Task*, TM_TaskPtrCompare>* tasks) : TM_View(bounds, {0.05,0.95},{}, {colorScheme[0],colorScheme[3],colorScheme[3],0,24,0,10})
 {
     this->tasks = tasks;
     this->currentDate = getCurrentDate();

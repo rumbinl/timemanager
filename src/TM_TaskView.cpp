@@ -1,6 +1,6 @@
 #include <TM_TaskView.hpp>
 
-TM_TaskView::TM_TaskView(SkRect bounds, std::multiset<TM_Task>* tasksPtr, std::map<std::chrono::year_month_day,int>* calendarPtr) : TM_View(bounds, {},{colorScheme[0],colorScheme[3],colorScheme[3],0,24,0,10})
+TM_TaskView::TM_TaskView(SkRect bounds, std::multiset<TM_Task*,TM_TaskPtrCompare>* tasksPtr, std::map<std::chrono::year_month_day,int>* calendarPtr) : TM_View(bounds, {},{colorScheme[0],colorScheme[3],colorScheme[3],0,24,0,10})
 {
     this->tasksPtr = tasksPtr;
     this->textBox = new TM_TextBox(SkRect::MakeWH(0,48),"New Task", {colorScheme[1],colorScheme[2],colorScheme[3],1,48,5});
@@ -12,7 +12,7 @@ TM_TaskView::TM_TaskView(SkRect bounds, std::multiset<TM_Task>* tasksPtr, std::m
     },this);
 
     this->scheduleTaskButton = new TM_Button<TM_TaskView>("Schedule", SkRect::MakeWH(0,50), [](TM_TaskView* context) {
-        context->tasksPtr->insert(TM_Task(context->getText(), context->getDate(), context->getCalendarPtr()));
+        // TODO: Add Task
 	}, this);
 
     this->deleteTaskButton = new TM_Button<TM_TaskView>("Delete this task", SkRect::MakeWH(0,50), [](TM_TaskView* context) {
