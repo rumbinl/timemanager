@@ -4,6 +4,7 @@
 #include <TM_View.hpp>
 #include <TM_CalendarWeekView.hpp>
 #include <TM_CalendarMonthView.hpp>
+#include <TM_Button.hpp>
 #include <TM_Task.hpp>
 
 class TM_CalendarView : public TM_View
