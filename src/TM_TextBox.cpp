@@ -1,5 +1,4 @@
-#include <TM_Core.hpp>
-#include <TM_UI.hpp>
+#include <TM_TextBox.hpp>
 
 TM_TextBox::TM_TextBox(SkRect bounds, std::string placeholder="", TM_ViewSetting viewSetting) : TM_TextView(placeholder, bounds, viewSetting, false)
 {

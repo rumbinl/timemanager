@@ -1,6 +1,8 @@
 #pragma once
 
-#include <TM_UI.hpp>
+#include <TM_View.hpp>
+#include <TM_TextBox.hpp>
+#include <TM_Button.hpp>
 #include <TM_CalendarMonthView.hpp>
 #include <TM_Task.hpp>
 

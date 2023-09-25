@@ -8,3 +8,5 @@ timeman
 *.dll
 src/gl3w.c
 *.swp
+*.o
+build

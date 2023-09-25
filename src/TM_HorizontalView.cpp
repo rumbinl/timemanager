@@ -1,4 +1,4 @@
-#include <TM_UI.hpp>
+#include <TM_HorizontalView.hpp>
 
 TM_HorizontalView::TM_HorizontalView(SkRect bounds, std::vector<TM_RenderObject*> objects, TM_ViewSetting viewSetting) : TM_View(bounds, objects, viewSetting)
 {

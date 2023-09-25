@@ -1,6 +1,8 @@
 #pragma once
 
-#include <TM_UI.hpp>
+#include <TM_Core.hpp>
+#include <TM_RenderObject.hpp>
+#include <TM_TextView.hpp>
 
 template<class T> class TM_CalendarMonthView : public TM_RenderObject
 {
