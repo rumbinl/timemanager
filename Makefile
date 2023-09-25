@@ -7,8 +7,10 @@ RUN=timeman
 CFLAGS = $(LIB) $(VERSION) $(HEADERS)
 OBJECTS = gl3w.o TM_ApplicationManager.o TM_CalendarView.o TM_CalendarWeekView.o TM_DateTime.o TM_HorizontalView.o TM_RenderObject.o TM_Task.o TM_TaskManager.o TM_TaskView.o TM_TextBox.o TM_TextView.o TM_View.o TM_Window.o
 
-build:
+link:
 	$(CXX) $(VERSION) $(LIB) $(HEADERS) src/main.cpp $(OBJECTS) -o $(RUN)
+
+all: $(OBJECTS) link
 
 TM_ApplicationManager.o : TM_Window.o TM_CalendarView.o TM_TaskView.o
 	$(CXX) $(CFLAGS) src/TM_ApplicationManager.cpp TM_Window.o TM_CalendarView.o TM_TaskView.o -c
