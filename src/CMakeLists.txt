@@ -1,0 +1,26 @@
+add_library(SDL3 STATIC IMPORTED) 
+set_property(TARGET SDL3 PROPERTY IMPORTED_LOCATION /usr/local/lib/libSDL3.dylib)
+add_library(skia STATIC IMPORTED)
+set_property(TARGET skia PROPERTY IMPORTED_LOCATION /usr/local/lib/libskia.a)
+find_library(COCOA_LIBRARY Cocoa)
+
+target_link_libraries(Timeman skia SDL3 ${COCOA_LIBRARY})
+
+file(GLOB cpp_files "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp")
+foreach(file ${cpp_files})
+    get_filename_component(libName ${file} NAME_WE)
+    message("${file} ${libName}")
+    list(APPEND ObjectList ${libName})
+    add_library(${libName} STATIC ${file})
+endforeach()
+
+file(GLOB c_files "${CMAKE_CURRENT_SOURCE_DIR}/*.c")
+foreach(file ${c_files})
+    get_filename_component(libName ${file} NAME_WE)
+    list(APPEND ObjectList ${libName})
+    add_library(${libName} STATIC ${file})
+endforeach()
+
+list(GET ObjectList 0 ObjectListItem)
+message("${ObjectListItem}")
+target_link_libraries(Timeman ${ObjectList})
