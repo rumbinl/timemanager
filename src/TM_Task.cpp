@@ -5,7 +5,7 @@ TM_Task::TM_Task(TM_Task& copyTask)
     *this = copyTask;
 }
 
-TM_Task::TM_Task(std::string name, std::chrono::year_month_day startDate, std::chrono::year_month_day endDate, TM_Time startTime,  TM_Time endTime)
+TM_Task::TM_Task(std::string name, std::chrono::year_month_day startDate, std::chrono::year_month_day endDate, TM_Time startTime, TM_Time endTime)
 {
     this->name = name;
     this->startDate = startDate;
@@ -54,11 +54,16 @@ TM_Time TM_Task::getEndTime  () { return this->startDate == this->endDate ? std:
 void TM_Task::setName(std::string name) { this->name = name; }
 std::string TM_Task::getName() { return this->name; }
 
+std::multiset<TM_Task*,TM_Task::TM_TaskPtrCompare>& TM_Task::getSubtaskList()
+{
+    return this->subtasks;
+}
+
 void TM_Task::scheduleSubtasks(std::chrono::year_month_day currentDay)
 {
-    if(this->sub_tasks.empty())
+    if(this->subtasks.empty())
         return;
-    for(TM_Task* subtask : this->sub_tasks)
+    for(TM_Task* subtask : this->subtasks)
     {
     }
 }

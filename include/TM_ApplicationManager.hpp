@@ -32,7 +32,7 @@ class TM_ApplicationManager
 		TM_TaskView* taskView;*/
 
         // Pointers to Timeman classes
-		TM_Graphics_Window window_ptr;
+		TM_Graphics_Window window_ptr =TM_Graphics_Window("Timeman", 960, 540);
 
         // External API object pointers
 		SDL_Event SDL_event_ptr;
@@ -42,6 +42,6 @@ class TM_ApplicationManager
         // Runtime attributes
 		bool should_render_update=true, should_terminate=false, pressed=false;
 		std::map<std::chrono::year_month_day,int> freeTimeMap;
-		std::multiset<TM_Task*, TM_TaskPtrCompare> tasks;
+		TM_TaskManager* taskManPtr;
         SkColor skia_canvas_clear_color;
 };

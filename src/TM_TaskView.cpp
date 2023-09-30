@@ -1,8 +1,8 @@
 #include <TM_TaskView.hpp>
 
-TM_TaskView::TM_TaskView(SkRect bounds, std::multiset<TM_Task*,TM_TaskPtrCompare>* tasksPtr, std::map<std::chrono::year_month_day,int>* calendarPtr) : TM_View(bounds, {},{colorScheme[0],colorScheme[3],colorScheme[3],0,24,0,10})
+TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr, std::map<std::chrono::year_month_day,int>* calendarPtr) : TM_View(bounds, {},{colorScheme[0],colorScheme[3],colorScheme[3],0,24,0,10})
 {
-    this->tasksPtr = tasksPtr;
+    this->taskManPtr = taskManPtr;
     this->textBox = new TM_TextBox(SkRect::MakeWH(0,48),"New Task", {colorScheme[1],colorScheme[2],colorScheme[3],1,48,5});
     this->taskList = new TM_View(SkRect::MakeWH(0,200), {});
     this->calendarPtr = calendarPtr;

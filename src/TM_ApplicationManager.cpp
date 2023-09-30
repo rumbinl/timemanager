@@ -1,6 +1,6 @@
 #include <TM_ApplicationManager.hpp>
 
-TM_ApplicationManager::TM_ApplicationManager() : window_ptr("Timeman", 960, 540)
+TM_ApplicationManager::TM_ApplicationManager()
 {
 	if(!this->window_ptr.Was_init_success())
 	{
@@ -18,6 +18,8 @@ TM_ApplicationManager::TM_ApplicationManager() : window_ptr("Timeman", 960, 540)
 	this->should_render_update = true;
 	this->skia_canvas_clear_color = colorScheme[BACKGROUND_COLOR_INDEX];
 
+	this->taskManPtr = new TM_TaskManager({});
+
 	this->mainView = new TM_View(SkRect::MakeXYWH(0,0,this->window_ptr.getWindowWidth(),this->window_ptr.getWindowHeight()), {0.05,0.95}, {
 		new TM_HorizontalView(SkRect::MakeEmpty(), {
 				new TM_Button<TM_View>("Create Task", SkRect::MakeEmpty(), [](TM_View* context) {}, this->mainView),
@@ -25,8 +27,8 @@ TM_ApplicationManager::TM_ApplicationManager() : window_ptr("Timeman", 960, 540)
 			},
 			{}),
 		new TM_HorizontalView(SkRect::MakeEmpty(), {
-				new TM_CalendarView(SkRect::MakeXYWH(0, 0, 840, 840), &this->tasks),
-				new TM_TaskView(SkRect::MakeXYWH(0,0,840,840), &this->tasks, &this->freeTimeMap)
+				new TM_CalendarView(SkRect::MakeXYWH(0, 0, 840, 840), this->taskManPtr),
+				new TM_TaskView(SkRect::MakeXYWH(0,0,840,840), this->taskManPtr, &this->freeTimeMap)
 			})
 	});
 }

@@ -6,16 +6,17 @@
 #include <TM_CalendarMonthView.hpp>
 #include <TM_Button.hpp>
 #include <TM_Task.hpp>
+#include <TM_TaskManager.hpp>
 
 class TM_CalendarView : public TM_View
 {
     public:
-        TM_CalendarView(SkRect bounds, std::multiset<TM_Task*, TM_TaskPtrCompare>* tasks);
+        TM_CalendarView(SkRect bounds, TM_TaskManager* taskManPtr);
     private:
         TM_CalendarMonthView<TM_CalendarView>* monthView;
         TM_CalendarWeekView* weekView;
 		TM_HorizontalView* buttonBar;
 		TM_View* vitalView;
         std::chrono::year_month_day currentDate;
-        std::multiset<TM_Task*, TM_TaskPtrCompare>* tasks;
+        TM_TaskManager* taskManPtr;
 };

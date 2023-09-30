@@ -1,10 +1,10 @@
 #include <TM_CalendarView.hpp>
 
-TM_CalendarView::TM_CalendarView(SkRect bounds, std::multiset<TM_Task*, TM_TaskPtrCompare>* tasks) : TM_View(bounds, {0.05,0.95},{}, {colorScheme[0],colorScheme[3],colorScheme[3],0,24,0,10})
+TM_CalendarView::TM_CalendarView(SkRect bounds, TM_TaskManager* taskManPtr) : TM_View(bounds, {0.05,0.95},{}, {colorScheme[0],colorScheme[3],colorScheme[3],0,24,0,10})
 {
-    this->tasks = tasks;
+    this->taskManPtr = taskManPtr;
     this->currentDate = getCurrentDate();
-    this->weekView = new TM_CalendarWeekView(SkRect::MakeXYWH(0, 0, 0, 480), &this->currentDate, tasks);
+    this->weekView = new TM_CalendarWeekView(SkRect::MakeXYWH(0, 0, 0, 480), &this->currentDate, taskManPtr);
     this->monthView = new TM_CalendarMonthView<TM_CalendarView>(SkRect::MakeXYWH(0, 0, 0, 480), [](TM_CalendarView* context, std::chrono::year_month_day date)
     {
         context->currentDate = date;

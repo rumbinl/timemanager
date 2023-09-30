@@ -1,12 +1,12 @@
 #include <TM_CalendarWeekView.hpp>
 
-TM_CalendarWeekView::TM_CalendarWeekView(SkRect bounds, std::chrono::year_month_day* focusDate, std::multiset<TM_Task*, TM_TaskPtrCompare>* tasksPtr, int numDays, SkScalar hourHeight, TM_ViewSetting viewSetting) : TM_RenderObject(bounds, viewSetting)
+TM_CalendarWeekView::TM_CalendarWeekView(SkRect bounds, std::chrono::year_month_day* focusDate, TM_TaskManager* taskManPtr, int numDays, SkScalar hourHeight, TM_ViewSetting viewSetting) : TM_RenderObject(bounds, viewSetting)
 {
 	this->hourHeight = hourHeight;
 	this->scrollY = 0;
     this->numDays = numDays;
     this->focusDate = focusDate;
-    this->tasks = tasksPtr;
+    this->taskManPtr = taskManPtr;
 }
 
 void TM_CalendarWeekView::RenderTimes(TM_RenderInfo renderInfo)
@@ -91,7 +91,7 @@ void TM_CalendarWeekView::Render(TM_RenderInfo renderInfo)
 	renderInfo.textFont->getMetrics(&fontMetrics);
 
 	std::chrono::year_month_day currentDate;
-	for(TM_Task* task : *this->tasks) 
+	for(TM_Task* task : this->taskManPtr->getTaskList()) 
 	{
 		if(task->getStartDate()>=*this->focusDate && task->getStartDate() < std::chrono::sys_days{*this->focusDate} + std::chrono::days{this->numDays})
 			this->RenderTask(task, this->viewSetting.borderColor, renderInfo);
@@ -163,35 +163,87 @@ TM_Time TM_CalendarWeekView::getTimeFromMouseY(TM_EventInput eventInput)
 	return {minuteCount/60,minuteCount%60};
 }
 
+bool TM_CalendarWeekView::PollTask(TM_Task* task, TM_EventInput eventInput)
+{
+	eventInput.mouseX -= this->bounds.x();
+	eventInput.mouseY -= this->bounds.y() + this->yOff;
+
+	int startIndex = (std::chrono::sys_days{task->getStartDate()}-std::chrono::sys_days{*this->focusDate}).count(),
+		endIndex   = (std::chrono::sys_days{task->getEndDate  ()}-std::chrono::sys_days{*this->focusDate}).count();
+
+	SkScalar yOff = -this->scrollY+this->viewSetting.paddingY;
+	SkScalar startDayX = this->xOff + dayWidth*startIndex,
+			 startDayY = yOff + this->hourHeight*((SkScalar)TM_TimeMinutes(task->getStartTime())/60.0f),
+			 endDayX = this->xOff + dayWidth*endIndex,
+			 endDayY = yOff + this->hourHeight*((SkScalar)TM_TimeMinutes(task->getEndTime())/60.0f);
+	
+    if(task->getStartDate() == task->getEndDate())
+    {
+		SkScalar minutes = TM_TimeMinutes(task->getEndTime()) - TM_TimeMinutes(task->getStartTime());
+		SkRect rect = SkRect::MakeXYWH(startDayX, startDayY, dayWidth, this->hourHeight*(minutes/60.0f));
+		return rect.contains(eventInput.mouseX, eventInput.mouseY);
+    }
+    else 
+    {
+		SkRect startDay = SkRect::MakeXYWH(startDayX, startDayY, dayWidth, this->srcBounds.height()-startDayY);
+
+        SkRect coverDays = SkRect::MakeXYWH(startDayX+dayWidth, 0, endDayX-startDayX-dayWidth, this->srcBounds.height());
+
+        SkRect endDay = SkRect::MakeXYWH(endDayX, 0, dayWidth, endDayY);
+		return startDay.contains(eventInput.mouseX, eventInput.mouseY) || 
+			   coverDays.contains(eventInput.mouseX, eventInput.mouseY) || 
+			   endDay.contains(eventInput.mouseX, eventInput.mouseY);
+    }
+	return false;
+}
+
 bool TM_CalendarWeekView::PollEvents(TM_EventInput eventInput)
 {
-    eventInput.mousePressed = eventInput.mousePressed || eventInput.mouseHeld;
 	bool contains = this->bounds.contains(eventInput.mouseX,eventInput.mouseY), shouldUpdate = false;
-	if(contains && eventInput.scrollY!=0)
+	if(contains) 
 	{
-		this->scrollY+=eventInput.scrollY;
-		SkScalar scrollLimitY = fmax(0,this->srcBounds.height()-this->bounds.height()+this->yOff);
-		this->scrollY = fmin(scrollLimitY, fmax(0, this->scrollY));
-	}
-
-    if(contains && eventInput.mouseHeld)
-    {
-        if(!this->select)
+		if(eventInput.scrollY!=0)
 		{
-			this->newTask.setStartDate(this->getDateFromMouseX(eventInput));
-			this->newTask.setStartTime(this->getTimeFromMouseY(eventInput));
-			this->select = true;
+			this->scrollY+=eventInput.scrollY;
+			SkScalar scrollLimitY = fmax(0,this->srcBounds.height()-this->bounds.height()+this->yOff);
+			this->scrollY = fmin(scrollLimitY, fmax(0, this->scrollY));
 		}
 
-		this->newTask.setEndDate(this->getDateFromMouseX(eventInput));
-		this->newTask.setEndTime(this->getTimeFromMouseY(eventInput));
-    }
+		if(eventInput.mouseHeld)
+		{
+			if(!this->select)
+			{
+				this->newTask.setStartDate(this->getDateFromMouseX(eventInput));
+				this->newTask.setStartTime(this->getTimeFromMouseY(eventInput));
+				this->select = true;
+			}
+
+			this->newTask.setEndDate(this->getDateFromMouseX(eventInput));
+			this->newTask.setEndTime(this->getTimeFromMouseY(eventInput));
+		}
+
+		if(eventInput.mousePressed)
+		{
+			std::multiset<TM_Task*,TM_Task::TM_TaskPtrCompare>::iterator taskIt = this->taskManPtr->getTaskList().begin(); 
+			while(taskIt!=this->taskManPtr->getTaskList().end())
+			{
+				if((*taskIt)->getStartDate()>=*this->focusDate && (*taskIt)->getStartDate() < std::chrono::sys_days{*this->focusDate} + std::chrono::days{this->numDays})
+					if(this->PollTask(*taskIt, eventInput))
+					{
+						this->taskManPtr->setCurrentTask(taskIt);
+						this->select = false;
+						break;
+					}
+				taskIt++;
+			}
+		}
+	}
 
     if(this->select && !eventInput.mouseHeld)
 	{
 		TM_Task* task = new TM_Task(this->newTask);
 		task->setName("New Task");
-		this->tasks->insert(task);
+		this->taskManPtr->addTask(task);
 		this->select = false;
 	}
 	return contains;
