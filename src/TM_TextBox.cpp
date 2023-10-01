@@ -128,4 +128,5 @@ SkScalar TM_TextBox::getCharWidth(char a, SkFont* font)
 void TM_TextBox::setSrcString(std::string* srcString)
 {
 	this->srcString = srcString;
+	this->cursorIndex = min(this->cursorIndex,this->srcString->size());
 }
