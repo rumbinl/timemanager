@@ -23,6 +23,13 @@ TM_Task* TM_TaskManager::getCurrentTask()
     return *this->currentTask;
 }
 
+void TM_TaskManager::deleteCurrentTask()
+{
+    if(this->currentTask!=this->sortedTasks.end())
+        this->sortedTasks.erase(this->currentTask);
+    this->currentTask = this->sortedTasks.end();
+}
+
 void TM_TaskManager::setCurrentTask(std::multiset<TM_Task*,TM_Task::TM_TaskPtrCompare>::iterator currentTask)
 {
     this->currentTask = currentTask;

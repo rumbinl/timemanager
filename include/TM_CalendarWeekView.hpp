@@ -21,6 +21,7 @@ class TM_CalendarWeekView : public TM_RenderObject
         std::chrono::year_month_day getDateFromMouseX(TM_EventInput eventInput);
         TM_Time getTimeFromMouseY(TM_EventInput eventInput);
         int getDaySpan();
+        std::chrono::year_month_day* getCurrentDatePtr();
     private:
         TM_TaskManager* taskManPtr;
         TM_Task newTask = TM_Task("", {},{},{0,0},{0,0});

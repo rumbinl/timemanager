@@ -13,6 +13,7 @@ class TM_TaskManager
         void addTask(TM_Task* task);
         void scheduleTask(TM_Task* task, std::chrono::year_month_day start, std::chrono::year_month_day end);
         TM_Task* getCurrentTask();
+        void deleteCurrentTask();
 		std::multiset<TM_Task*,TM_Task::TM_TaskPtrCompare>& getTaskList();
         void setCurrentTask(std::multiset<TM_Task*,TM_Task::TM_TaskPtrCompare>::iterator currentTask);
 	private:

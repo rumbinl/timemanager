@@ -19,6 +19,7 @@ class TM_TaskView : public TM_View
 		std::string getText();
         std::map<std::chrono::year_month_day,int>* getCalendarPtr();
         TM_Task* getTask();
+        TM_TaskManager* getTaskManPtr();
     private:
         TM_Task* currentTask=NULL; 
         TM_TextBox* textBox;

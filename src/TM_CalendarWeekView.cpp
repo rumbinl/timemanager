@@ -258,3 +258,8 @@ int TM_CalendarWeekView::getDaySpan()
 {
     return this->numDays;
 }
+
+std::chrono::year_month_day* TM_CalendarWeekView::getCurrentDatePtr()
+{
+	return this->focusDate;
+}

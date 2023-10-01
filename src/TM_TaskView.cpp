@@ -16,6 +16,7 @@ TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr, std::map<std
 	}, this);
 
     this->deleteTaskButton = new TM_Button<TM_TaskView>("Delete this task", SkRect::MakeWH(0,50), [](TM_TaskView* context) {
+        context->getTaskManPtr()->deleteCurrentTask();
     },this);
 
     this->monthView = new TM_CalendarMonthView(SkRect::MakeWH(0,480), &this->date);
@@ -75,4 +76,9 @@ bool TM_TaskView::PollEvents(TM_EventInput eventInput)
 TM_Task* TM_TaskView::getTask()
 {
     return this->taskManPtr->getCurrentTask();
+}
+
+TM_TaskManager* TM_TaskView::getTaskManPtr()
+{
+    return this->taskManPtr;
 }

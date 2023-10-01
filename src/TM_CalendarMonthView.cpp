@@ -8,7 +8,6 @@ TM_CalendarMonthView::TM_CalendarMonthView(SkRect bounds, std::chrono::year_mont
 
     std::chrono::year_month_day today = getCurrentDate();
     this->setMonth({today.year(),today.month()});
-    this->datePlaceholder = today;
 
     this->weekList = std::vector(7, TM_TextView("XX", SkRect::MakeWH(this->bounds.width()/7.0f, 0.0f)));
 }
