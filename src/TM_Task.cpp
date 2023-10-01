@@ -54,6 +54,9 @@ TM_Time TM_Task::getEndTime  () { return this->startDate == this->endDate ? std:
 void TM_Task::setName(std::string name) { this->name = name; }
 std::string TM_Task::getName() { return this->name; }
 
+std::string* TM_Task::getNamePtr() { return &this->name; }
+std::chrono::year_month_day* TM_Task::getStartDatePtr() { return &this->startDate; }
+
 std::multiset<TM_Task*,TM_Task::TM_TaskPtrCompare>& TM_Task::getSubtaskList()
 {
     return this->subtasks;

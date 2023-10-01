@@ -13,6 +13,8 @@ class TM_TaskView : public TM_View
         TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr,std::map<std::chrono::year_month_day,int>* calendarPtr);
         void setTask(TM_Task* task);
         void setDate(std::chrono::year_month_day date);
+        void Render(TM_RenderInfo renderInfo) override;
+        bool PollEvents(TM_EventInput eventInput) override;
         std::chrono::year_month_day getDate();
 		std::string getText();
         std::map<std::chrono::year_month_day,int>* getCalendarPtr();
@@ -22,7 +24,7 @@ class TM_TaskView : public TM_View
         TM_TextBox* textBox;
         TM_View* taskList;
         TM_Button<TM_TaskView>* addSubtaskButton,*scheduleTaskButton,*deleteTaskButton;
-        TM_CalendarMonthView<TM_TaskView>* monthView;
+        TM_CalendarMonthView* monthView;
         std::chrono::year_month_day date;
         TM_TaskManager* taskManPtr;
         std::map<std::chrono::year_month_day,int>* calendarPtr;

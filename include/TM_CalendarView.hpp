@@ -13,7 +13,7 @@ class TM_CalendarView : public TM_View
     public:
         TM_CalendarView(SkRect bounds, TM_TaskManager* taskManPtr);
     private:
-        TM_CalendarMonthView<TM_CalendarView>* monthView;
+        TM_CalendarMonthView* monthView;
         TM_CalendarWeekView* weekView;
 		TM_HorizontalView* buttonBar;
 		TM_View* vitalView;

@@ -8,8 +8,6 @@
 
 #include <TM_DateTime.hpp>
 
-
-
 class TM_Task 
 {
     public:
@@ -17,9 +15,12 @@ class TM_Task
         TM_Task(std::string name, std::chrono::year_month_day startDate, std::chrono::year_month_day endDate, TM_Time startTime,  TM_Time endTime);
         TM_Task(std::string name, std::chrono::year_month_day startDate, std::chrono::year_month_day deadline, TM_Time startTime, TM_Time endTime, TM_Time duration, std::map<std::chrono::year_month_day,int>* calendarPtr);
         void addSubtask(std::string name, TM_Time duration);
+        std::string* getNamePtr();
 
         void setStartDate(std::chrono::year_month_day startDate);
         void setEndDate(std::chrono::year_month_day endDate);
+
+        std::chrono::year_month_day* getStartDatePtr();
 
         std::chrono::year_month_day getStartDate();
         std::chrono::year_month_day getEndDate();

@@ -242,7 +242,7 @@ bool TM_CalendarWeekView::PollEvents(TM_EventInput eventInput)
     if(this->select && !eventInput.mouseHeld)
 	{
 		TM_Task* task = new TM_Task(this->newTask);
-		task->setName("New Task");
+		task->setName("New Event");
 		this->taskManPtr->addTask(task);
 		this->select = false;
 	}

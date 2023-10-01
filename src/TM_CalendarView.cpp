@@ -5,10 +5,7 @@ TM_CalendarView::TM_CalendarView(SkRect bounds, TM_TaskManager* taskManPtr) : TM
     this->taskManPtr = taskManPtr;
     this->currentDate = getCurrentDate();
     this->weekView = new TM_CalendarWeekView(SkRect::MakeXYWH(0, 0, 0, 480), &this->currentDate, taskManPtr);
-    this->monthView = new TM_CalendarMonthView<TM_CalendarView>(SkRect::MakeXYWH(0, 0, 0, 480), [](TM_CalendarView* context, std::chrono::year_month_day date)
-    {
-        context->currentDate = date;
-    },this);
+    this->monthView = new TM_CalendarMonthView(SkRect::MakeXYWH(0, 0, 0, 480));
    	this->buttonBar = new TM_HorizontalView(SkRect::MakeXYWH(0,0,0,40),{
 
 			new TM_Button<TM_CalendarView>("Show Month", SkRect::MakeXYWH(0,0,0,40), 

@@ -1,26 +1,29 @@
 #include <TM_TextBox.hpp>
 
-TM_TextBox::TM_TextBox(SkRect bounds, std::string placeholder="", TM_ViewSetting viewSetting) : TM_TextView(placeholder, bounds, viewSetting, false)
+TM_TextBox::TM_TextBox(SkRect bounds, std::string placeholder="", std::string* srcString, TM_ViewSetting viewSetting) : TM_TextView(placeholder, bounds, viewSetting, false)
 {
     this->placeholder = placeholder;
+	this->srcString = srcString;
 }
 
 void TM_TextBox::Render(TM_RenderInfo renderInfo)
 {
+	if(this->srcString == NULL)
+		this->srcString = &this->content;
 	SkFont* font = renderInfo.textFont;
     if(!this->fitted)
     {
         TM_TextView::setHeightFont(font);
         this->fitted = true;
     }
-    if(this->content == "")
+    if(this->srcString->empty())
 	{
 		TM_TextView::setText(this->placeholder);
         TM_TextView::setColorOpacity(150);
 	}
     else
 	{
-		TM_TextView::setText(this->content);
+		TM_TextView::setText(*this->srcString);
         TM_TextView::setColorOpacity(255);
 	}
 	SkFontMetrics fontMetrics;
@@ -35,7 +38,7 @@ void TM_TextBox::Render(TM_RenderInfo renderInfo)
 		paint.setStrokeWidth(2);
 		paint.setStyle(SkPaint::kStrokeAndFill_Style);
 		SkRect textBounds;
-		font->measureText(this->content.substr(0,this->cursorIndex).c_str(), this->cursorIndex*sizeof(char), SkTextEncoding::kUTF8, &textBounds);
+		font->measureText(this->srcString->substr(0,this->cursorIndex).c_str(), this->cursorIndex*sizeof(char), SkTextEncoding::kUTF8, &textBounds);
 		this->cursorX = textBounds.width()-TM_TextView::getTextXOffset();
 		renderInfo.canvas->drawLine(this->bounds.x()+this->cursorX, this->bounds.y(), this->bounds.x()+this->cursorX, this->bounds.y()+this->viewSetting.fontSize-fontMetrics.fDescent, paint);
 	}
@@ -49,14 +52,14 @@ void TM_TextBox::locatePosition(SkScalar mouseX, std::string text, SkFont* font)
 	while(h-l>1)
 	{
 		int mid = (l+h)/2;
-		font->measureText(text.c_str(), (mid)*sizeof(char), SkTextEncoding::kUTF8, &textBounds);
+		font->measureText(text.c_str(), mid*sizeof(char), SkTextEncoding::kUTF8, &textBounds);
 		if(textBounds.width()>=mouseX)
 			h = mid;
 		else
 			l = mid;
 	}
-	int lb = fabs(mouseX-font->measureText(text.c_str(),(l)*sizeof(char),SkTextEncoding::kUTF8,&textBounds));
-	int ub = fabs(mouseX-font->measureText(text.c_str(),(h)*sizeof(char),SkTextEncoding::kUTF8,&textBounds));
+	int lb = fabs(mouseX-font->measureText(text.c_str(),l*sizeof(char),SkTextEncoding::kUTF8,&textBounds));
+	int ub = fabs(mouseX-font->measureText(text.c_str(),h*sizeof(char),SkTextEncoding::kUTF8,&textBounds));
 	cursorIndex = h;
 	if(lb<ub)
 		cursorIndex = l;
@@ -73,12 +76,15 @@ bool TM_TextBox::PollEvents(TM_EventInput eventInput)
 		ret = true;
 	}
 
+	if(this->srcString == NULL)
+			this->srcString = &this->content;
+
 	if(contains)
 	{
 		if(eventInput.mousePressed)
 		{
 			eventInput.font->setSize(this->viewSetting.fontSize);
-			this->locatePosition(eventInput.mouseX-this->bounds.x()+TM_TextView::getTextXOffset(),this->content+" ",eventInput.font);
+			this->locatePosition(eventInput.mouseX-this->bounds.x()+TM_TextView::getTextXOffset(),(*this->srcString)+" ",eventInput.font);
 			this->select = true;
 			ret = true;
 		}
@@ -91,17 +97,18 @@ bool TM_TextBox::PollEvents(TM_EventInput eventInput)
 
     if(this->select)
     {
+		
 		if(eventInput.inputText.size()>0 && this->content.size()<512)
 		{
-			std::string s0 = this->content.substr(this->cursorIndex,this->content.size()), s1 = this->content.substr(0,cursorIndex);
-			this->content = s1 + eventInput.inputText + s0;
+			std::string s0 = this->srcString->substr(this->cursorIndex,this->srcString->size()), s1 = this->srcString->substr(0,cursorIndex);
+			*this->srcString = s1 + eventInput.inputText + s0;
 			this->cursorIndex ++;
 			ret = true;
 		}
 		else if(eventInput.keyPressed && eventInput.key == SDL_SCANCODE_BACKSPACE && cursorIndex)
 		{
-			std::string s0 = this->content.substr(this->cursorIndex,this->content.size()),s1 = this->content.substr(0,cursorIndex-1);
-			this->content = s1+s0;
+			std::string s0 = this->srcString->substr(this->cursorIndex,this->srcString->size()),s1 = this->srcString->substr(0,cursorIndex-1);
+			*this->srcString = s1+s0;
 			this->cursorIndex --;
 			ret = true;
 		}
@@ -116,4 +123,9 @@ SkScalar TM_TextBox::getCharWidth(char a, SkFont* font)
 	SkScalar width;
 	font->getWidths(&glyph, 1, &width);
 	return width;
+}
+
+void TM_TextBox::setSrcString(std::string* srcString)
+{
+	this->srcString = srcString;
 }
