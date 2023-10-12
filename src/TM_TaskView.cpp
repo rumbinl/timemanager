@@ -3,12 +3,21 @@
 TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr, std::map<std::chrono::year_month_day,int>* calendarPtr) : TM_View(bounds, {},{colorScheme[0],colorScheme[3],colorScheme[3],0,24,0,10})
 {
     this->taskManPtr = taskManPtr;
+    this->currentTask = &this->dummyTask;
     this->textBox = new TM_TextBox(SkRect::MakeWH(0,48),"New Task", NULL, {colorScheme[1],colorScheme[2],colorScheme[3],1,48,5});
     this->taskList = new TM_View(SkRect::MakeWH(0,200), {});
     this->calendarPtr = calendarPtr;
     this->addSubtaskButton = new TM_Button<TM_TaskView>("Add Subtask", SkRect::MakeWH(0,50), [](TM_TaskView* context) {
         if(context->getTask())
             context->getTask()->addSubtask("Subtask", {0,30});
+    },this);
+
+    this->startDateButton = new TM_Button<TM_TaskView>("Start Date", SkRect::MakeWH(0,50), [](TM_TaskView* context) {
+        context->setRenderObjectExistence(2, !context->getRenderObjectExistence(2));
+    },this);
+
+    this->endDateButton = new TM_Button<TM_TaskView>("End Date", SkRect::MakeWH(0,50), [](TM_TaskView* context) {
+        context->setRenderObjectExistence(4, !context->getRenderObjectExistence(4));
     },this);
 
     this->scheduleTaskButton = new TM_Button<TM_TaskView>("Schedule", SkRect::MakeWH(0,50), [](TM_TaskView* context) {
@@ -19,12 +28,19 @@ TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr, std::map<std
         context->getTaskManPtr()->deleteCurrentTask();
     },this);
 
-    this->monthView = new TM_CalendarMonthView(SkRect::MakeWH(0,480), &this->date);
+    this->startDateMonthView = new TM_CalendarMonthView(SkRect::MakeWH(0,480), NULL);
+    this->endDateMonthView = new TM_CalendarMonthView(SkRect::MakeWH(0,480), NULL);
+
+    this->startDateMonthView->setExistence(false);
+    this->endDateMonthView->setExistence(false);
 
     this->renderObjects.push_back(this->textBox);
+    this->renderObjects.push_back(this->startDateButton);
+    this->renderObjects.push_back(this->startDateMonthView);
+    this->renderObjects.push_back(this->endDateButton);
+    this->renderObjects.push_back(this->endDateMonthView);
     //this->renderObjects.push_back(this->taskList);
     //this->renderObjects.push_back(this->addSubtaskButton);
-    this->renderObjects.push_back(this->monthView);
     this->renderObjects.push_back(this->scheduleTaskButton);
     this->renderObjects.push_back(this->deleteTaskButton);
 }
@@ -55,21 +71,26 @@ void TM_TaskView::setTask(TM_Task* taskPtr)
 
 void TM_TaskView::Render(TM_RenderInfo renderInfo)
 {
+    this->SynchronizeView();
+    TM_View::Render(renderInfo);
+}
+
+void TM_TaskView::SynchronizeView()
+{
     if(this->taskManPtr->getCurrentTask() != NULL)
     {
-        this->textBox->setSrcString(this->taskManPtr->getCurrentTask()->getNamePtr());
-        this->monthView->setDatePtr(this->taskManPtr->getCurrentTask()->getStartDatePtr());
+        TM_Task* currentTaskPtr = this->taskManPtr->getCurrentTask();
+        this->textBox->setSrcString(currentTaskPtr->getNamePtr());
+        this->startDateMonthView->setDatePtr(currentTaskPtr->getStartDatePtr());
+        this->endDateMonthView->setDatePtr(currentTaskPtr->getEndDatePtr());
+        this->startDateButton->setText("Start Date" + TM_DateToString(currentTaskPtr->getStartDate()));
+        this->endDateButton->setText("End Date" + TM_DateToString(currentTaskPtr->getEndDate()));
     }
-    TM_View::Render(renderInfo);
 }
 
 bool TM_TaskView::PollEvents(TM_EventInput eventInput)
 {
-    if(this->taskManPtr->getCurrentTask() != NULL)
-    {
-        this->textBox->setSrcString(this->taskManPtr->getCurrentTask()->getNamePtr());
-        this->monthView->setDatePtr(this->taskManPtr->getCurrentTask()->getStartDatePtr());
-    }
+    this->SynchronizeView(); 
     return TM_View::PollEvents(eventInput);
 }
 

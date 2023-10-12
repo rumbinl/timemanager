@@ -56,6 +56,7 @@ std::string TM_Task::getName() { return this->name; }
 
 std::string* TM_Task::getNamePtr() { return &this->name; }
 std::chrono::year_month_day* TM_Task::getStartDatePtr() { return &this->startDate; }
+std::chrono::year_month_day* TM_Task::getEndDatePtr() { return &this->endDate; }
 
 std::multiset<TM_Task*,TM_Task::TM_TaskPtrCompare>& TM_Task::getSubtaskList()
 {

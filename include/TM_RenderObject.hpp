@@ -17,6 +17,7 @@ class TM_RenderObject
         bool exists();
         void setExistence(bool existence);
 		void setRenderObjectExistence(int index, bool existence);
+        bool getRenderObjectExistence(int index);
 		void addRenderObject(TM_RenderObject* renderObject);
 		TM_RenderObject* getRenderObject(int index);
 		int getNumExists();

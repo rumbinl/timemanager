@@ -21,6 +21,7 @@ class TM_Task
         void setEndDate(std::chrono::year_month_day endDate);
 
         std::chrono::year_month_day* getStartDatePtr();
+        std::chrono::year_month_day* getEndDatePtr();
 
         std::chrono::year_month_day getStartDate();
         std::chrono::year_month_day getEndDate();

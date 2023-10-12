@@ -62,6 +62,13 @@ void TM_RenderObject::setRenderObjectExistence(int index, bool existence)
 	}
 }
 
+bool TM_RenderObject::getRenderObjectExistence(int index)
+{
+    if(index < this->renderObjects.size() && index>=0)
+        return this->renderObjects[index]->exists();
+    return false;
+}
+
 TM_RenderObject* TM_RenderObject::getRenderObject(int index)
 {
 	return this->renderObjects[index];
