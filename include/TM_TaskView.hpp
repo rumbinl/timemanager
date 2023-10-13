@@ -6,6 +6,7 @@
 #include <TM_CalendarMonthView.hpp>
 #include <TM_Task.hpp>
 #include <TM_TaskManager.hpp>
+#include <TM_HorizontalView.hpp>
 
 class TM_TaskView : public TM_View
 {
@@ -25,7 +26,8 @@ class TM_TaskView : public TM_View
         TM_Task* currentTask=NULL,dummyTask=TM_Task("",getCurrentDate(),getCurrentDate(),{0,0},{0,0}); 
         TM_TextBox* textBox;
         TM_View* taskList;
-        TM_Button<TM_TaskView>* addSubtaskButton,*scheduleTaskButton,*deleteTaskButton,*startDateButton,*endDateButton;
+        TM_Button<TM_TaskView>* addSubtaskButton,*scheduleTaskButton,*deleteTaskButton;
+        TM_TextView *startDateLabel,*endDateLabel;
         TM_CalendarMonthView *startDateMonthView, *endDateMonthView;
         std::chrono::year_month_day date;
         TM_TaskManager* taskManPtr;
