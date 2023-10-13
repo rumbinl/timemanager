@@ -9,4 +9,5 @@ timeman
 src/gl3w.c
 *.swp
 *.o
+*.gch
 build

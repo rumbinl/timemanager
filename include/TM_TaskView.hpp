@@ -7,6 +7,7 @@
 #include <TM_Task.hpp>
 #include <TM_TaskManager.hpp>
 #include <TM_HorizontalView.hpp>
+#include <TM_TimeDial.hpp>
 
 class TM_TaskView : public TM_View
 {

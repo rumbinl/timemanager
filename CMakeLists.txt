@@ -10,11 +10,11 @@ add_definitions(-D_ITERATOR_DEBUG_LEVEL=0)
 
 include_directories(PUBLIC include/)
 
-if (MACOS)
+if (APPLE)
 	include_directories(PUBLIC /usr/local/include)
 	include_directories(PUBLIC /usr/local/include/skia)
 	include_directories(PUBLIC /usr/local/include/gl3w)
-endif (MACOS)
+endif (APPLE)
 
 if (WIN32)
 	include_directories(PUBLIC "C:\\Program Files (x86)\\gl3w")

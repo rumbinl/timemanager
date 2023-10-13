@@ -1,11 +1,8 @@
-if (MACOS)
+if (APPLE)
 	add_library(SDL3 STATIC IMPORTED) 
 	set_property(TARGET SDL3 PROPERTY IMPORTED_LOCATION /usr/local/lib/libSDL3.dylib)
 	add_library(skia STATIC IMPORTED)
 	set_property(TARGET skia PROPERTY IMPORTED_LOCATION /usr/local/lib/libskia.a)
-endif (MACOS)
-
-if (APPLE)
 	find_library(COCOA_LIBRARY Cocoa)
 endif (APPLE)
 

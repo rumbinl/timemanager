@@ -32,7 +32,9 @@ TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr, std::map<std
         this->endDateLabel 
     }));
     this->renderObjects.push_back(new TM_HorizontalView(SkRect::MakeWH(0,350), {
+        new TM_TimeDial(SkRect::MakeWH(0,0)),
         this->startDateMonthView, 
+        new TM_TimeDial(SkRect::MakeWH(0,0)),
         this->endDateMonthView
     }));
     //this->renderObjects.push_back(this->taskList);
