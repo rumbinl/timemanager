@@ -17,24 +17,54 @@ void TM_TimeDial::Render(TM_RenderInfo renderInfo)
     SkScalar cx = this->bounds.width()/2.0f,cy = this->bounds.height()/2.0f, length = std::fmin(this->bounds.width(), this->bounds.height())/2.0f-this->dialThickness/2.0f;
     renderInfo.canvas->drawCircle(cx,cy, length, paint);
 
-    cx = cx + sin(2 * M_PI * dialProgressPercentage/100.0f) * length, cy = cy - length * cos(2 * M_PI * dialProgressPercentage/100.0f);
+    paint.setColor(this->viewSetting.borderColor);
+    SkRect arcTemplate = SkRect::MakeXYWH(cx - length, cy - length, 2*length, 2*length);
+    SkScalar hourDivider = 6;
+    SkScalar stepDialPercentage = round(dialProgressPercentage*24.0f*hourDivider/100.0f)/(24.0f*hourDivider);
+    renderInfo.canvas->drawArc(arcTemplate, -90, 360.0f * stepDialPercentage, false, paint);
+
+    cx = cx + sin(2 * M_PI * stepDialPercentage) * length, cy = cy - length * cos(2 * M_PI * stepDialPercentage);
+    paint.setColor(this->viewSetting.textColor);
     paint.setStyle(SkPaint::kFill_Style);
     paint.setStrokeWidth(0);
-    paint.setColor(this->viewSetting.textColor);
     renderInfo.canvas->drawCircle(cx,cy, this->dialThickness/2.0f, paint);
     renderInfo.canvas->restore();
 }
 
+SkScalar TM_TimeDial::GetAnglePercentage(TM_EventInput eventInput)
+{
+    SkScalar xDif = eventInput.mouseX - this->bounds.width()/2.0f, yDif = eventInput.mouseY - this->bounds.height()/2.0f;
+    SkScalar angle;
+    angle = acos(-yDif/sqrt(xDif*xDif + yDif*yDif));
+    if(xDif < 0)
+        angle = 2*M_PI-angle;
+    return angle*100.0f/(2*M_PI);
+}
+
 bool TM_TimeDial::PollEvents(TM_EventInput eventInput)
 {
+    bool should_update = false;
+    eventInput.mouseX -= this->bounds.x();
+    eventInput.mouseY -= this->bounds.y();
     SkScalar length = std::fmin(this->bounds.width(), this->bounds.height())/2.0f-this->dialThickness/2.0f;
     SkScalar cx = this->bounds.width()/2.0f + sin(2 * M_PI * dialProgressPercentage/100.0f)*length, cy = this->bounds.height()/2.0f - length * cos(2 * M_PI * dialProgressPercentage/100.0f); 
     SkRect rectBounds = SkRect::MakeXYWH(cx-this->dialThickness/2.0f, cy-this->dialThickness/2.0f, this->dialThickness, this->dialThickness);
     SkRRect circleBounds = SkRRect::MakeRectXY(rectBounds, this->dialThickness/2.0f, this->dialThickness/2.0f);
-    if(circleBounds.contains(SkRect::MakeXYWH(eventInput.mouseX - this->bounds.x(),eventInput.mouseY - this->bounds.y(), 1, 1)) && eventInput.mousePressed)
+    if(eventInput.mouseHeld==false && this->select)
+        this->select = false;
+
+    if(select)
     {
-        this->dialProgressPercentage += 1;
-        return true;
+        this->dialProgressPercentage = GetAnglePercentage(eventInput)-selectAngleOffset;
+        should_update = true;
     }
-    return false;
+
+    if(circleBounds.contains(SkRect::MakeXYWH(eventInput.mouseX,eventInput.mouseY, 1, 1)) && eventInput.mousePressed)
+    {
+        this->selectAngleOffset = GetAnglePercentage(eventInput)-this->dialProgressPercentage;
+        this->select = true;
+        should_update = true;
+    }
+    
+    return should_update;
 }
