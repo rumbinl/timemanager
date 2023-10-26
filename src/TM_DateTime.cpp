@@ -21,7 +21,7 @@ std::string TM_DateToString(std::chrono::year_month_day ymd)
     return std::to_string(unsigned(ymd.day())) + " " + monthNames[unsigned(ymd.month())-1] + " " + std::to_string(int(ymd.year()));
 }
 
-unsigned TM_NumMonthDays(std::chrono::year_month ym)
+unsigned TM_NumMonthDays(std::chrono::year_month_day ymd)
 {
-    return static_cast<unsigned>(std::chrono::year_month_day_last{ym.year(),std::chrono::month_day_last{ym.month()/std::chrono::last}}.day());
+    return static_cast<unsigned>(std::chrono::year_month_day_last{ymd.year(),std::chrono::month_day_last{ymd.month()/std::chrono::last}}.day());
 }

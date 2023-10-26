@@ -10,4 +10,5 @@ src/gl3w.c
 *.swp
 *.o
 *.gch
+include/TM_Button.hpp.gch
 build

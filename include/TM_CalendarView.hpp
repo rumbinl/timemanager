@@ -12,11 +12,13 @@ class TM_CalendarView : public TM_View
 {
     public:
         TM_CalendarView(SkRect bounds, TM_TaskManager* taskManPtr);
+        void setReferenceDate(TM_YMD date);
+        TM_YMD getReferenceDate();
     private:
-        TM_CalendarMonthView* monthView;
+        TM_CalendarMonthView<TM_CalendarView>* monthView;
         TM_CalendarWeekView* weekView;
 		TM_HorizontalView* buttonBar;
 		TM_View* vitalView;
-        std::chrono::year_month_day currentDate;
+        TM_YMD currentDate;
         TM_TaskManager* taskManPtr;
 };

@@ -20,7 +20,7 @@ void TM_TimeDial::Render(TM_RenderInfo renderInfo)
     paint.setColor(this->viewSetting.borderColor);
     SkRect arcTemplate = SkRect::MakeXYWH(cx - length, cy - length, 2*length, 2*length);
     SkScalar hourDivider = 6;
-    SkScalar stepDialPercentage = round(dialProgressPercentage*24.0f*hourDivider/200.0f)/(12.0f*hourDivider);
+    SkScalar stepDialPercentage = round(dialProgressPercentage*12.0f*hourDivider/100.0f)/(12.0f*hourDivider);
     SkScalar stepDialPercentage2ndOrder = round((std::fmod(dialProgressPercentage,100))*12.0f*hourDivider/100.0f)/(12.0f*hourDivider);
     renderInfo.canvas->drawArc(arcTemplate, -90, 360.0f * stepDialPercentage, false, paint);
     paint.setStyle(SkPaint::kFill_Style);
@@ -38,6 +38,16 @@ void TM_TimeDial::Render(TM_RenderInfo renderInfo)
     paint.setStrokeWidth(0);
     cx = cx + sin(2 * M_PI * stepDialPercentage) * length, cy = cy - length * cos(2 * M_PI * stepDialPercentage);
     renderInfo.canvas->drawCircle(cx,cy, this->dialThickness/2.0f, paint);
+
+    paint.setColor(this->viewSetting.backgroundColor);
+    TM_Time time = this->GetTime();
+    std::string timeLabel = (time.hours<10?"0":"")+std::to_string(time.hours) + ":" + (time.minutes<10?"0":"")+std::to_string(time.minutes);
+    SkRect textBounds;
+    SkFontMetrics fontMetrics;
+    renderInfo.textFont->setSize(this->viewSetting.fontSize);
+    renderInfo.textFont->getMetrics(&fontMetrics);
+    renderInfo.textFont->measureText(timeLabel.c_str(), timeLabel.length() * sizeof(char), SkTextEncoding::kUTF8, &textBounds);
+    renderInfo.canvas->drawSimpleText(timeLabel.c_str(), sizeof(char)*timeLabel.length(), SkTextEncoding::kUTF8, this->bounds.width()/2-textBounds.width()/2, fontMetrics.fDescent+this->bounds.height()/2, *renderInfo.textFont, paint);
     renderInfo.canvas->restore();
 }
 
@@ -107,4 +117,10 @@ bool TM_TimeDial::PollEvents(TM_EventInput eventInput)
     }
     
     return should_update;
+}
+
+TM_Time TM_TimeDial::GetTime()
+{
+    int minutes = (int)round(60.0f * 24.0f * this->dialProgressPercentage/200.0f/5.0f)*5;
+    return {minutes/60, minutes%60};
 }

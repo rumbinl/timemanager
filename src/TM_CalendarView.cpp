@@ -5,7 +5,11 @@ TM_CalendarView::TM_CalendarView(SkRect bounds, TM_TaskManager* taskManPtr) : TM
     this->taskManPtr = taskManPtr;
     this->currentDate = getCurrentDate();
     this->weekView = new TM_CalendarWeekView(SkRect::MakeXYWH(0, 0, 0, 480), &this->currentDate, taskManPtr);
-    this->monthView = new TM_CalendarMonthView(SkRect::MakeXYWH(0, 0, 250, 250), &this->currentDate);
+    this->monthView = new TM_CalendarMonthView<TM_CalendarView>(SkRect::MakeXYWH(0, 0, 250, 250), this, [](TM_CalendarView* calendarView, TM_YMD date){
+		calendarView->setReferenceDate(date);
+	}, [](TM_CalendarView* calendarView) {
+		return calendarView->getReferenceDate();
+	});
    	this->buttonBar = new TM_HorizontalView(SkRect::MakeXYWH(0,0,0,40),{
 
 			new TM_Button<TM_CalendarView>("Show Month", SkRect::MakeXYWH(0,0,0,40), 
@@ -42,10 +46,21 @@ TM_CalendarView::TM_CalendarView(SkRect bounds, TM_TaskManager* taskManPtr) : TM
 		this->monthView,
 		this->weekView
 	});
+
 	this->addRenderObject(this->buttonBar);
     this->addRenderObject(this->vitalView);
 
 	this->getRenderObject(1)->setRenderObjectExistence(0,true);
 	this->getRenderObject(0)->setRenderObjectExistence(0,false);
 	this->getRenderObject(0)->setRenderObjectExistence(1,true);
+}
+
+void TM_CalendarView::setReferenceDate(TM_YMD date)
+{
+	this->currentDate = date;
+}
+
+TM_YMD TM_CalendarView::getReferenceDate()
+{
+	return this->currentDate;
 }

@@ -1,53 +1,38 @@
 #include <TM_CalendarMonthView.hpp>
 
-TM_CalendarMonthView::TM_CalendarMonthView(SkRect bounds, std::chrono::year_month_day* datePtr, TM_ViewSetting viewSetting) : TM_RenderObject(bounds, viewSetting)
+template <typename T> TM_CalendarMonthView<T>::TM_CalendarMonthView(SkRect bounds, T* datePtr, void (*setDateFunc)(T* taskManPtr, TM_YMD date), TM_YMD (*getDateFunc)(T* taskManPtr), TM_ViewSetting viewSetting) : TM_RenderObject(bounds, viewSetting)
 {
     this->datePtr = datePtr;
+    this->setDateFunc = setDateFunc;
+    this->getDateFunc = getDateFunc;
     this->dayViewList = std::vector(31, TM_TextView("0", SkRect::MakeWH(bounds.width()/7.0f, 0)));
-    this->dataView = new TM_TextView("January 1981", bounds, {colorScheme[1],colorScheme[2],colorScheme[3],1,36,0});
-
-    std::chrono::year_month_day today = getCurrentDate();
-    this->setMonth({today.year(),today.month()});
-
+    this->dataView = new TM_TextView("", bounds, {colorScheme[1],colorScheme[2],colorScheme[3],1,36,0});
+    this->datePlaceholder = getCurrentDate();
     this->weekList = std::vector(7, TM_TextView("XX", SkRect::MakeWH(this->bounds.width()/7.0f, 0.0f)));
 }
 
-void TM_CalendarMonthView::setMonth(std::chrono::year_month ym)
-{
-    this->month = ym;
-    this->firstDay = weekDayFromDate({ym.year(),ym.month(),std::chrono::day{1}});
-    this->numDays = TM_NumMonthDays(this->month);
-    this->numRows = (this->numDays+this->firstDay+6)/7;
-}
-
-void TM_CalendarMonthView::setDate(std::chrono::year_month_day date)
-{
-    *this->datePtr = date;
-}
-
-void TM_CalendarMonthView::setDatePtr(std::chrono::year_month_day* datePtr)
-{
-    this->datePtr = datePtr;
-}
-
-std::chrono::year_month TM_CalendarMonthView::getMonthYear()
-{
-    return month;
-}
-
-void TM_CalendarMonthView::Render(TM_RenderInfo renderInfo)
+template <typename T> void TM_CalendarMonthView<T>::Render(TM_RenderInfo renderInfo)
 {
     SkFontMetrics fontMetrics;
     renderInfo.textFont->getMetrics(&fontMetrics);
 
+    TM_YMD currentDate = this->getDateFunc(this->datePtr);
+
+    if(currentDate == ZeroDate)
+        currentDate = this->datePlaceholder;
+
+    int firstDay = weekDayFromDate({currentDate.year(),currentDate.month(),std::chrono::day{1}}),
+        numDays  = TM_NumMonthDays(currentDate),
+        numRows  = (numDays+firstDay+6)/7;
+
     this->dataView->setX(this->bounds.x());
     this->dataView->setY(this->bounds.y());
-    this->dataView->setText(monthNames[static_cast<unsigned>(this->month.month())-1]+' '+std::to_string(static_cast<int>(this->month.year())));
+    this->dataView->setText(monthNames[static_cast<unsigned>(currentDate.month())]+' '+std::to_string(static_cast<int>(currentDate.year())));
     this->dataView->setWidth(this->bounds.width());
     this->dataView->setHeightFont(renderInfo.textFont);
     this->dataView->Render(renderInfo);
 
-    SkScalar x=this->firstDay*(this->bounds.width()/7.0f)+this->bounds.x(),y=this->dataView->getHeight()+this->bounds.y();
+    SkScalar x=firstDay*(this->bounds.width()/7.0f)+this->bounds.x(),y=this->dataView->getHeight()+this->bounds.y();
     for(int i=0;i<7;i++)
     {
         this->weekList[i].setText(dayNames[i].substr(0,2).c_str());
@@ -57,8 +42,10 @@ void TM_CalendarMonthView::Render(TM_RenderInfo renderInfo)
         this->weekList[i].setHeightFont(renderInfo.textFont);
         this->weekList[i].Render(renderInfo);
     }
+
     y+=this->weekList[0].getHeight();
-    for(int i=0;i<this->numDays;i++)
+
+    for(int i=0;i<numDays;i++)
     {
         if((i+firstDay)%7==0 && i)
         {
@@ -70,17 +57,17 @@ void TM_CalendarMonthView::Render(TM_RenderInfo renderInfo)
         this->dayViewList[i].setY(y);
         this->dayViewList[i].setText(std::to_string(i+1));
         this->dayViewList[i].setWidth(this->bounds.width()/7.0f);
-        std::chrono::year_month_day day = {this->month.year(), this->month.month(), std::chrono::day{(unsigned)i+1}};
-        if((this->datePtr!=NULL && day == *this->datePtr) || (!this->datePtr&&this->datePlaceholder == day))
+        TM_YMD day = {currentDate.year(), currentDate.month(), std::chrono::day{(unsigned)i+1}};
+        if(day == currentDate)
             this->dayViewList[i].invertColors();
         this->dayViewList[i].Render(renderInfo);
-        if((this->datePtr!=NULL && day == *this->datePtr) || (!this->datePtr&&this->datePlaceholder == day))
+        if(day == currentDate)
             this->dayViewList[i].invertColors();
         x+=this->bounds.width()/7.0f;
     }
 }
 
-bool TM_CalendarMonthView::PollEvents(TM_EventInput eventInput)
+template<typename T> bool TM_CalendarMonthView<T>::PollEvents(TM_EventInput eventInput) 
 {
     bool select=false;
     if(this->bounds.contains(eventInput.mouseX,eventInput.mouseY))
@@ -93,20 +80,23 @@ bool TM_CalendarMonthView::PollEvents(TM_EventInput eventInput)
                 select = true;
                 if(eventInput.mousePressed)
                 {
+                    TM_YMD currentDate = this->getDateFunc(this->datePtr);
+                    if(currentDate == ZeroDate) 
+                        currentDate = datePlaceholder;
                     if(this->selectDayButton==i)
                     {
                         this->selectDayButton = -1;
-                        if(this->datePtr!=NULL)
-                            *datePtr = {this->month.year(),this->month.month(),std::chrono::day{1}};
+                        if(this->getDateFunc(this->datePtr) != ZeroDate)
+                            this->setDateFunc(this->datePtr, {currentDate.year(),currentDate.month(),std::chrono::day{1}});
                         else
-                            this->datePlaceholder = {this->month.year(),this->month.month(),std::chrono::day{1}};
+                            this->datePlaceholder = {currentDate.year(),currentDate.month(),std::chrono::day{1}};
                     }
                     else
                     {
                         this->selectDayButton = i;
-                        if(this->datePtr!=NULL)
-                            *datePtr = {this->month.year(),this->month.month(),std::chrono::day{(unsigned)i+1}};
-                        else   
+                        if(this->getDateFunc(this->datePtr) != ZeroDate)
+                            this->setDateFunc(this->datePtr, {currentDate.year(),currentDate.month(),std::chrono::day{(unsigned)i+1}});
+                        else
                             this->datePlaceholder = {this->month.year(),this->month.month(),std::chrono::day{(unsigned)i+1}};
                     }
                 }
@@ -119,4 +109,22 @@ bool TM_CalendarMonthView::PollEvents(TM_EventInput eventInput)
         return true;
     }
     return select;
+}
+
+template <typename T> void TM_CalendarMonthView<T>::setDate(TM_YMD date)
+{
+    this->taskManPtr->setStartDate(date);
+}
+
+template <typename T> std::chrono::year_month TM_CalendarMonthView<T>::getMonthYear()
+{
+    return month;
+}
+
+#include <TM_CalendarView.hpp>
+
+void dummyFunc()
+{
+    TM_CalendarMonthView<TM_TaskManager> monthView1(SkRect::MakeEmpty());
+    TM_CalendarMonthView<TM_CalendarView> monthView2(SkRect::MakeEmpty());
 }

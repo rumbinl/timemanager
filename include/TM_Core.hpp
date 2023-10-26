@@ -30,6 +30,10 @@ static SkColor colorScheme[4] = {SkColorSetRGB(0xee,0xf3,0xf9),SkColorSetRGB(0xb
 
 static SkScalar scrollSensFactor = 5.0;
 
+typedef std::chrono::year_month_day TM_YMD;
+
+#define ZeroDate (TM_YMD{std::chrono::January/1/0})
+
 #ifndef max
 #define max(a,b) ((a>b)?(a):(b))
 #endif

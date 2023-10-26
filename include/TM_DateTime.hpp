@@ -17,4 +17,4 @@ std::string TM_DateToString(std::chrono::year_month_day ymd);
 
 std::chrono::year_month_day getCurrentDate();
 
-unsigned TM_NumMonthDays(std::chrono::year_month ymd);
+unsigned TM_NumMonthDays(std::chrono::year_month_day ymd);
