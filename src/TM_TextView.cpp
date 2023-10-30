@@ -20,9 +20,12 @@ void TM_TextView::Render(TM_RenderInfo renderInfo)
 
     renderInfo.canvas->drawRect(this->bounds,paint);
 
-    paint.setStyle(SkPaint::kStroke_Style);
-    paint.setColor(this->viewSetting.borderColor);
-    paint.setStrokeWidth(this->viewSetting.borderThickness);
+    if(viewSetting.borderThickness>0)
+    {
+        paint.setStyle(SkPaint::kStroke_Style);
+        paint.setColor(this->viewSetting.borderColor);
+        paint.setStrokeWidth(this->viewSetting.borderThickness-1);
+    }
 
     renderInfo.canvas->drawRect(SkRect::MakeXYWH(this->bounds.x(),this->bounds.y(),this->bounds.width(),this->bounds.height()),paint);
 
@@ -65,9 +68,12 @@ void TM_TextView::Render(std::string text, SkRect bounds, TM_RenderInfo renderIn
 
     renderInfo.canvas->drawRect(bounds,paint);
 
-    paint.setStyle(SkPaint::kStroke_Style);
-    paint.setColor(viewSetting.borderColor);
-    paint.setStrokeWidth(viewSetting.borderThickness);
+    if(viewSetting.borderThickness>0)
+    {
+        paint.setStyle(SkPaint::kStroke_Style);
+        paint.setColor(viewSetting.borderColor);
+        paint.setStrokeWidth(viewSetting.borderThickness-1);
+    }
 
     renderInfo.canvas->drawRect(bounds,paint);
 
@@ -129,7 +135,7 @@ void TM_TextView::setHeightFont(SkFont* font)
     font->setSize(this->viewSetting.fontSize);
     SkFontMetrics fontMetrics;
     font->getMetrics(&fontMetrics);
-    this->bounds.setXYWH(this->bounds.x(), this->bounds.y(), this->bounds.width(), fontMetrics.fDescent-fontMetrics.fAscent);
+    this->bounds.setXYWH(this->bounds.x(), this->bounds.y(), this->bounds.width(), fontMetrics.fDescent-fontMetrics.fAscent+2*this->viewSetting.paddingY);
 }
 
 void TM_TextView::setWidth(SkScalar newWidth)

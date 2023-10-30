@@ -80,6 +80,9 @@ TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr, std::map<TM_
     this->renderObjects.push_back(this->addSubtaskButton);
     //this->renderObjects.push_back(this->scheduleTaskButton);
     this->renderObjects.push_back(this->deleteTaskButton);
+    this->renderObjects.push_back(new TM_Button<TM_TaskView>("Hide Task Panel", SkRect::MakeWH(0,50), [](TM_TaskView* taskView){
+        taskView->setExistence(false);
+    }, this));
 }
 
 void TM_TaskView::setDate(TM_YMD date)

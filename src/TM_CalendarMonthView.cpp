@@ -5,16 +5,15 @@ template <typename T> TM_CalendarMonthView<T>::TM_CalendarMonthView(SkRect bound
     this->datePtr = datePtr;
     this->setDateFunc = setDateFunc;
     this->getDateFunc = getDateFunc;
-    this->dayViewList = std::vector(31, TM_TextView("0", SkRect::MakeWH(bounds.width()/7.0f, 0)));
-    this->dataView = new TM_TextView("", bounds, {colorScheme[1],colorScheme[2],colorScheme[3],1,36,0});
+    this->dayViewList = std::vector(31, TM_TextView("0", SkRect::MakeWH(bounds.width()/7.0f, 0), {colorScheme[0],colorScheme[2],colorScheme[3],0,24,0,0}));
+    this->dataView = new TM_TextView("", bounds, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,0,10});
     this->datePlaceholder = getCurrentDate();
-    this->weekList = std::vector(7, TM_TextView("XX", SkRect::MakeWH(this->bounds.width()/7.0f, 0.0f)));
+    this->weekList = std::vector(7, TM_TextView("XX", SkRect::MakeWH(this->bounds.width()/7.0f, 0.0f), {colorScheme[1],colorScheme[2],colorScheme[3],0,20,0,10}));
 }
 
 template <typename T> void TM_CalendarMonthView<T>::Render(TM_RenderInfo renderInfo)
 {
-    SkFontMetrics fontMetrics;
-    renderInfo.textFont->getMetrics(&fontMetrics);
+    renderInfo.textFont->setSize(this->viewSetting.fontSize);
 
     TM_YMD currentDate = this->getDateFunc(this->datePtr);
 

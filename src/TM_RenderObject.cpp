@@ -44,6 +44,9 @@ void TM_RenderObject::setExistence(bool existence)
 
 int TM_RenderObject::getNumExists()
 {
+    numExists = 0;
+    for(TM_RenderObject* renderObject : renderObjects)
+        numExists += renderObject->existence;
 	return numExists;
 }
 
