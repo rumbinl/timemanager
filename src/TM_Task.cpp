@@ -34,11 +34,6 @@ TM_Task::TM_Task(std::string name, std::chrono::year_month_day startDate, std::c
     (*calendarPtr)[optimalDate] += 30;
 }
 
-void TM_Task::addSubtask(std::string name, TM_Time duration)
-{
-    
-}
-
 void TM_Task::setStartDate(std::chrono::year_month_day startDate) { this->startDate = startDate; }
 void TM_Task::setEndDate(std::chrono::year_month_day endDate) { this->endDate = endDate; }
 
@@ -61,6 +56,11 @@ std::chrono::year_month_day* TM_Task::getEndDatePtr() { return &this->endDate; }
 std::multiset<TM_Task*,TM_Task::TM_TaskPtrCompare>& TM_Task::getSubtaskList()
 {
     return this->subtasks;
+}
+
+void TM_Task::addSubtask(TM_Task* headTask)
+{
+    this->subtasks.insert(headTask);
 }
 
 void TM_Task::scheduleSubtasks(std::chrono::year_month_day currentDay)

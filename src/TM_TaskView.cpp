@@ -8,8 +8,6 @@ TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr, std::map<TM_
     this->taskList = new TM_View(SkRect::MakeWH(0,200), {});
     this->calendarPtr = calendarPtr;
     this->addSubtaskButton = new TM_Button<TM_TaskView>("Add Subtask", SkRect::MakeWH(0,50), [](TM_TaskView* context) {
-        if(context->getTask())
-            context->getTask()->addSubtask("Subtask", {0,30});
     },this);
 
     this->scheduleTaskButton = new TM_Button<TM_TaskView>("Schedule", SkRect::MakeWH(0,50), [](TM_TaskView* context) {
@@ -79,8 +77,8 @@ TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr, std::map<TM_
         this->endDateMonthView
     }));
     //this->renderObjects.push_back(this->taskList);
-    //this->renderObjects.push_back(this->addSubtaskButton);
-    this->renderObjects.push_back(this->scheduleTaskButton);
+    this->renderObjects.push_back(this->addSubtaskButton);
+    //this->renderObjects.push_back(this->scheduleTaskButton);
     this->renderObjects.push_back(this->deleteTaskButton);
 }
 

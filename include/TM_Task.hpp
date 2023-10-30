@@ -14,7 +14,11 @@ class TM_Task
         TM_Task(TM_Task& copyTask);
         TM_Task(std::string name, std::chrono::year_month_day startDate, std::chrono::year_month_day endDate, TM_Time startTime,  TM_Time endTime);
         TM_Task(std::string name, std::chrono::year_month_day startDate, std::chrono::year_month_day deadline, TM_Time startTime, TM_Time endTime, TM_Time duration, std::map<std::chrono::year_month_day,int>* calendarPtr);
-        void addSubtask(std::string name, TM_Time duration);
+
+        void addSubtask(TM_Task* headTask);
+
+        void setHeadTask(TM_Task* headTask);
+
         std::string* getNamePtr();
 
         void setStartDate(std::chrono::year_month_day startDate);
@@ -55,6 +59,6 @@ class TM_Task
         TM_Time startTime,endTime;
         std::multiset<TM_Task*,TM_TaskPtrCompare> subtasks;
         bool locked = true;
-        TM_Task* rootTask = NULL;
+        TM_Task* headTask = NULL;
 };
 

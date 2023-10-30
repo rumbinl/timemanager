@@ -13,6 +13,16 @@ void TM_TaskManager::addTask(TM_Task* task)
         this->sortedTasks.insert(task);
 }
 
+void TM_TaskManager::addSubtask(TM_Task* task)
+{
+    if(this->getCurrentTask()) 
+    {
+        task->setHeadTask(this->getCurrentTask());
+        this->getCurrentTask()->addSubtask(task);
+        this->sortedTasks.insert(task);
+    }
+}
+
 std::multiset<TM_Task*,TM_Task::TM_TaskPtrCompare>& TM_TaskManager::getTaskList()
 {
     return this->sortedTasks;

@@ -12,6 +12,7 @@ class TM_TaskManager
 	public:
 		TM_TaskManager(std::vector<TM_Task*> tasks);
         void addTask(TM_Task* task);
+        void addSubtask(TM_Task* task);
         void scheduleTask(TM_Task* task, TM_YMD start, TM_YMD end);
         void setStartDateTime(TM_YMD startDate, TM_Time startTime);
         void setEndDateTime(TM_YMD endDate, TM_Time endTime);
