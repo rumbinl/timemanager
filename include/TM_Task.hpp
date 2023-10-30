@@ -15,7 +15,7 @@ class TM_Task
         TM_Task(std::string name, std::chrono::year_month_day startDate, std::chrono::year_month_day endDate, TM_Time startTime,  TM_Time endTime);
         TM_Task(std::string name, std::chrono::year_month_day startDate, std::chrono::year_month_day deadline, TM_Time startTime, TM_Time endTime, TM_Time duration, std::map<std::chrono::year_month_day,int>* calendarPtr);
 
-        void addSubtask(TM_Task* headTask);
+        void addSubtask(TM_Task* subtask);
 
         void setHeadTask(TM_Task* headTask);
 

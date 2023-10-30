@@ -58,9 +58,14 @@ std::multiset<TM_Task*,TM_Task::TM_TaskPtrCompare>& TM_Task::getSubtaskList()
     return this->subtasks;
 }
 
-void TM_Task::addSubtask(TM_Task* headTask)
+void TM_Task::setHeadTask(TM_Task* headTask)
 {
-    this->subtasks.insert(headTask);
+    this->headTask = headTask;
+}
+
+void TM_Task::addSubtask(TM_Task* subtask)
+{
+    this->subtasks.insert(subtask);
 }
 
 void TM_Task::scheduleSubtasks(std::chrono::year_month_day currentDay)
