@@ -15,6 +15,8 @@ class TM_TaskManager
         void scheduleTask(TM_Task* task, TM_YMD start, TM_YMD end);
         void setStartDateTime(TM_YMD startDate, TM_Time startTime);
         void setEndDateTime(TM_YMD endDate, TM_Time endTime);
+        TM_Time getStartTime();
+        TM_Time getEndTime();
         void setTaskName(std::string taskName);
         TM_Task* getCurrentTask();
         void deleteCurrentTask();

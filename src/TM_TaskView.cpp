@@ -39,7 +39,6 @@ TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr, std::map<TM_
         [](TM_TaskManager* taskMan, TM_YMD date) {
             if(taskMan->getCurrentTask()!=NULL)
             {
-                std::cout<<"Current task is non-NULL"<<std::endl;
                 taskMan->setEndDateTime(date, taskMan->getCurrentTask()->getEndTime());
             }
         },
@@ -62,9 +61,21 @@ TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr, std::map<TM_
     }));
 
     this->renderObjects.push_back(new TM_HorizontalView(SkRect::MakeWH(0,350), {
-        new TM_TimeDial(SkRect::MakeWH(0,0)),
+        new TM_TimeDial<TM_TaskManager>(SkRect::MakeWH(0,0), this->taskManPtr, [](TM_TaskManager* taskManPtr, TM_Time time) {
+            taskManPtr->setStartDateTime(ZeroDate, time);
+        }, 
+        [](TM_TaskManager* taskManPtr) -> TM_Time
+        {
+            return taskManPtr->getStartTime();
+        }),
         this->startDateMonthView, 
-        new TM_TimeDial(SkRect::MakeWH(0,0)),
+        new TM_TimeDial<TM_TaskManager>(SkRect::MakeWH(0,0), this->taskManPtr, [](TM_TaskManager* taskManPtr, TM_Time time) {
+            taskManPtr->setEndDateTime(ZeroDate, time);
+        }, 
+        [](TM_TaskManager* taskManPtr) -> TM_Time
+        {
+            return taskManPtr->getEndTime();
+        }),
         this->endDateMonthView
     }));
     //this->renderObjects.push_back(this->taskList);
