@@ -5,6 +5,7 @@
 #include <iostream>
 
 #include <string>
+#include <locale>
 
 #define SK_GANESH
 #define SK_GL
@@ -20,6 +21,7 @@
 #include <include/core/SkFontMetrics.h>
 #include <include/core/SkTypeface.h>
 #include <include/core/SkTextBlob.h>
+#include <include/core/SkFontMgr.h>
 
 #include <TM_DateTime.hpp>
 

@@ -32,7 +32,7 @@ class TM_ApplicationManager
 		TM_TaskView* taskView;*/
 
         // Pointers to Timeman classes
-		TM_Graphics_Window window_ptr =TM_Graphics_Window("Timeman", 960, 540);
+		TM_Graphics_Window window_ptr =TM_Graphics_Window("Timeman", 1080, 540);
 
         // External API object pointers
 		SDL_Event SDL_event_ptr;

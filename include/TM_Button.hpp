@@ -6,7 +6,7 @@
 template<class T> class TM_Button : public TM_TextView 
 {
     public:
-        TM_Button(std::string text, SkRect bounds, void (*actionFunc)(T* context)=NULL, T* context=NULL) : TM_TextView(text, bounds)
+        TM_Button(std::string text, SkRect bounds, void (*actionFunc)(T* context)=NULL, T* context=NULL, TM_ViewSetting viewSetting={colorScheme[1],colorScheme[2],colorScheme[3],1,24,5,5}) : TM_TextView(text, bounds, viewSetting)
         {
             this->actionFunc = actionFunc;
             this->context = context;

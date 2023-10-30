@@ -10,7 +10,7 @@ TM_TextView::TM_TextView(std::string text, SkRect bounds, TM_ViewSetting viewSet
 
 void TM_TextView::Render(TM_RenderInfo renderInfo)
 {
-	SkFont* font = renderInfo.textFont;
+	SkFont* font = (this->viewSetting.icon?renderInfo.iconFont:renderInfo.textFont);
 
 	if(this->select) this->invertColors();
     SkPaint paint;
@@ -41,14 +41,20 @@ void TM_TextView::Render(TM_RenderInfo renderInfo)
     font->getMetrics(&fontMetrics);
     SkScalar fontHeight = fontMetrics.fDescent,textX,textY;
     SkRect text_bounds;
-    font->measureText(this->text.c_str(), this->text.length()*sizeof(char), SkTextEncoding::kUTF8, &text_bounds, &paint);
+    if(this->viewSetting.icon)
+        font->measureText(this->text.c_str(), this->text.length()*2, SkTextEncoding::kUTF16, &text_bounds, &paint);
+    else
+        font->measureText(this->text.c_str(), this->text.length()*1, SkTextEncoding::kUTF8, &text_bounds, &paint);
     srcBounds.setWH(text_bounds.width(), this->bounds.height());
     if(this->centered)
         textX = this->bounds.x()+this->bounds.width()/2 - text_bounds.width()/2, textY = this->bounds.y()+this->bounds.height()/2+this->viewSetting.fontSize/2-fontMetrics.fDescent;
     else 
         textX = this->bounds.x(), textY = this->bounds.y()+this->viewSetting.fontSize-fontMetrics.fDescent;
 
-    renderInfo.canvas->drawSimpleText(text.c_str(), text.size()*sizeof(char), SkTextEncoding::kUTF8, textX, textY, *font, paint);
+    if(this->viewSetting.icon)
+        renderInfo.canvas->drawSimpleText(text.c_str(), text.size()*2, SkTextEncoding::kUTF16, textX, textY, *font, paint);
+    else
+        renderInfo.canvas->drawSimpleText(text.c_str(), text.size()*1, SkTextEncoding::kUTF8, textX, textY, *font, paint);
     renderInfo.canvas->restoreToCount(restore);
 	if(this->select) this->invertColors();
 }
