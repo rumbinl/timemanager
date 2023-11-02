@@ -21,12 +21,9 @@ TM_ApplicationManager::TM_ApplicationManager()
 	this->skia_canvas_clear_color = colorScheme[BACKGROUND_COLOR_INDEX];
 
 	this->taskManPtr = new TM_TaskManager({});
-	std::wstring_convert<std::codecvt_utf8<char32_t> > convert;
-	char32_t c = 0xe145;
-	std::u32string s(1,c);
 	this->mainView = new TM_View(SkRect::MakeXYWH(0,0,this->window_ptr.getWindowWidth(),this->window_ptr.getWindowHeight()), {0.05,0.95}, {
 		new TM_HorizontalView(SkRect::MakeEmpty(), {
-				new TM_Button<TM_View>(s, SkRect::MakeEmpty(), [](TM_View* context) {}, this->mainView, {colorScheme[1],colorScheme[2],colorScheme[3],1,24,5,5,true}),
+				new TM_Button<TM_View>("\ue145", SkRect::MakeEmpty(), [](TM_View* context) {}, this->mainView, {colorScheme[1],colorScheme[2],colorScheme[3],1,24,5,5,true}),
 				new TM_Button<TM_View>("Day View", SkRect::MakeEmpty(), [](TM_View* context) {}, this->mainView)
 			},
 			{}),
@@ -112,10 +109,10 @@ void TM_ApplicationManager::PollEvents()
 
 void TM_ApplicationManager::LoadFont(std::string fontPath)
 {
-	sk_sp<SkFontMgr> fontManager(SkFontMgr::RefDefault());
-	sk_sp<SkTypeface> typeface = fontManager->makeFromFile(fontPath.c_str());
-	if(typeface==NULL)
-		std::cout<<"Failed to load font from path: "<<fontPath<<std::endl;
+//	sk_sp<SkFontMgr> fontManager(SkFontMgr::RefDefault());
+	sk_sp<SkTypeface> typeface = SkTypeface::MakeFromFile(fontPath.c_str());
+//	if(typeface==NULL)
+//		std::cout<<"Failed to load font from path: "<<fontPath<<std::endl;
     this->skia_fontList.push_back(new SkFont(typeface)); 
 }
 

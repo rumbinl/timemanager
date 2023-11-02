@@ -9,6 +9,7 @@ template <typename T> TM_CalendarMonthView<T>::TM_CalendarMonthView(SkRect bound
     this->dataView = new TM_TextView("", bounds, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,0,10});
     this->datePlaceholder = getCurrentDate();
     this->weekList = std::vector(7, TM_TextView("XX", SkRect::MakeWH(this->bounds.width()/7.0f, 0.0f), {colorScheme[1],colorScheme[2],colorScheme[3],0,20,0,10}));
+    this->month = std::chrono::year_month{getCurrentDate().year(), getCurrentDate().month()};
 }
 
 template <typename T> void TM_CalendarMonthView<T>::Render(TM_RenderInfo renderInfo)
@@ -44,7 +45,7 @@ template <typename T> void TM_CalendarMonthView<T>::Render(TM_RenderInfo renderI
 
     y+=this->weekList[0].getHeight();
 
-    for(int i=0;i<numDays;i++)
+    for(unsigned i=0; i<numDays; i++)
     {
         if((i+firstDay)%7==0 && i)
         {
@@ -64,6 +65,7 @@ template <typename T> void TM_CalendarMonthView<T>::Render(TM_RenderInfo renderI
             this->dayViewList[i].invertColors();
         x+=this->bounds.width()/7.0f;
     }
+
 }
 
 template<typename T> bool TM_CalendarMonthView<T>::PollEvents(TM_EventInput eventInput) 
@@ -113,6 +115,7 @@ template<typename T> bool TM_CalendarMonthView<T>::PollEvents(TM_EventInput even
 template <typename T> void TM_CalendarMonthView<T>::setDate(TM_YMD date)
 {
     this->taskManPtr->setStartDate(date);
+    this->month = std::chrono::year_month{date.year(), date.month()};
 }
 
 template <typename T> std::chrono::year_month TM_CalendarMonthView<T>::getMonthYear()

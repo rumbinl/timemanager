@@ -42,7 +42,7 @@ void TM_TextView::Render(TM_RenderInfo renderInfo)
     SkScalar fontHeight = fontMetrics.fDescent,textX,textY;
     SkRect text_bounds;
     if(this->viewSetting.icon)
-        font->measureText(this->text.c_str(), this->text.length()*2, SkTextEncoding::kUTF16, &text_bounds, &paint);
+        font->measureText(this->text.c_str(), this->text.length()*1, SkTextEncoding::kUTF16, &text_bounds, &paint);
     else
         font->measureText(this->text.c_str(), this->text.length()*1, SkTextEncoding::kUTF8, &text_bounds, &paint);
     srcBounds.setWH(text_bounds.width(), this->bounds.height());
@@ -52,7 +52,7 @@ void TM_TextView::Render(TM_RenderInfo renderInfo)
         textX = this->bounds.x(), textY = this->bounds.y()+this->viewSetting.fontSize-fontMetrics.fDescent;
 
     if(this->viewSetting.icon)
-        renderInfo.canvas->drawSimpleText(text.c_str(), text.size()*2, SkTextEncoding::kUTF16, textX, textY, *font, paint);
+        renderInfo.canvas->drawSimpleText(text.c_str(), text.size()*1, SkTextEncoding::kUTF16, textX, textY, *font, paint);
     else
         renderInfo.canvas->drawSimpleText(text.c_str(), text.size()*1, SkTextEncoding::kUTF8, textX, textY, *font, paint);
     renderInfo.canvas->restoreToCount(restore);

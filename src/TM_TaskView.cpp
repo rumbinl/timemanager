@@ -21,8 +21,12 @@ TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr, std::map<TM_
     this->startDateMonthView = new TM_CalendarMonthView<TM_TaskManager>(SkRect::MakeWH(0,350), this->taskManPtr, 
 
         [](TM_TaskManager* taskMan, TM_YMD date) {
+            std::cout<<"Setting date"<<std::endl;
             if(taskMan->getCurrentTask()!=NULL)
-                taskMan->setStartDateTime(date, taskMan->getCurrentTask()->getStartTime());
+            {
+                taskMan->setStartDateTime(date, ZeroTime);
+            }
+            std::cout<<"Date set"<<std::endl;
         }, 
 
         [](TM_TaskManager* taskMan) {

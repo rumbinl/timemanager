@@ -37,6 +37,10 @@ typedef std::chrono::year_month_day TM_YMD;
 #define ZeroDate (TM_YMD{std::chrono::January/1/0})
 #define ZeroTime (TM_Time{-1,-1})
 
+#ifndef M_PI
+#define M_PI (3.14159265358979323846f)
+#endif
+
 #ifndef max
 #define max(a,b) ((a>b)?(a):(b))
 #endif
