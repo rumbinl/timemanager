@@ -24,7 +24,7 @@ TM_ApplicationManager::TM_ApplicationManager()
 	this->mainView = new TM_View(SkRect::MakeXYWH(0,0,this->window_ptr.getWindowWidth(),this->window_ptr.getWindowHeight()), {0.05,0.95}, {
 		new TM_HorizontalView(SkRect::MakeEmpty(), {
 				new TM_Button<TM_View>("\ue145", SkRect::MakeEmpty(), [](TM_View* context) {}, this->mainView, {colorScheme[1],colorScheme[2],colorScheme[3],1,24,5,5,true}),
-				new TM_Button<TM_View>("Day View", SkRect::MakeEmpty(), [](TM_View* context) {}, this->mainView)
+				new TM_Button<TM_View>("\ue1b2", SkRect::MakeEmpty(), [](TM_View* context) {}, this->mainView, {colorScheme[1],colorScheme[2],colorScheme[3],1,24,5,5,true})
 			},
 			{}),
 		new TM_HorizontalView(SkRect::MakeEmpty(), {
