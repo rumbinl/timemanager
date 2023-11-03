@@ -27,7 +27,7 @@ template <typename T> void TM_CalendarMonthView<T>::Render(TM_RenderInfo renderI
 
     this->dataView->setX(this->bounds.x());
     this->dataView->setY(this->bounds.y());
-    this->dataView->setText(monthNames[static_cast<unsigned>(currentDate.month())]+' '+std::to_string(static_cast<int>(currentDate.year())));
+    this->dataView->setText(monthNames[static_cast<unsigned>(currentDate.month())-1]+' '+std::to_string(static_cast<int>(currentDate.year())));
     this->dataView->setWidth(this->bounds.width());
     this->dataView->setHeightFont(renderInfo.textFont);
     this->dataView->Render(renderInfo);
