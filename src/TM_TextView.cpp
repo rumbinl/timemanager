@@ -22,6 +22,7 @@ void TM_TextView::Render(TM_RenderInfo renderInfo)
 
     if(viewSetting.borderThickness>0)
     {
+        paint.setBlendMode(SkBlendMode::kLastMode);
         paint.setStyle(SkPaint::kStroke_Style);
         paint.setColor(this->viewSetting.borderColor);
         paint.setStrokeWidth(this->viewSetting.borderThickness-1);
@@ -30,7 +31,6 @@ void TM_TextView::Render(TM_RenderInfo renderInfo)
     renderInfo.canvas->drawRect(SkRect::MakeXYWH(this->bounds.x(),this->bounds.y(),this->bounds.width(),this->bounds.height()),paint);
 
     int restore = renderInfo.canvas->save();
-	renderInfo.canvas->clipRect(this->bounds);
     renderInfo.canvas->translate(-this->textXOffset,0);
 
     paint.setColor(this->viewSetting.textColor);

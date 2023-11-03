@@ -5,7 +5,7 @@
 class TM_TextBox : public TM_TextView
 {
     public:
-        TM_TextBox(SkRect bounds, std::string placeholder, std::string* srcString=NULL, TM_ViewSetting viewSetting ={colorScheme[1],colorScheme[2],colorScheme[3],1,24,5,5});
+        TM_TextBox(SkRect bounds, std::string placeholder, std::string* srcString=NULL, TM_ViewSetting viewSetting ={colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5});
         void Render(TM_RenderInfo renderInfo) override;
         bool PollEvents(TM_EventInput eventInput) override;
         void setSrcString(std::string* srcString);

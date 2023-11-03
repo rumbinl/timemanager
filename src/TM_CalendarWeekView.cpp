@@ -60,10 +60,12 @@ void TM_CalendarWeekView::Render(TM_RenderInfo renderInfo)
 
 	renderInfo.canvas->drawRect(this->bounds, paint);
 
-	paint.setStyle(SkPaint::kStroke_Style);
-	paint.setColor(this->viewSetting.borderColor);
-
-	renderInfo.canvas->drawRect(this->bounds, paint);
+	if(this->viewSetting.borderThickness>0)
+	{
+		paint.setStyle(SkPaint::kStroke_Style);
+		paint.setColor(this->viewSetting.borderColor-1);
+		renderInfo.canvas->drawRect(this->bounds, paint);
+	}
 
     renderInfo.textFont->setSize(this->viewSetting.fontSize);
 

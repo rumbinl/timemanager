@@ -11,7 +11,7 @@
 class TM_CalendarWeekView : public TM_RenderObject
 {
     public:
-        TM_CalendarWeekView(SkRect bounds, std::chrono::year_month_day* focusDate, TM_TaskManager* taskManPtr, int numDays = 7, SkScalar hourHeight = 50.0, TM_ViewSetting viewSettings={colorScheme[1],colorScheme[2],colorScheme[3],1,24,0,0});
+        TM_CalendarWeekView(SkRect bounds, std::chrono::year_month_day* focusDate, TM_TaskManager* taskManPtr, int numDays = 7, SkScalar hourHeight = 50.0, TM_ViewSetting viewSettings={colorScheme[1],colorScheme[2],colorScheme[3],0,24,0,0});
         void Render(TM_RenderInfo renderInfo) override;
         void RenderTimes(TM_RenderInfo renderInfo);
         void RenderTask(TM_Task* task, SkColor color, TM_RenderInfo renderInfo);

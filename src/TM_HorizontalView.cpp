@@ -10,7 +10,7 @@ void TM_HorizontalView::Render(TM_RenderInfo renderInfo)
 			 objectHeight = this->bounds.height() - 2 * this->viewSetting.paddingY;
 
 	renderInfo.canvas->save();
-	renderInfo.canvas->clipRect(this->bounds);
+	//renderInfo.canvas->clipRect(this->bounds);
 	renderInfo.canvas->translate(this->bounds.x(), this->bounds.y());
 
 	SkScalar x = 0;
