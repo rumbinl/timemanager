@@ -13,7 +13,7 @@
 class TM_TaskView : public TM_View
 {
     public:
-        TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr,std::map<TM_YMD,int>* calendarPtr);
+        TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr,std::map<TM_YMD,int>& calendarPtr);
         void setTask(TM_Task* task);
         void setDate(TM_YMD date);
         void Render(TM_RenderInfo renderInfo) override;
@@ -28,10 +28,10 @@ class TM_TaskView : public TM_View
         TM_Task* currentTask=NULL,dummyTask=TM_Task("",getCurrentDate(),getCurrentDate(),{0,0},{0,0}); 
         TM_TextBox* textBox;
         TM_View* taskList;
-        TM_Button<TM_TaskView>* addSubtaskButton,*scheduleTaskButton,*deleteTaskButton;
+        TM_Button<TM_TaskView,int>* addSubtaskButton,*scheduleTaskButton,*deleteTaskButton;
         TM_TextView *startDateLabel,*endDateLabel;
         TM_CalendarMonthView<TM_TaskManager> *startDateMonthView, *endDateMonthView;
         TM_YMD date;
         TM_TaskManager* taskManPtr;
-        std::map<TM_YMD,int>* calendarPtr;
+        std::map<TM_YMD,int> calendarPtr;
 };

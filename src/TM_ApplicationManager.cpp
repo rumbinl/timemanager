@@ -23,13 +23,13 @@ TM_ApplicationManager::TM_ApplicationManager()
 	this->taskManPtr = new TM_TaskManager({});
 	this->mainView = new TM_View(SkRect::MakeXYWH(0,0,this->window_ptr.getWindowWidth(),this->window_ptr.getWindowHeight()), {0.05,0.95}, {
 		new TM_HorizontalView(SkRect::MakeEmpty(), {
-				new TM_Button<TM_View>("\ue145", SkRect::MakeEmpty(), [](TM_View* context) {}, this->mainView, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true}),
-				new TM_Button<TM_View>("\ue1b2", SkRect::MakeEmpty(), [](TM_View* context) {}, this->mainView, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true})
-			},
-			{}),
+				new TM_Button<TM_View,int>("\ue145", SkRect::MakeEmpty(), (int)0, this->mainView, [](TM_View* context, int data) {}, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true}),
+				new TM_Button<TM_View,int>("\ue1b2", SkRect::MakeEmpty(), (int)0, this->mainView, [](TM_View* context, int data) {}, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true})
+			})
+			,
 		new TM_HorizontalView(SkRect::MakeEmpty(), {
 				new TM_CalendarView(SkRect::MakeXYWH(0, 0, 840, 840), this->taskManPtr),
-				new TM_TaskView(SkRect::MakeXYWH(0,0,840,840), this->taskManPtr, &this->freeTimeMap)
+				new TM_TaskView(SkRect::MakeXYWH(0,0,840,840), this->taskManPtr, this->freeTimeMap)
 			})
 	});
 }

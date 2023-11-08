@@ -12,33 +12,33 @@ TM_CalendarView::TM_CalendarView(SkRect bounds, TM_TaskManager* taskManPtr) : TM
 	});
    	this->buttonBar = new TM_HorizontalView(SkRect::MakeXYWH(0,0,0,40),{
 
-			new TM_Button<TM_CalendarView>("Show Month", SkRect::MakeXYWH(0,0,0,40), 
-				[](TM_CalendarView* context) 
+			new TM_Button<TM_CalendarView,int>("\ue8f4", SkRect::MakeXYWH(0,0,0,40), 0, this, 
+				[](TM_CalendarView* context,int data) 
 				{
 					context->getRenderObject(1)->setRenderObjectExistence(0,true);
 					context->getRenderObject(0)->setRenderObjectExistence(0,false);
 					context->getRenderObject(0)->setRenderObjectExistence(1,true);
-				}, this),
+				}, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true}),
 
-			new TM_Button<TM_CalendarView>("Hide Month", SkRect::MakeXYWH(0,0,0,40), 
-				[](TM_CalendarView* context) 
+			new TM_Button<TM_CalendarView,int>("\ue8f5", SkRect::MakeXYWH(0,0,0,40), 0, this, 
+				[](TM_CalendarView* context, int data) 
 				{
 					context->getRenderObject(1)->setRenderObjectExistence(0,false);
 					context->getRenderObject(0)->setRenderObjectExistence(0,true);
 					context->getRenderObject(0)->setRenderObjectExistence(1,false);
-				}, this),
+				}, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true}),
 
-			new TM_Button<TM_CalendarWeekView>("Increase View Range", SkRect::MakeXYWH(0,0,0,40), 
-				[](TM_CalendarWeekView* context)
-				{
-					context->setDaySpan(context->getDaySpan()+1);
-				}, this->weekView),
-
-    		new TM_Button<TM_CalendarWeekView>("Decrease View Range", SkRect::MakeXYWH(0,0,0,40),
-				[](TM_CalendarWeekView* context)
+    		new TM_Button<TM_CalendarWeekView,int>("\ue14c", SkRect::MakeXYWH(0,0,0,40), 0, this->weekView, 
+				[](TM_CalendarWeekView* context, int data)
 				{
 					context->setDaySpan(context->getDaySpan()-1);
-				}, this->weekView)
+				}, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true}),
+
+			new TM_Button<TM_CalendarWeekView,int>("\ue145", SkRect::MakeXYWH(0,0,0,40), 0, this->weekView, 
+				[](TM_CalendarWeekView* context, int data)
+				{
+					context->setDaySpan(context->getDaySpan()+1);
+				}, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true})
 		}
 		, {colorScheme[0],colorScheme[3],colorScheme[3],0,24,0,0});
 

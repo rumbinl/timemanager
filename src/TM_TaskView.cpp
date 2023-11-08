@@ -1,35 +1,31 @@
 #include <TM_TaskView.hpp>
 
-TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr, std::map<TM_YMD,int>* calendarPtr) : TM_View(bounds, {},{colorScheme[0],colorScheme[3],colorScheme[3],0,24,0,10})
+TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr, std::map<TM_YMD,int>& calendarPtr) : TM_View(bounds, {},{colorScheme[0],colorScheme[3],colorScheme[3],0,24,0,10})
 {
     this->taskManPtr = taskManPtr;
     this->currentTask = &this->dummyTask;
     this->textBox = new TM_TextBox(SkRect::MakeWH(0,48),"New Task", NULL, {colorScheme[1],colorScheme[2],colorScheme[3],1,48,5});
     this->taskList = new TM_View(SkRect::MakeWH(0,200), {});
     this->calendarPtr = calendarPtr;
-    this->addSubtaskButton = new TM_Button<TM_TaskView>("Add Subtask", SkRect::MakeWH(0,50), [](TM_TaskView* context) {
-    },this);
+    this->addSubtaskButton = new TM_Button<TM_TaskView, int>("Add Subtask", SkRect::MakeWH(0,50), 0, this, [](TM_TaskView* context, int data) {
+    });
 
-    this->scheduleTaskButton = new TM_Button<TM_TaskView>("Schedule", SkRect::MakeWH(0,50), [](TM_TaskView* context) {
+    this->scheduleTaskButton = new TM_Button<TM_TaskView, int>("Schedule", SkRect::MakeWH(0,50), 0, this, [](TM_TaskView* context, int data) {
         // TODO: Add Task
-	}, this);
+	});
 
-    this->deleteTaskButton = new TM_Button<TM_TaskView>("Delete this task", SkRect::MakeWH(0,50), [](TM_TaskView* context) {
+    this->deleteTaskButton = new TM_Button<TM_TaskView, int>("Delete this task", SkRect::MakeWH(0,50), 0, this, [](TM_TaskView* context, int data) {
         context->getTaskManPtr()->deleteCurrentTask();
-    },this);
+    });
 
     this->startDateMonthView = new TM_CalendarMonthView<TM_TaskManager>(SkRect::MakeWH(0,350), this->taskManPtr, 
 
         [](TM_TaskManager* taskMan, TM_YMD date) {
-            std::cout<<"Setting date"<<std::endl;
             if(taskMan->getCurrentTask()!=NULL)
-            {
                 taskMan->setStartDateTime(date, ZeroTime);
-            }
-            std::cout<<"Date set"<<std::endl;
         }, 
 
-        [](TM_TaskManager* taskMan) {
+        [](TM_TaskManager* taskMan) -> TM_YMD {
             if(taskMan->getCurrentTask()==NULL)
                 return ZeroDate;
             return taskMan->getCurrentTask()->getStartDate();
@@ -84,9 +80,9 @@ TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr, std::map<TM_
     this->renderObjects.push_back(this->addSubtaskButton);
     //this->renderObjects.push_back(this->scheduleTaskButton);
     this->renderObjects.push_back(this->deleteTaskButton);
-    this->renderObjects.push_back(new TM_Button<TM_TaskView>("Hide Task Panel", SkRect::MakeWH(0,50), [](TM_TaskView* taskView){
+    this->renderObjects.push_back(new TM_Button<TM_TaskView, int>("Hide Task Panel", SkRect::MakeWH(0,50), 0, this, [](TM_TaskView* taskView, int data){
         taskView->setExistence(false);
-    }, this));
+    }));
 }
 
 void TM_TaskView::setDate(TM_YMD date)
@@ -106,7 +102,7 @@ std::string TM_TaskView::getText()
 
 std::map<TM_YMD,int>* TM_TaskView::getCalendarPtr()
 {
-    return this->calendarPtr;
+    return &this->calendarPtr;
 }
 
 void TM_TaskView::setTask(TM_Task* taskPtr)
