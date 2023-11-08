@@ -109,8 +109,8 @@ void TM_ApplicationManager::PollEvents()
 
 void TM_ApplicationManager::LoadFont(std::string fontPath)
 {
-//	sk_sp<SkFontMgr> fontManager(SkFontMgr::RefDefault());
-	sk_sp<SkTypeface> typeface = SkTypeface::MakeFromFile(fontPath.c_str());
+	sk_sp<SkFontMgr> fontManager(SkFontMgr::RefDefault());
+	sk_sp<SkTypeface> typeface = fontManager->makeFromFile(fontPath.c_str());
 //	if(typeface==NULL)
 //		std::cout<<"Failed to load font from path: "<<fontPath<<std::endl;
     this->skia_fontList.push_back(new SkFont(typeface)); 

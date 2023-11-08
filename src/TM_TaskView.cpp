@@ -26,8 +26,10 @@ TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr, std::map<TM_
         }, 
 
         [](TM_TaskManager* taskMan) -> TM_YMD {
+            std::cout<<"Getting task date."<<std::endl;
             if(taskMan->getCurrentTask()==NULL)
                 return ZeroDate;
+            std::cout<<"Task non-null."<<std::endl;
             return taskMan->getCurrentTask()->getStartDate();
         }
     );
@@ -42,11 +44,12 @@ TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr, std::map<TM_
         },
 
         [](TM_TaskManager* taskMan) {
+            std::cout<<"Getting task date."<<std::endl;
             if(taskMan->getCurrentTask() == NULL)
                 return ZeroDate;
+            std::cout<<"Task non-null."<<std::endl;
             return taskMan->getCurrentTask()->getEndDate();
         } 
-
     );
 
     this->startDateLabel = new TM_TextView("Start Date", SkRect::MakeWH(0,50));

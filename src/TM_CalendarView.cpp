@@ -5,9 +5,12 @@ TM_CalendarView::TM_CalendarView(SkRect bounds, TM_TaskManager* taskManPtr) : TM
     this->taskManPtr = taskManPtr;
     this->currentDate = getCurrentDate();
     this->weekView = new TM_CalendarWeekView(SkRect::MakeXYWH(0, 0, 0, 480), &this->currentDate, taskManPtr);
-    this->monthView = new TM_CalendarMonthView<TM_CalendarView>(SkRect::MakeXYWH(0, 0, 250, 250), this, [](TM_CalendarView* calendarView, TM_YMD date){
+    this->monthView = new TM_CalendarMonthView<TM_CalendarView>(SkRect::MakeXYWH(0, 0, 250, 250), this, 
+	[](TM_CalendarView* calendarView, TM_YMD date){
 		calendarView->setReferenceDate(date);
-	}, [](TM_CalendarView* calendarView) {
+	}, 
+	[](TM_CalendarView* calendarView) -> TM_YMD {
+		std::cout<<"Getting reference date"<<std::endl;
 		return calendarView->getReferenceDate();
 	});
    	this->buttonBar = new TM_HorizontalView(SkRect::MakeXYWH(0,0,0,40),{
@@ -39,8 +42,7 @@ TM_CalendarView::TM_CalendarView(SkRect bounds, TM_TaskManager* taskManPtr) : TM
 				{
 					context->setDaySpan(context->getDaySpan()+1);
 				}, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true})
-		}
-		, {colorScheme[0],colorScheme[3],colorScheme[3],0,24,0,0});
+		});
 
 	this->vitalView = new TM_View(SkRect::MakeEmpty(), {}, {
 		this->monthView,

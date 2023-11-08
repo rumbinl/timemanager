@@ -9,7 +9,7 @@
 template <typename T> class TM_TimeDial : public TM_RenderObject
 {
     public:
-        TM_TimeDial(SkRect bounds, T* timeManPtr=NULL, void (*setTime)(T* timeManPtr, TM_Time time)=NULL, TM_Time (*getTime)(T* timeManPtr)=NULL, TM_ViewSetting viewSetting = {colorScheme[3],colorScheme[2],colorScheme[1],1,32,0,0});
+        TM_TimeDial(SkRect bounds, T* timeManPtr=NULL, void (*setTime)(T* timeManPtr, TM_Time time)=NULL, TM_Time (*getTime)(T* timeManPtr)=NULL, TM_ViewSetting viewSetting = {colorScheme[3],colorScheme[2],colorScheme[1],0,32,0,0});
         void Render(TM_RenderInfo renderInfo);
         SkScalar GetAnglePercentage(TM_EventInput eventInput);
         static SkScalar SubtractAnglePercentages(SkScalar angle1, SkScalar angle2);

@@ -5,6 +5,8 @@
 #include <TM_View.hpp>
 #include <TM_CalendarView.hpp>
 #include <TM_TaskView.hpp>
+#include <include/core/SkRefCnt.h>
+#include <include/core/SkFontMgr.h>
 #include <map>
 
 class TM_ApplicationManager

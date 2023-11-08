@@ -22,20 +22,18 @@ void TM_TextView::Render(TM_RenderInfo renderInfo)
 
     if(viewSetting.borderThickness>0)
     {
-        paint.setBlendMode(SkBlendMode::kLastMode);
         paint.setStyle(SkPaint::kStroke_Style);
         paint.setColor(this->viewSetting.borderColor);
         paint.setStrokeWidth(this->viewSetting.borderThickness-1);
+        renderInfo.canvas->drawRect(this->bounds,paint);
     }
 
-    renderInfo.canvas->drawRect(SkRect::MakeXYWH(this->bounds.x(),this->bounds.y(),this->bounds.width(),this->bounds.height()),paint);
-
-    int restore = renderInfo.canvas->save();
+    renderInfo.canvas->save();
     renderInfo.canvas->translate(-this->textXOffset,0);
 
     paint.setColor(this->viewSetting.textColor);
     paint.setStyle(SkPaint::kFill_Style);
-    font->setSize(this->viewSetting.fontSize);
+    font->setSize(fmin(this->viewSetting.fontSize,this->bounds.height()));
 
     SkFontMetrics fontMetrics;
     font->getMetrics(&fontMetrics);
@@ -44,12 +42,12 @@ void TM_TextView::Render(TM_RenderInfo renderInfo)
     font->measureText(this->text.c_str(), this->text.length()*1, SkTextEncoding::kUTF8, &text_bounds, &paint);
     srcBounds.setWH(text_bounds.width(), this->bounds.height());
     if(this->centered)
-        textX = this->bounds.x()+this->bounds.width()/2 - text_bounds.width()/2, textY = this->bounds.y()+this->bounds.height()/2+this->viewSetting.fontSize/2-fontMetrics.fDescent;
+        textX = this->bounds.x()+this->bounds.width()/2 - text_bounds.width()/2, textY = this->bounds.height()<this->viewSetting.fontSize?this->bounds.y()+this->bounds.height()-fontMetrics.fDescent:this->bounds.y()+this->bounds.height()/2+this->viewSetting.fontSize/2-fontMetrics.fDescent;
     else 
         textX = this->bounds.x(), textY = this->bounds.y()+this->viewSetting.fontSize-fontMetrics.fDescent;
 
     renderInfo.canvas->drawSimpleText(text.c_str(), text.size()*1, SkTextEncoding::kUTF8, textX, textY, *font, paint);
-    renderInfo.canvas->restoreToCount(restore);
+    renderInfo.canvas->restore();
 	if(this->select) this->invertColors();
 }
 

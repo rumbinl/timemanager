@@ -7,6 +7,7 @@ template <typename ContextType, typename DataType> class TM_SelectButton : publi
     public: 
         TM_SelectButton(std::string text, SkRect bounds, DataType data, ContextType* context=NULL, void (*actionFunc)(ContextType* context, DataType data)=NULL, bool (*isSelectedFunc)(ContextType* context, DataType data)=NULL, TM_ViewSetting viewSetting={colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5});
 
+        void Render(TM_RenderInfo renderInfo) override;
     private:
         bool (*isSelectedFunc)(ContextType* context, DataType data);
 

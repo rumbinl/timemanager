@@ -7,7 +7,7 @@
 class TM_RenderObject 
 {
     public:
-        TM_RenderObject(SkRect bounds, TM_ViewSetting viewSetting={colorScheme[0],colorScheme[3],colorScheme[3],1,24,5,5});
+        TM_RenderObject(SkRect bounds, TM_ViewSetting viewSetting={colorScheme[0],colorScheme[3],colorScheme[3],0,24,5,5});
         virtual void Render(TM_RenderInfo renderInfo);
         virtual bool PollEvents(TM_EventInput eventInput);
         SkRect getBounds();

@@ -5,11 +5,13 @@ template <typename ContextType, typename DataType> TM_SelectButton<ContextType, 
     this->isSelectedFunc = isSelectedFunc;  
 }
 
-/*template <typename ContextType, typename DataType> void TM_SelectButton<ContextType, DataType>::Render(TM_RenderInfo renderInfo)
+template <typename ContextType, typename DataType> void TM_SelectButton<ContextType, DataType>::Render(TM_RenderInfo renderInfo)
 {
+    std::cout<<"Is selected?"<<std::endl;
     this->select = isSelectedFunc(this->context, this->data);
+    std::cout<<"Select checked."<<std::endl;
     TM_TextView::Render(renderInfo);
-}*/
+}
 
 #include <TM_TaskManager.hpp>
 #include <TM_MonthView.hpp>

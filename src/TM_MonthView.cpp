@@ -15,6 +15,11 @@ template <typename ContextType> TM_MonthView<ContextType>::TM_MonthView(SkRect b
             }, 
             [](TM_MonthView<ContextType>* monthView, int dayIndex) -> bool 
             {
+                std::cout<<"Is selected?."<<std::endl;
+                std::chrono::year_month month = monthView->getMonthYear();
+                std::cout<<"Month obtained."<<std::endl;
+                TM_YMD date = monthView->getDate();
+                std::cout<<"Date obtained."<<std::endl;
                 return monthView->getMonthYear().year()  == monthView->getDate().year() && 
                        monthView->getMonthYear().month() == monthView->getDate().month() && 
                        dayIndex == static_cast<unsigned int>(monthView->getDate().day());
@@ -24,7 +29,7 @@ template <typename ContextType> TM_MonthView<ContextType>::TM_MonthView(SkRect b
 
     for(int i=0; i<31; i++)
     {
-        dayViewList[i].setText(std::to_string(i));
+        dayViewList[i].setText(std::to_string(i+1));
         dayViewList[i].setData(i+1);
     }
     this->datePlaceholder = getCurrentDate();
@@ -41,6 +46,7 @@ template <typename ContextType> void TM_MonthView<ContextType>::Render(TM_Render
 
     renderInfo.canvas->save();
     renderInfo.canvas->clipRect(this->bounds);
+    renderInfo.canvas->translate(this->bounds.x(), this->bounds.y());
     SkScalar xStep = this->bounds.width()/7.0f,
              yStep = this->bounds.height()/(SkScalar)numRows,
              x=firstDay*xStep,
@@ -85,10 +91,13 @@ template <typename ContextType> void TM_MonthView<ContextType>::setDate(TM_YMD d
 
 template <typename ContextType> TM_YMD TM_MonthView<ContextType>::getDate()
 {
-    if(getDateFunc!=NULL)
+    if(this->getDateFunc!=NULL&& this->contextPtr!=NULL)
     {
-        return getDateFunc(this->contextPtr);
+        std::cout<<"Getting date"<<std::endl;
+        return this->getDateFunc(this->contextPtr);
     }
+    
+    return ZeroDate;
 }
 
 template <typename ContextType> std::chrono::year_month TM_MonthView<ContextType>::getMonthYear()

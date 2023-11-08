@@ -8,7 +8,7 @@
 template<typename ContextType> class TM_MonthView : public TM_RenderObject
 {
     public:
-        TM_MonthView(SkRect bounds=SkRect::MakeEmpty(), ContextType* contextPtr=NULL, void (*setDateFunc)(ContextType* contextPtr, TM_YMD date)=NULL, TM_YMD (*getDateFunc)(ContextType* contextPtr)=NULL, TM_ViewSetting viewSetting={colorScheme[0],colorScheme[3],colorScheme[3],1,16,0,0});
+        TM_MonthView(SkRect bounds=SkRect::MakeEmpty(), ContextType* contextPtr=NULL, void (*setDateFunc)(ContextType* contextPtr, TM_YMD date)=NULL, TM_YMD (*getDateFunc)(ContextType* contextPtr)=NULL, TM_ViewSetting viewSetting={colorScheme[0],colorScheme[3],colorScheme[3],0,16,0,0});
        
         void Render(TM_RenderInfo renderInfo) override;
 
