@@ -4,9 +4,11 @@ if (APPLE)
 	add_library(skia STATIC IMPORTED)
 	set_property(TARGET skia PROPERTY IMPORTED_LOCATION /usr/local/lib/libskia.a)
 	find_library(COCOA_LIBRARY Cocoa)
+	add_library(sqlite3 STATIC IMPORTED)
+	set_property(TARGET sqlite3 PROPERTY IMPORTED_LOCATION /usr/local/lib/sqlite3.o)
 endif (APPLE)
 
-target_link_libraries(Timeman skia SDL3)
+target_link_libraries(Timeman skia SDL3 sqlite3)
 
 if (APPLE)
 	target_link_libraries(Timeman ${COCOA_LIBRARY})

@@ -7,6 +7,7 @@
 #include <TM_TaskView.hpp>
 #include <include/core/SkRefCnt.h>
 #include <include/core/SkFontMgr.h>
+#include <TM_Database.hpp>
 #include <map>
 
 class TM_ApplicationManager
