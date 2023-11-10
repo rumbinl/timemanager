@@ -15,7 +15,7 @@ TM_CalendarView::TM_CalendarView(SkRect bounds, TM_TaskManager* taskManPtr) : TM
 	});
    	this->buttonBar = new TM_HorizontalView(SkRect::MakeXYWH(0,0,0,40),{
 
-			new TM_Button<TM_CalendarView,int>("\ue8f4", SkRect::MakeXYWH(0,0,0,40), 0, this, 
+			new TM_Button<TM_CalendarView,int>("\ue8f4\uebcc", SkRect::MakeXYWH(0,0,0,40), 0, this, 
 				[](TM_CalendarView* context,int data) 
 				{
 					context->getRenderObject(1)->setRenderObjectExistence(0,true);
@@ -23,7 +23,7 @@ TM_CalendarView::TM_CalendarView(SkRect bounds, TM_TaskManager* taskManPtr) : TM
 					context->getRenderObject(0)->setRenderObjectExistence(1,true);
 				}, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true}),
 
-			new TM_Button<TM_CalendarView,int>("\ue8f5", SkRect::MakeXYWH(0,0,0,40), 0, this, 
+			new TM_Button<TM_CalendarView,int>("\ue8f5\uebcc", SkRect::MakeXYWH(0,0,0,40), 0, this, 
 				[](TM_CalendarView* context, int data) 
 				{
 					context->getRenderObject(1)->setRenderObjectExistence(0,false);
@@ -31,13 +31,13 @@ TM_CalendarView::TM_CalendarView(SkRect bounds, TM_TaskManager* taskManPtr) : TM
 					context->getRenderObject(0)->setRenderObjectExistence(1,false);
 				}, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true}),
 
-    		new TM_Button<TM_CalendarWeekView,int>("\ue14c", SkRect::MakeXYWH(0,0,0,40), 0, this->weekView, 
+    		new TM_Button<TM_CalendarWeekView,int>("\ue8f3\ue3cb", SkRect::MakeXYWH(0,0,0,40), 0, this->weekView, 
 				[](TM_CalendarWeekView* context, int data)
 				{
 					context->setDaySpan(context->getDaySpan()-1);
 				}, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true}),
 
-			new TM_Button<TM_CalendarWeekView,int>("\ue145", SkRect::MakeXYWH(0,0,0,40), 0, this->weekView, 
+			new TM_Button<TM_CalendarWeekView,int>("\ue8f3\ue3cd", SkRect::MakeXYWH(0,0,0,40), 0, this->weekView, 
 				[](TM_CalendarWeekView* context, int data)
 				{
 					context->setDaySpan(context->getDaySpan()+1);

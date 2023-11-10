@@ -16,16 +16,16 @@ TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr, std::map<TM_
                                                    }, {colorScheme[1],colorScheme[2],colorScheme[3],1,48,5});
     this->taskList = new TM_View(SkRect::MakeWH(0,200), {});
     this->calendarPtr = calendarPtr;
-    this->addSubtaskButton = new TM_Button<TM_TaskView, int>("Add Subtask", SkRect::MakeWH(0,50), 0, this, [](TM_TaskView* context, int data) {
-    });
+    this->addSubtaskButton = new TM_Button<TM_TaskView, int>("\uf23a", SkRect::MakeWH(0,50), 0, this, [](TM_TaskView* context, int data) {
+    }, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true});
 
-    this->scheduleTaskButton = new TM_Button<TM_TaskView, int>("Schedule", SkRect::MakeWH(0,50), 0, this, [](TM_TaskView* context, int data) {
+    this->scheduleTaskButton = new TM_Button<TM_TaskView, int>("\ue8b5", SkRect::MakeWH(0,50), 0, this, [](TM_TaskView* context, int data) {
         // TODO: Add Task
-	});
+	}, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true});
 
-    this->deleteTaskButton = new TM_Button<TM_TaskView, int>("Delete this task", SkRect::MakeWH(0,50), 0, this, [](TM_TaskView* context, int data) {
+    this->deleteTaskButton = new TM_Button<TM_TaskView, int>("\ue872a", SkRect::MakeWH(0,50), 0, this, [](TM_TaskView* context, int data) {
         context->getTaskManPtr()->deleteCurrentTask();
-    });
+    }, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true});
 
     this->startDateMonthView = new TM_CalendarMonthView<TM_TaskManager>(SkRect::MakeWH(0,350), this->taskManPtr, 
 
@@ -88,9 +88,9 @@ TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr, std::map<TM_
     this->renderObjects.push_back(this->addSubtaskButton);
     //this->renderObjects.push_back(this->scheduleTaskButton);
     this->renderObjects.push_back(this->deleteTaskButton);
-    this->renderObjects.push_back(new TM_Button<TM_TaskView, int>("Hide Task Panel", SkRect::MakeWH(0,50), 0, this, [](TM_TaskView* taskView, int data){
+    this->renderObjects.push_back(new TM_Button<TM_TaskView, int>("\ue8f5", SkRect::MakeWH(0,50), 0, this, [](TM_TaskView* taskView, int data){
         taskView->setExistence(false);
-    }));
+    }, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true}));
 }
 
 void TM_TaskView::setDate(TM_YMD date)
