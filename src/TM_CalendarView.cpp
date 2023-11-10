@@ -31,13 +31,13 @@ TM_CalendarView::TM_CalendarView(SkRect bounds, TM_TaskManager* taskManPtr) : TM
 					context->getRenderObject(0)->setRenderObjectExistence(1,false);
 				}, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true}),
 
-    		new TM_Button<TM_CalendarWeekView,int>("\ue8f3\ue3cb", SkRect::MakeXYWH(0,0,0,40), 0, this->weekView, 
+    		new TM_Button<TM_CalendarWeekView,int>("\ue3cb\ue8f3", SkRect::MakeXYWH(0,0,0,40), 0, this->weekView, 
 				[](TM_CalendarWeekView* context, int data)
 				{
 					context->setDaySpan(context->getDaySpan()-1);
 				}, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true}),
 
-			new TM_Button<TM_CalendarWeekView,int>("\ue8f3\ue3cd", SkRect::MakeXYWH(0,0,0,40), 0, this->weekView, 
+			new TM_Button<TM_CalendarWeekView,int>("\ue3cd\ue8f3", SkRect::MakeXYWH(0,0,0,40), 0, this->weekView, 
 				[](TM_CalendarWeekView* context, int data)
 				{
 					context->setDaySpan(context->getDaySpan()+1);
