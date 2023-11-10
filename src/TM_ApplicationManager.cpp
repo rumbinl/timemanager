@@ -20,7 +20,8 @@ TM_ApplicationManager::TM_ApplicationManager()
 	this->should_render_update = true;
 	this->skia_canvas_clear_color = colorScheme[BACKGROUND_COLOR_INDEX];
 
-	this->taskManPtr = new TM_TaskManager({});
+	this->taskManPtr = new TM_TaskManager({}, &this->taskViewPtr);
+	this->taskViewPtr = new TM_TaskView(SkRect::MakeXYWH(0,0,840,840), this->taskManPtr, this->freeTimeMap);
 	this->mainView = new TM_View(SkRect::MakeXYWH(0,0,this->window_ptr.getWindowWidth(),this->window_ptr.getWindowHeight()), {0.05,0.95}, {
 		new TM_HorizontalView(SkRect::MakeEmpty(), {
 				new TM_Button<TM_View,int>("\ue145", SkRect::MakeEmpty(), (int)0, this->mainView, [](TM_View* context, int data) {}, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true}),
@@ -29,7 +30,7 @@ TM_ApplicationManager::TM_ApplicationManager()
 			,
 		new TM_HorizontalView(SkRect::MakeEmpty(), {
 				new TM_CalendarView(SkRect::MakeXYWH(0, 0, 840, 840), this->taskManPtr),
-				new TM_TaskView(SkRect::MakeXYWH(0,0,840,840), this->taskManPtr, this->freeTimeMap)
+				this->taskViewPtr
 			})
 	});
 }

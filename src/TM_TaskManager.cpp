@@ -1,7 +1,9 @@
 #include <TM_TaskManager.hpp>
+#include <TM_TaskView.hpp>
 
-TM_TaskManager::TM_TaskManager(std::vector<TM_Task*> tasks)
+TM_TaskManager::TM_TaskManager(std::vector<TM_Task*> tasks, TM_TaskView** outputPtr)
 {
+    this->outputPtr = outputPtr;
     for(TM_Task* task : tasks)
         this->sortedTasks.insert(task);
 }
@@ -43,6 +45,8 @@ void TM_TaskManager::deleteCurrentTask()
 void TM_TaskManager::setCurrentTask(std::multiset<TM_Task*,TM_Task::TM_TaskPtrCompare>::iterator currentTask)
 {
     this->currentTask = currentTask;
+    if(this->outputPtr!=NULL)
+        (*(this->outputPtr))->setExistence(true);
 }
 
 void TM_TaskManager::setStartDateTime(TM_YMD startDate, TM_Time startTime)

@@ -37,6 +37,7 @@ template <typename ContextType> void TM_CalendarMonthView<ContextType>::setDate(
 
 #include <TM_CalendarView.hpp>
 #include <TM_TaskManager.hpp>
+#include <TM_TaskView.hpp>
 
 template class TM_CalendarMonthView<TM_TaskManager>;
 template class TM_CalendarMonthView<TM_CalendarView>;
