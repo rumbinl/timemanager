@@ -20,7 +20,7 @@ template <typename ContextType> TM_CalendarMonthView<ContextType>::TM_CalendarMo
     this->addRenderObject(&this->controlPanel);
     this->addRenderObject(&this->weekDayLabels);
     this->addRenderObject(this->monthView);
-    this->proportionTable = {0.05,0.05,0.90};
+    this->proportionTable = {0.15,0.05,0.80};
     this->fit = true;
 }
 
