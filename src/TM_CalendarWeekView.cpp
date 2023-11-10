@@ -126,9 +126,11 @@ void TM_CalendarWeekView::RenderTask(TM_Task* task, SkColor color, TM_RenderInfo
 	
     if(task->getStartDate() == task->getEndDate())
     {
-		SkScalar minutes = TM_TimeMinutes(task->getEndTime()) - TM_TimeMinutes(task->getStartTime());
+		SkScalar minutes = std::fmax(TM_TimeMinutes(task->getEndTime()) - TM_TimeMinutes(task->getStartTime()), 15.0f);
 		SkRect rect = SkRect::MakeXYWH(startDayX, startDayY, dayWidth, this->hourHeight*(minutes/60.0f));
         renderInfo.canvas->drawRect(rect, paint);
+
+		renderInfo.textFont->setSize(std::fmin(this->viewSetting.fontSize, this->hourHeight*(minutes/60.0f)));
     }
     else 
     {
@@ -140,12 +142,16 @@ void TM_CalendarWeekView::RenderTask(TM_Task* task, SkColor color, TM_RenderInfo
 
         SkRect endDay = SkRect::MakeXYWH(endDayX, 0, dayWidth, endDayY);
         renderInfo.canvas->drawRect(endDay, paint);
+
+		renderInfo.textFont->setSize(this->viewSetting.fontSize);
     }
 
 	paint.setColor(this->viewSetting.backgroundColor);
-	renderInfo.textFont->setSize(this->viewSetting.fontSize);
 
-	renderInfo.canvas->drawString(task->getName().c_str(), startDayX, startDayY+this->viewSetting.fontSize, *renderInfo.textFont, paint);
+	SkFontMetrics fontMetrics;
+	renderInfo.textFont->getMetrics(&fontMetrics);
+
+	renderInfo.canvas->drawString(task->getName().c_str(), startDayX, startDayY+renderInfo.textFont->getSize()-fontMetrics.fDescent, *renderInfo.textFont, paint);
 
 	paint.setStyle(SkPaint::kStroke_Style);
 	paint.setColor(this->viewSetting.backgroundColor);
@@ -181,7 +187,7 @@ bool TM_CalendarWeekView::PollTask(TM_Task* task, TM_EventInput eventInput)
 	
     if(task->getStartDate() == task->getEndDate())
     {
-		SkScalar minutes = TM_TimeMinutes(task->getEndTime()) - TM_TimeMinutes(task->getStartTime());
+		SkScalar minutes = std::fmax(TM_TimeMinutes(task->getEndTime()) - TM_TimeMinutes(task->getStartTime()), 15.0f);
 		SkRect rect = SkRect::MakeXYWH(startDayX, startDayY, dayWidth, this->hourHeight*(minutes/60.0f));
 		return rect.contains(eventInput.mouseX, eventInput.mouseY);
     }
