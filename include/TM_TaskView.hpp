@@ -18,7 +18,6 @@ class TM_TaskView : public TM_View
         void setDate(TM_YMD date);
         void Render(TM_RenderInfo renderInfo) override;
         bool PollEvents(TM_EventInput eventInput) override;
-        void SynchronizeView();
         TM_YMD getDate();
 		std::string getText();
         std::map<TM_YMD,int>* getCalendarPtr();
@@ -26,7 +25,7 @@ class TM_TaskView : public TM_View
         TM_TaskManager* getTaskManPtr();
     private:
         TM_Task* currentTask=NULL,dummyTask=TM_Task("",getCurrentDate(),getCurrentDate(),{0,0},{0,0}); 
-        TM_TextBox* textBox;
+        TM_TextBox<TM_TaskManager>* textBox;
         TM_View* taskList;
         TM_Button<TM_TaskView,int>* addSubtaskButton,*scheduleTaskButton,*deleteTaskButton;
         TM_TextView *startDateLabel,*endDateLabel;

@@ -34,6 +34,8 @@ static SkScalar scrollSensFactor = 5.0;
 
 typedef std::chrono::year_month_day TM_YMD;
 
+static int indexCal = 0;
+
 #define ZeroDate (TM_YMD{std::chrono::January/1/0})
 #define ZeroTime (TM_Time{-1,-1})
 

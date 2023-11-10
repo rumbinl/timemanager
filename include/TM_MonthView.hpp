@@ -8,7 +8,11 @@
 template<typename ContextType> class TM_MonthView : public TM_RenderObject
 {
     public:
-        TM_MonthView(SkRect bounds=SkRect::MakeEmpty(), ContextType* contextPtr=NULL, void (*setDateFunc)(ContextType* contextPtr, TM_YMD date)=NULL, TM_YMD (*getDateFunc)(ContextType* contextPtr)=NULL, TM_ViewSetting viewSetting={colorScheme[0],colorScheme[3],colorScheme[3],0,16,0,0});
+        TM_MonthView(SkRect bounds=SkRect::MakeEmpty(), 
+                     ContextType* contextPtr=NULL, 
+                     void (*setDateFunc)(ContextType* contextPtr, TM_YMD date)=NULL, 
+                     TM_YMD (*getDateFunc)(ContextType* contextPtr)=NULL, 
+                     TM_ViewSetting viewSetting={colorScheme[0],colorScheme[3],colorScheme[3],0,16,0,0});
        
         void Render(TM_RenderInfo renderInfo) override;
 
@@ -16,16 +20,20 @@ template<typename ContextType> class TM_MonthView : public TM_RenderObject
 
         void setDate(TM_YMD date);
 
+        void updateDate();
+
         TM_YMD getDate();
 
         std::chrono::year_month getMonthYear();
 
+        void setMonthYear(std::chrono::year_month monthYear);
+
     private:
-        int numColumns = 7;
-        ContextType* contextPtr;
-        void (*setDateFunc)(ContextType* contextPtr, TM_YMD date);
-        TM_YMD (*getDateFunc)(ContextType* contextPtr);
-        TM_YMD datePlaceholder;
+        int numColumns = 7, idx=0;
+        ContextType* contextPtr=NULL;
+        void (*setDateFunc)(ContextType* contextPtr, TM_YMD date)=NULL;
+        TM_YMD (*getDateFunc)(ContextType* contextPtr)=NULL;
+        TM_YMD currentDate;
         std::vector<TM_SelectButton<TM_MonthView, int> > dayViewList;
         std::chrono::year_month month;
 };

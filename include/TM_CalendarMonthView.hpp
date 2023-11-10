@@ -16,7 +16,7 @@ template<typename ContextType> class TM_CalendarMonthView : public TM_View
         void setDate(TM_YMD date);
 
     private:
-        TM_MonthView<ContextType> monthView;
+        TM_MonthView<ContextType>* monthView;
         TM_TextView dataView;
         TM_HorizontalView weekDayLabels, controlPanel;
         TM_Button<TM_MonthView<ContextType>,int> nextMonth, previousMonth;

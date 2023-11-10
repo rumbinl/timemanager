@@ -4,7 +4,16 @@ TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr, std::map<TM_
 {
     this->taskManPtr = taskManPtr;
     this->currentTask = &this->dummyTask;
-    this->textBox = new TM_TextBox(SkRect::MakeWH(0,48),"New Task", NULL, {colorScheme[1],colorScheme[2],colorScheme[3],1,48,5});
+    this->textBox = new TM_TextBox<TM_TaskManager>(SkRect::MakeWH(0,48),"New Task", this->taskManPtr, 
+                                                   [](TM_TaskManager* taskManager) -> std::string {
+                                                        if(taskManager->getCurrentTask()!=NULL)
+                                                            return taskManager->getCurrentTask()->getName(); 
+                                                        return "";
+                                                   }, 
+                                                   [](TM_TaskManager* taskManager, std::string newString) {
+                                                        if(taskManager->getCurrentTask()!=NULL)
+                                                            taskManager->setTaskName(newString);
+                                                   }, {colorScheme[1],colorScheme[2],colorScheme[3],1,48,5});
     this->taskList = new TM_View(SkRect::MakeWH(0,200), {});
     this->calendarPtr = calendarPtr;
     this->addSubtaskButton = new TM_Button<TM_TaskView, int>("Add Subtask", SkRect::MakeWH(0,50), 0, this, [](TM_TaskView* context, int data) {
@@ -26,10 +35,8 @@ TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr, std::map<TM_
         }, 
 
         [](TM_TaskManager* taskMan) -> TM_YMD {
-            std::cout<<"Getting task date."<<std::endl;
             if(taskMan->getCurrentTask()==NULL)
                 return ZeroDate;
-            std::cout<<"Task non-null."<<std::endl;
             return taskMan->getCurrentTask()->getStartDate();
         }
     );
@@ -44,10 +51,8 @@ TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr, std::map<TM_
         },
 
         [](TM_TaskManager* taskMan) {
-            std::cout<<"Getting task date."<<std::endl;
             if(taskMan->getCurrentTask() == NULL)
                 return ZeroDate;
-            std::cout<<"Task non-null."<<std::endl;
             return taskMan->getCurrentTask()->getEndDate();
         } 
     );
@@ -114,24 +119,11 @@ void TM_TaskView::setTask(TM_Task* taskPtr)
 
 void TM_TaskView::Render(TM_RenderInfo renderInfo)
 {
-    this->SynchronizeView();
     TM_View::Render(renderInfo);
-}
-
-void TM_TaskView::SynchronizeView()
-{
-    if(this->taskManPtr->getCurrentTask() != NULL)
-    {
-        TM_Task* currentTaskPtr = this->taskManPtr->getCurrentTask();
-        this->textBox->setSrcString(currentTaskPtr->getNamePtr());
-        this->startDateLabel->setText("Start Date" + TM_DateToString(currentTaskPtr->getStartDate()));
-        this->endDateLabel->setText("End Date" + TM_DateToString(currentTaskPtr->getEndDate()));
-    }
 }
 
 bool TM_TaskView::PollEvents(TM_EventInput eventInput)
 {
-    this->SynchronizeView(); 
     return TM_View::PollEvents(eventInput);
 }
 

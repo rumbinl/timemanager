@@ -1,29 +1,35 @@
 #include <TM_TextBox.hpp>
 
-TM_TextBox::TM_TextBox(SkRect bounds, std::string placeholder="", std::string* srcString, TM_ViewSetting viewSetting) : TM_TextView(placeholder, bounds, viewSetting, false)
+template <typename ContextType> TM_TextBox<ContextType>::TM_TextBox(SkRect bounds, std::string placeholder, ContextType* contextPtr, std::string (*getStringFunc)(ContextType* contextPtr), void (*setStringFunc)(ContextType* contextPtr, std::string newString), TM_ViewSetting viewSetting) : TM_TextView("", bounds, viewSetting, false)
 {
     this->placeholder = placeholder;
-	this->srcString = srcString;
+	this->content = "";
+	this->contextPtr = contextPtr;
+	this->getStringFunc = getStringFunc;
+	this->setStringFunc = setStringFunc;
 }
 
-void TM_TextBox::Render(TM_RenderInfo renderInfo)
+template <typename ContextType> void TM_TextBox<ContextType>::Render(TM_RenderInfo renderInfo)
 {
-	if(this->srcString == NULL)
-		this->srcString = &this->content;
+	if(this->getStringFunc != NULL)
+	{
+		this->content = this->getStringFunc(this->contextPtr);
+		this->cursorIndex = min(this->content.size(), this->cursorIndex);
+	}
 	SkFont* font = renderInfo.textFont;
     if(!this->fitted)
     {
         TM_TextView::setHeightFont(font);
         this->fitted = true;
     }
-    if(this->srcString->empty())
+    if(this->content.empty())
 	{
 		TM_TextView::setText(this->placeholder);
         TM_TextView::setColorOpacity(150);
 	}
     else
 	{
-		TM_TextView::setText(*this->srcString);
+		TM_TextView::setText(this->content);
         TM_TextView::setColorOpacity(255);
 	}
 	SkFontMetrics fontMetrics;
@@ -38,14 +44,14 @@ void TM_TextBox::Render(TM_RenderInfo renderInfo)
 		paint.setStrokeWidth(2);
 		paint.setStyle(SkPaint::kStrokeAndFill_Style);
 		SkRect textBounds;
-		font->measureText(this->srcString->substr(0,this->cursorIndex).c_str(), this->cursorIndex*sizeof(char), SkTextEncoding::kUTF8, &textBounds);
-		this->cursorX = textBounds.width()-TM_TextView::getTextXOffset();
+		font->measureText(this->content.substr(0,this->cursorIndex).c_str(), this->cursorIndex*sizeof(char), SkTextEncoding::kUTF8, &textBounds);
+		this->cursorX = textBounds.width()+TM_TextView::getTextXOffset();
 		renderInfo.canvas->drawLine(this->bounds.x()+this->cursorX, this->bounds.y(), this->bounds.x()+this->cursorX, this->bounds.y()+this->viewSetting.fontSize-fontMetrics.fDescent, paint);
 	}
 	if(this->select) TM_TextView::invertColors();
 }
 
-void TM_TextBox::locatePosition(SkScalar mouseX, std::string text, SkFont* font)
+template <typename ContextType> void TM_TextBox<ContextType>::locatePosition(SkScalar mouseX, std::string text, SkFont* font)
 {
 	SkRect textBounds;
 	int l=0,h=text.size()-1;
@@ -65,7 +71,7 @@ void TM_TextBox::locatePosition(SkScalar mouseX, std::string text, SkFont* font)
 		cursorIndex = l;
 }
 
-bool TM_TextBox::PollEvents(TM_EventInput eventInput)
+template <typename ContextType> bool TM_TextBox<ContextType>::PollEvents(TM_EventInput eventInput)
 {
 	bool contains = TM_TextView::getBounds().contains(eventInput.mouseX,eventInput.mouseY);
 	bool ret = false;
@@ -76,15 +82,18 @@ bool TM_TextBox::PollEvents(TM_EventInput eventInput)
 		ret = true;
 	}
 
-	if(this->srcString == NULL)
-			this->srcString = &this->content;
+	if(this->getStringFunc != NULL)
+	{
+		this->content = this->getStringFunc(this->contextPtr);
+		this->cursorIndex = min(this->content.size(), this->cursorIndex);
+	}
 
 	if(contains)
 	{
 		if(eventInput.mousePressed)
 		{
 			eventInput.font->setSize(this->viewSetting.fontSize);
-			this->locatePosition(eventInput.mouseX-this->bounds.x()+TM_TextView::getTextXOffset(),(*this->srcString)+" ",eventInput.font);
+			this->locatePosition(eventInput.mouseX-this->bounds.x()+TM_TextView::getTextXOffset(),(this->content)+" ",eventInput.font);
 			this->select = true;
 			ret = true;
 		}
@@ -97,18 +106,21 @@ bool TM_TextBox::PollEvents(TM_EventInput eventInput)
 
     if(this->select)
     {
-		
 		if(eventInput.inputText.size()>0 && this->content.size()<512)
 		{
-			std::string s0 = this->srcString->substr(this->cursorIndex,this->srcString->size()), s1 = this->srcString->substr(0,cursorIndex);
-			*this->srcString = s1 + eventInput.inputText + s0;
+			std::string s0 = this->content.substr(this->cursorIndex,this->content.size()), s1 = this->content.substr(0,cursorIndex);
+			this->content = s1 + eventInput.inputText + s0;
+			if(this->setStringFunc!=NULL)
+				this->setStringFunc(this->contextPtr, this->content);
 			this->cursorIndex ++;
 			ret = true;
 		}
 		else if(eventInput.keyPressed && eventInput.key == SDL_SCANCODE_BACKSPACE && cursorIndex)
 		{
-			std::string s0 = this->srcString->substr(this->cursorIndex,this->srcString->size()),s1 = this->srcString->substr(0,cursorIndex-1);
-			*this->srcString = s1+s0;
+			std::string b = this->content.substr(this->cursorIndex,this->content.size()),a = this->content.substr(0,cursorIndex-1);
+			this->content = a+b;
+			if(this->setStringFunc!=NULL)
+				this->setStringFunc(this->contextPtr, this->content);
 			this->cursorIndex --;
 			ret = true;
 		}
@@ -116,7 +128,7 @@ bool TM_TextBox::PollEvents(TM_EventInput eventInput)
     return ret;
 }
 
-SkScalar TM_TextBox::getCharWidth(char a, SkFont* font)
+template <typename ContextType> SkScalar TM_TextBox<ContextType>::getCharWidth(char a, SkFont* font)
 {
 	SkGlyphID glyph;
 	font->textToGlyphs(&a, sizeof(char), SkTextEncoding::kUTF8, &glyph, 1);
@@ -125,8 +137,5 @@ SkScalar TM_TextBox::getCharWidth(char a, SkFont* font)
 	return width;
 }
 
-void TM_TextBox::setSrcString(std::string* srcString)
-{
-	this->srcString = srcString;
-	this->cursorIndex = min(this->cursorIndex,this->srcString->size());
-}
+#include <TM_TaskManager.hpp>
+template class TM_TextBox<TM_TaskManager>;

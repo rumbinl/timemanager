@@ -9,8 +9,8 @@ TM_CalendarView::TM_CalendarView(SkRect bounds, TM_TaskManager* taskManPtr) : TM
 	[](TM_CalendarView* calendarView, TM_YMD date){
 		calendarView->setReferenceDate(date);
 	}, 
-	[](TM_CalendarView* calendarView) -> TM_YMD {
-		std::cout<<"Getting reference date"<<std::endl;
+	[](TM_CalendarView* calendarView) -> TM_YMD
+	{
 		return calendarView->getReferenceDate();
 	});
    	this->buttonBar = new TM_HorizontalView(SkRect::MakeXYWH(0,0,0,40),{
