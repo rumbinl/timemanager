@@ -67,6 +67,7 @@ void TM_TaskManager::setStartDateTime(TM_YMD startDate, TM_Time startTime)
         tempTask->setStartDate(startDate);
     if(startTime != ZeroTime)
         tempTask->setStartTime(startTime);
+    (*this->storageManPtr)->AlterDBTask(tempTask);
     this->currentTask = this->sortedTasks.insert(tempTask);
 }
 
@@ -81,12 +82,14 @@ void TM_TaskManager::setEndDateTime(TM_YMD endDate, TM_Time endTime)
         tempTask->setEndDate(endDate);
     if(endTime != ZeroTime)
         tempTask->setEndTime(endTime);
+    (*this->storageManPtr)->AlterDBTask(tempTask);
     this->currentTask = this->sortedTasks.insert(tempTask);
 }
 
 void TM_TaskManager::setTaskName(std::string taskName)
 {
     (*this->currentTask)->setName(taskName);
+    (*this->storageManPtr)->AlterDBTask(*this->currentTask);
 }
 
 TM_Time TM_TaskManager::getStartTime()
