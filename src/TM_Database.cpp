@@ -14,15 +14,10 @@ void TM_StorageManager::CreateDBTask(TM_Task* taskPtr)
 {
     std::string queryString = "INSERT INTO TimeSections (Name, startDatetime, endDatetime) VALUES ('"+taskPtr->getName()+"', '"+TM_GetDateTimeString(taskPtr->getStartDate(), taskPtr->getStartTime())+"', '"+TM_GetDateTimeString(taskPtr->getEndDate(), taskPtr->getEndTime())+"');";
     int errorCode;
-    if((errorCode = sqlite3_exec(this->dbPtr, queryString.c_str(), [](void* x, int rowCount, char** columnStrings, char** columnNames) -> int { 
-        if(rowCount > 0)
-        {
-            std::cout<<rowCount<<std::endl;
-            std::cout<<"ID:"<<columnStrings[ID_COLUMN_IDX]<<std::endl;
-        }
-        return 0; 
-    }, NULL, NULL)) != SQLITE_OK)
+    if((errorCode = sqlite3_exec(this->dbPtr, queryString.c_str(), NULL, NULL, NULL)) != SQLITE_OK)
         std::cout<<sqlite3_errmsg(this->dbPtr)<<std::endl;
+    else
+        taskPtr->setDBID(sqlite3_last_insert_rowid(this->dbPtr));
 }
 
 void TM_StorageManager::AlterDBTask(TM_Task* taskPtr)
@@ -37,7 +32,25 @@ void TM_StorageManager::DeleteDBTask(TM_Task* taskPtr)
 
 void TM_StorageManager::LoadTasks(TM_TaskManager* taskManPtr)
 {
+    std::string queryString = "SELECT * FROM TimeSections ORDER BY startDatetime ASC;";
+    int errorCode;
+    if((errorCode = sqlite3_exec(this->dbPtr, queryString.c_str(), [](void* x, int columnCount, char** columnData, char** columnNames) -> int {
 
+        TM_TaskManager* taskManPtr = (TM_TaskManager*)x;
+
+        int d,m,y, hr, mn;
+        sscanf(columnData[STARTDATE_COLUMN_IDX], "%d-%d-%d %d:%d", &d, &m, &y, &hr, &mn);
+        std::chrono::year_month_day startDate = getDateFromVars(d,m,y);
+        TM_Time startTime = {hr, mn};
+        sscanf(columnData[ENDDATE_COLUMN_IDX], "%d-%d-%d %d:%d", &d, &m, &y, &hr, &mn);
+        std::chrono::year_month_day endDate = getDateFromVars(d,m,y);
+        TM_Time endTime = {hr, mn};
+
+        taskManPtr->addTask(new TM_Task(columnData[NAME_COLUMN_IDX], startDate, endDate, startTime, endTime, std::atoi(columnData[ID_COLUMN_IDX])));
+
+        return 0;
+    }, taskManPtr, NULL)) != SQLITE_OK)
+        std::cout<<sqlite3_errmsg(this->dbPtr)<<std::endl;
 }
 
 TM_StorageManager::~TM_StorageManager()

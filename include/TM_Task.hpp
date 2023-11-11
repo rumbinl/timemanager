@@ -13,6 +13,7 @@ class TM_Task
     public:
         TM_Task(TM_Task& copyTask);
         TM_Task(std::string name, std::chrono::year_month_day startDate, std::chrono::year_month_day endDate, TM_Time startTime,  TM_Time endTime);
+        TM_Task(std::string name, std::chrono::year_month_day startDate, std::chrono::year_month_day endDate, TM_Time startTime,  TM_Time endTime, int dbID);
         TM_Task(std::string name, std::chrono::year_month_day startDate, std::chrono::year_month_day deadline, TM_Time startTime, TM_Time endTime, TM_Time duration, std::map<std::chrono::year_month_day,int>* calendarPtr);
 
         void addSubtask(TM_Task* subtask);
@@ -52,6 +53,9 @@ class TM_Task
 
         bool operator<(const TM_Task& b) const;
         bool operator==(const TM_Task& b) const;
+
+        void setDBID(int dbID);
+        int getDBID();
     private:
         
         std::string name; // once it has subtasks the date time variable automatically becomes the deadline for all subtasks
@@ -60,5 +64,6 @@ class TM_Task
         std::multiset<TM_Task*,TM_TaskPtrCompare> subtasks;
         bool locked = true;
         TM_Task* headTask = NULL;
+        int dbID=-1;
 };
 

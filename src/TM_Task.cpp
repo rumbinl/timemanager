@@ -5,6 +5,16 @@ TM_Task::TM_Task(TM_Task& copyTask)
     *this = copyTask;
 }
 
+TM_Task::TM_Task(std::string name, std::chrono::year_month_day startDate, std::chrono::year_month_day endDate, TM_Time startTime,  TM_Time endTime, int dbID)
+{
+    this->name = name;
+    this->startDate = startDate;
+    this->startTime = startTime;
+    this->endDate = endDate;
+    this->endTime = endTime;
+    this->dbID = dbID;
+}
+
 TM_Task::TM_Task(std::string name, std::chrono::year_month_day startDate, std::chrono::year_month_day endDate, TM_Time startTime, TM_Time endTime)
 {
     this->name = name;
@@ -80,4 +90,14 @@ void TM_Task::scheduleSubtasks(std::chrono::year_month_day currentDay)
 bool TM_Task::operator<(const TM_Task& b) const 
 {
     return this->startDate < b.startDate || (this->startDate == b.startDate && this->startTime < b.startTime);
+}
+
+void TM_Task::setDBID(int dbID)
+{
+    this->dbID = dbID;
+}
+
+int TM_Task::getDBID()
+{
+    return this->dbID;
 }

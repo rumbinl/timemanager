@@ -5,6 +5,11 @@ int TM_TimeMinutes(TM_Time time)
     return time.hours * 60 + time.minutes;
 }
 
+std::chrono::year_month_day getDateFromVars(int d, int m, int y)
+{
+    return std::chrono::year_month_day{std::chrono::year{(int)y}, std::chrono::month{(unsigned)m}, std::chrono::day{(unsigned)d}};
+}
+
 int weekDayFromDate(std::chrono::year_month_day ymd)
 {
     return (std::chrono::weekday{std::chrono::sys_days(ymd)}).c_encoding();

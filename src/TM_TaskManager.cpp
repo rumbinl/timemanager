@@ -12,7 +12,7 @@ TM_TaskManager::TM_TaskManager(std::vector<TM_Task*> tasks, TM_TaskView** output
 
 void TM_TaskManager::addTask(TM_Task* task)
 {
-    if(*this->storageManPtr!=NULL)
+    if(*this->storageManPtr!=NULL && task->getDBID() == -1)
         (*this->storageManPtr)->CreateDBTask(task);
     this->sortedTasks.insert(task);
     for(TM_Task* subtask : task->getSubtaskList())

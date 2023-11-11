@@ -22,6 +22,7 @@ TM_ApplicationManager::TM_ApplicationManager()
 
 	this->storageManPtr = new TM_StorageManager("./TM_Stor.db");
 	this->taskManPtr = new TM_TaskManager({}, &this->taskViewPtr, &this->storageManPtr);
+	this->storageManPtr->LoadTasks(this->taskManPtr);
 	this->taskViewPtr = new TM_TaskView(SkRect::MakeXYWH(0,0,840,840), this->taskManPtr, this->freeTimeMap);
 	this->mainView = new TM_View(SkRect::MakeXYWH(0,0,this->window_ptr.getWindowWidth(),this->window_ptr.getWindowHeight()), {0.05,0.95}, {
 		new TM_HorizontalView(SkRect::MakeEmpty(), {

@@ -15,6 +15,8 @@ int weekDayFromDate(std::chrono::year_month_day ymd);
 
 std::string TM_DateToString(std::chrono::year_month_day ymd);
 
+std::chrono::year_month_day getDateFromVars(int d, int m, int y);
+
 std::chrono::year_month_day getCurrentDate();
 
 unsigned TM_NumMonthDays(std::chrono::year_month_day ymd);
