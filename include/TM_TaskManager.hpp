@@ -9,11 +9,12 @@
 #include <TM_Task.hpp>
 
 class TM_TaskView;
+class TM_StorageManager;
 
 class TM_TaskManager 
 {
 	public:
-		TM_TaskManager(std::vector<TM_Task*> tasks, TM_TaskView** outputPtr);
+		TM_TaskManager(std::vector<TM_Task*> tasks, TM_TaskView** outputPtr, TM_StorageManager** storageManPtr);
         void addTask(TM_Task* task);
         void addSubtask(TM_Task* task);
         void scheduleTask(TM_Task* task, TM_YMD start, TM_YMD end);
@@ -32,4 +33,5 @@ class TM_TaskManager
         std::multiset<TM_Task*,TM_Task::TM_TaskPtrCompare>::iterator currentTask=sortedTasks.end();
 		std::map<TM_YMD,int> freeTimeMap;
         TM_TaskView** outputPtr;
+        TM_StorageManager** storageManPtr;
 };

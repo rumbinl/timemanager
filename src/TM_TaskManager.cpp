@@ -1,15 +1,19 @@
 #include <TM_TaskManager.hpp>
 #include <TM_TaskView.hpp>
+#include <TM_Database.hpp>
 
-TM_TaskManager::TM_TaskManager(std::vector<TM_Task*> tasks, TM_TaskView** outputPtr)
+TM_TaskManager::TM_TaskManager(std::vector<TM_Task*> tasks, TM_TaskView** outputPtr, TM_StorageManager** storageManPtr)
 {
     this->outputPtr = outputPtr;
+    this->storageManPtr = storageManPtr;
     for(TM_Task* task : tasks)
         this->sortedTasks.insert(task);
 }
 
 void TM_TaskManager::addTask(TM_Task* task)
 {
+    if(*this->storageManPtr!=NULL)
+        (*this->storageManPtr)->CreateDBTask(task);
     this->sortedTasks.insert(task);
     for(TM_Task* subtask : task->getSubtaskList())
         this->sortedTasks.insert(task);

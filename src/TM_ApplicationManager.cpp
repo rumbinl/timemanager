@@ -20,7 +20,8 @@ TM_ApplicationManager::TM_ApplicationManager()
 	this->should_render_update = true;
 	this->skia_canvas_clear_color = colorScheme[BACKGROUND_COLOR_INDEX];
 
-	this->taskManPtr = new TM_TaskManager({}, &this->taskViewPtr);
+	this->storageManPtr = new TM_StorageManager("./TM_Stor.db");
+	this->taskManPtr = new TM_TaskManager({}, &this->taskViewPtr, &this->storageManPtr);
 	this->taskViewPtr = new TM_TaskView(SkRect::MakeXYWH(0,0,840,840), this->taskManPtr, this->freeTimeMap);
 	this->mainView = new TM_View(SkRect::MakeXYWH(0,0,this->window_ptr.getWindowWidth(),this->window_ptr.getWindowHeight()), {0.05,0.95}, {
 		new TM_HorizontalView(SkRect::MakeEmpty(), {
@@ -132,4 +133,7 @@ int TM_ApplicationManager::getDefaultFont()
 
 TM_ApplicationManager::~TM_ApplicationManager()
 {
+	delete this->taskManPtr;
+	delete this->taskViewPtr;
+	delete this->storageManPtr;
 }

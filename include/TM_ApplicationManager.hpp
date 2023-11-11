@@ -47,5 +47,6 @@ class TM_ApplicationManager
 		std::map<std::chrono::year_month_day,int> freeTimeMap;
 		TM_TaskManager* taskManPtr;
 		TM_TaskView* taskViewPtr;
+		TM_StorageManager* storageManPtr;
         SkColor skia_canvas_clear_color;
 };
