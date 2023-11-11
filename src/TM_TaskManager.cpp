@@ -42,7 +42,10 @@ TM_Task* TM_TaskManager::getCurrentTask()
 void TM_TaskManager::deleteCurrentTask()
 {
     if(this->currentTask!=this->sortedTasks.end())
+    {
+        (*this->storageManPtr)->DeleteDBTask(*this->currentTask);
         this->sortedTasks.erase(this->currentTask);
+    }
     this->currentTask = this->sortedTasks.end();
 }
 

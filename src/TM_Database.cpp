@@ -27,7 +27,10 @@ void TM_StorageManager::AlterDBTask(TM_Task* taskPtr)
 
 void TM_StorageManager::DeleteDBTask(TM_Task* taskPtr)
 {
-
+    std::string queryString = "DELETE FROM TimeSections WHERE ID="+std::to_string(taskPtr->getDBID())+";";
+    int errorCode;
+    if((errorCode = sqlite3_exec(this->dbPtr, queryString.c_str(), NULL, NULL, NULL)) != SQLITE_OK)
+        std::cout<<sqlite3_errmsg(this->dbPtr)<<std::endl;
 }
 
 void TM_StorageManager::LoadTasks(TM_TaskManager* taskManPtr)
@@ -46,6 +49,7 @@ void TM_StorageManager::LoadTasks(TM_TaskManager* taskManPtr)
         std::chrono::year_month_day endDate = getDateFromVars(d,m,y);
         TM_Time endTime = {hr, mn};
 
+        std::cout<<std::atoi(columnData[ID_COLUMN_IDX])<<std::endl;
         taskManPtr->addTask(new TM_Task(columnData[NAME_COLUMN_IDX], startDate, endDate, startTime, endTime, std::atoi(columnData[ID_COLUMN_IDX])));
 
         return 0;
