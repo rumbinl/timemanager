@@ -102,7 +102,8 @@ void TM_ApplicationManager::PollEvents()
 					this->window_ptr.getDPI(),
 					pressed,held,
 					SDL_event_ptr.type == SDL_EVENT_KEY_DOWN, 
-					inputText,this->skia_fontList[this->defaultFont],SDL_event_ptr.key.keysym.scancode
+					SDL_event_ptr.type == SDL_EVENT_DROP_FILE,
+					inputText,(SDL_event_ptr.type == SDL_EVENT_DROP_FILE?SDL_event_ptr.drop.file:""),this->skia_fontList[this->defaultFont],SDL_event_ptr.key.keysym.scancode
 				};
 
 			should_render_update = this->mainView->PollEvents(eventInput);
