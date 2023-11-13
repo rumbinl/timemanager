@@ -9,6 +9,7 @@
 #include <include/core/SkFontMgr.h>
 #include <TM_Database.hpp>
 #include <TM_FileDrop.hpp>
+#include <TM_TaskInfoView.hpp>
 #include <map>
 
 class TM_ApplicationManager

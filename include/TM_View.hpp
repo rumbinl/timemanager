@@ -12,7 +12,6 @@ class TM_View : public TM_RenderObject
         TM_View(SkRect bounds, std::vector<SkScalar> proportionTable, std::vector<TM_RenderObject*> objects, TM_ViewSetting viewSetting={colorScheme[0],colorScheme[2],colorScheme[3],0,24,10,10});
         void Render(TM_RenderInfo renderInfo) override;
         bool PollEvents(TM_EventInput eventInput) override;
-        
     protected:
 		std::vector<SkScalar> proportionTable;
 		bool fit = false;

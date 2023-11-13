@@ -43,7 +43,7 @@ void TM_View::Render(TM_RenderInfo renderInfo)
     {
         if(!this->renderObjects[i]->exists())
             continue; 
-		
+
 		if(this->fit)
 		{
 			if(!this->proportionTable.size())

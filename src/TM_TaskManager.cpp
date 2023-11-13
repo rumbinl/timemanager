@@ -29,7 +29,7 @@ void TM_TaskManager::addSubtask(TM_Task* task)
     }
 }
 
-std::multiset<TM_Task*,TM_Task::TM_TaskPtrCompare>& TM_TaskManager::getTaskList()
+TM_TaskManSet& TM_TaskManager::getTaskList()
 {
     return this->sortedTasks;
 }
@@ -104,4 +104,14 @@ TM_Time TM_TaskManager::getEndTime()
     if(!getCurrentTask())
         return {0,0};
     return getCurrentTask()->getEndTime();
+}
+
+TM_TaskManIt TM_TaskManager::getStartIt()
+{
+    return this->sortedTasks.begin();
+}
+
+TM_TaskManIt TM_TaskManager::getEndIt()
+{
+    return this->sortedTasks.end();
 }

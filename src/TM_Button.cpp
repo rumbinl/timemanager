@@ -40,10 +40,11 @@ template <typename ContextType, typename DataType> void TM_Button<ContextType,Da
 #include <TM_FileDrop.hpp>
 
 template class TM_Button<TM_View, int>;
-template class TM_Button<TM_FileDrop, int>;
 template class TM_Button<TM_View*, int>;
+template class TM_Button<TM_FileDrop, int>;
 template class TM_Button<TM_TaskView, int>; 
-template class TM_Button<TM_CalendarWeekView, int>;
 template class TM_Button<TM_CalendarView, int>;
+template class TM_Button<TM_CalendarWeekView, int>;
+template class TM_Button<TM_TaskManager, TM_TaskManIt>;
 template class TM_Button<TM_MonthView<TM_TaskManager>, int>;
 template class TM_Button<TM_MonthView<TM_CalendarView>, int>;

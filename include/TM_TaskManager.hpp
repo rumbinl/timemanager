@@ -11,6 +11,9 @@
 class TM_TaskView;
 class TM_StorageManager;
 
+typedef std::multiset<TM_Task*,TM_Task::TM_TaskPtrCompare>::iterator TM_TaskManIt;
+typedef std::multiset<TM_Task*,TM_Task::TM_TaskPtrCompare> TM_TaskManSet;
+
 class TM_TaskManager 
 {
 	public:
@@ -24,13 +27,15 @@ class TM_TaskManager
         TM_Time getEndTime();
         void setTaskName(std::string taskName);
         TM_Task* getCurrentTask();
+        TM_TaskManIt getStartIt();
+        TM_TaskManIt getEndIt();
         void deleteCurrentTask();
-		std::multiset<TM_Task*,TM_Task::TM_TaskPtrCompare>& getTaskList();
-        void setCurrentTask(std::multiset<TM_Task*,TM_Task::TM_TaskPtrCompare>::iterator currentTask);
+		TM_TaskManSet& getTaskList();
+        void setCurrentTask(TM_TaskManIt currentTask);
 	private:
         bool isSchedulable(TM_Task* task, TM_YMD date); 
-		std::multiset<TM_Task*,TM_Task::TM_TaskPtrCompare> sortedTasks;
-        std::multiset<TM_Task*,TM_Task::TM_TaskPtrCompare>::iterator currentTask=sortedTasks.end();
+		TM_TaskManSet sortedTasks;
+        TM_TaskManIt currentTask=sortedTasks.end();
 		std::map<TM_YMD,int> freeTimeMap;
         TM_TaskView** outputPtr;
         TM_StorageManager** storageManPtr;
