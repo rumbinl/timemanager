@@ -8,6 +8,7 @@
 #include <include/core/SkRefCnt.h>
 #include <include/core/SkFontMgr.h>
 #include <TM_Database.hpp>
+#include <TM_FileDrop.hpp>
 #include <map>
 
 class TM_ApplicationManager
