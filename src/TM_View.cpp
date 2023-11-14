@@ -31,7 +31,7 @@ void TM_View::Render(TM_RenderInfo renderInfo)
 
     int restore = renderInfo.canvas->save();
 
-    //renderInfo.canvas->clipRect(SkRect::MakeXYWH(this->bounds.x()-1,this->bounds.y()-1,this->bounds.width()+1,this->bounds.height()+1));
+    //renderInfo.canvas->clipRect(SkRect::MakeXYWH(this->bounds.x(),this->bounds.y(),this->bounds.width(),this->bounds.height()));
 
 	renderInfo.canvas->translate(this->bounds.x(), this->bounds.y()-this->yOffset);
 

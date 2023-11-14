@@ -6,9 +6,11 @@ if (APPLE)
 	find_library(COCOA_LIBRARY Cocoa)
 	add_library(sqlite3 STATIC IMPORTED)
 	set_property(TARGET sqlite3 PROPERTY IMPORTED_LOCATION /usr/local/lib/sqlite3.o)
+    add_library(duckx STATIC IMPORTED)
+	set_property(TARGET duckx PROPERTY IMPORTED_LOCATION /usr/local/lib/libduckx.a)
 endif (APPLE)
 
-target_link_libraries(Timeman skia SDL3 sqlite3)
+target_link_libraries(Timeman skia SDL3 sqlite3 duckx)
 
 if (APPLE)
 	target_link_libraries(Timeman ${COCOA_LIBRARY})

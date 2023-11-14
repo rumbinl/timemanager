@@ -14,6 +14,7 @@ if (APPLE)
 	include_directories(PUBLIC /usr/local/include)
 	include_directories(PUBLIC /usr/local/include/skia)
 	include_directories(PUBLIC /usr/local/include/gl3w)
+	include_directories(PUBLIC /usr/local/include/duckx)
 endif (APPLE)
 
 if (WIN32)

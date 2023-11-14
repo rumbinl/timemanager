@@ -22,10 +22,12 @@ void TM_TaskInfoView::Render(TM_RenderInfo renderInfo)
         std::pair<TM_TaskManIt,TM_TaskManIt> itRange = getItFunc(this->taskManPtr);
         TM_TaskManIt currentIt = itRange.first;
 
-        SkScalar yPos = this->getBounds().y();
-        SkScalar y = yPos;
+        SkScalar yPos = this->getBounds().y()-this->yOffset;
+        SkScalar y = yPos+this->yOffset;
 
         int count = 0;
+
+        renderInfo.canvas->clipRect(this->bounds);
 
         while(currentIt != itRange.second && (*currentIt != NULL))
         {
@@ -45,6 +47,7 @@ void TM_TaskInfoView::Render(TM_RenderInfo renderInfo)
             currentIt++;
             count ++;
         }
+        this->srcBounds.setWH(0,yPos-y);
         this->bounds.setXYWH(this->bounds.x(), y, this->bounds.width(), (this->blockHeight)*count - this->viewSetting.paddingY*(count-1));
     }
 }
@@ -56,6 +59,11 @@ bool TM_TaskInfoView::PollEvents(TM_EventInput eventInput)
     SkScalar y = this->bounds.y();
     if(this->bounds.contains(eventInput.mouseX, eventInput.mouseY))
     {
+        if(eventInput.scrollY != 0)
+		{
+			SkScalar newY = this->yOffset+eventInput.scrollY;
+			this->yOffset = fmin(fmax(0, newY),fmax(0, this->srcBounds.height()-this->bounds.height()));
+		}
         if(getItFunc != NULL)
         {
             std::pair<TM_TaskManIt,TM_TaskManIt> itRange = getItFunc(this->taskManPtr);

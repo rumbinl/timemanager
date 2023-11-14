@@ -7,6 +7,7 @@
 
 #include <TM_Core.hpp>
 #include <TM_Task.hpp>
+#include <duckx/duckx.hpp>
 
 class TM_TaskView;
 class TM_StorageManager;
@@ -23,6 +24,7 @@ class TM_TaskManager
         void scheduleTask(TM_Task* task, TM_YMD start, TM_YMD end);
         void setStartDateTime(TM_YMD startDate, TM_Time startTime);
         void setEndDateTime(TM_YMD endDate, TM_Time endTime);
+        void openDocXFile(std::string filePath);
         TM_Time getStartTime();
         TM_Time getEndTime();
         void setTaskName(std::string taskName);
