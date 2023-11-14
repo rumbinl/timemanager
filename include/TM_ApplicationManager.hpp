@@ -48,6 +48,8 @@ class TM_ApplicationManager
 		bool should_render_update=true, should_terminate=false, pressed=false;
 		std::map<std::chrono::year_month_day,int> freeTimeMap;
 		TM_TaskManager* taskManPtr;
+		TM_TaskManager* importTaskManPtr;
+		TM_TaskInfoView* importTaskInfoViewPtr;
 		TM_TaskView* taskViewPtr;
 		TM_StorageManager* storageManPtr;
         SkColor skia_canvas_clear_color;

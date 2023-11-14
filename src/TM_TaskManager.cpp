@@ -12,7 +12,7 @@ TM_TaskManager::TM_TaskManager(std::vector<TM_Task*> tasks, TM_TaskView** output
 
 void TM_TaskManager::addTask(TM_Task* task)
 {
-    if(*this->storageManPtr!=NULL && task->getDBID() == -1)
+    if(this->storageManPtr&&*this->storageManPtr!=NULL && task->getDBID() == -1)
         (*this->storageManPtr)->CreateDBTask(task);
     this->sortedTasks.insert(task);
     for(TM_Task* subtask : task->getSubtaskList())
@@ -43,7 +43,8 @@ void TM_TaskManager::deleteCurrentTask()
 {
     if(this->currentTask!=this->sortedTasks.end())
     {
-        (*this->storageManPtr)->DeleteDBTask(*this->currentTask);
+        if(this->storageManPtr&&*this->storageManPtr!=NULL)
+            (*this->storageManPtr)->DeleteDBTask(*this->currentTask);
         this->sortedTasks.erase(this->currentTask);
     }
     this->currentTask = this->sortedTasks.end();
@@ -67,7 +68,8 @@ void TM_TaskManager::setStartDateTime(TM_YMD startDate, TM_Time startTime)
         tempTask->setStartDate(startDate);
     if(startTime != ZeroTime)
         tempTask->setStartTime(startTime);
-    (*this->storageManPtr)->AlterDBTask(tempTask);
+    if(this->storageManPtr&&*this->storageManPtr!=NULL)
+        (*this->storageManPtr)->AlterDBTask(tempTask);
     this->currentTask = this->sortedTasks.insert(tempTask);
 }
 
@@ -82,14 +84,16 @@ void TM_TaskManager::setEndDateTime(TM_YMD endDate, TM_Time endTime)
         tempTask->setEndDate(endDate);
     if(endTime != ZeroTime)
         tempTask->setEndTime(endTime);
-    (*this->storageManPtr)->AlterDBTask(tempTask);
+    if(this->storageManPtr&&*this->storageManPtr!=NULL)
+        (*this->storageManPtr)->AlterDBTask(tempTask);
     this->currentTask = this->sortedTasks.insert(tempTask);
 }
 
 void TM_TaskManager::setTaskName(std::string taskName)
 {
     (*this->currentTask)->setName(taskName);
-    (*this->storageManPtr)->AlterDBTask(*this->currentTask);
+    if(this->storageManPtr&&*this->storageManPtr!=NULL)
+        (*this->storageManPtr)->AlterDBTask(*this->currentTask);
 }
 
 TM_Time TM_TaskManager::getStartTime()

@@ -22,6 +22,10 @@ TM_ApplicationManager::TM_ApplicationManager()
 
 	this->storageManPtr = new TM_StorageManager("./TM_Stor.db");
 	this->taskManPtr = new TM_TaskManager({}, &this->taskViewPtr, &this->storageManPtr);
+	this->importTaskManPtr = new TM_TaskManager({}, &this->taskViewPtr, NULL);
+	this->importTaskInfoViewPtr = new TM_TaskInfoView(SkRect::MakeEmpty(), this->importTaskManPtr, [](TM_TaskManager* taskManager) -> std::pair<TM_TaskManIt,TM_TaskManIt> {
+		return {taskManager->getStartIt(), taskManager->getEndIt()};
+	});
 	this->storageManPtr->LoadTasks(this->taskManPtr);
 	this->taskViewPtr = new TM_TaskView(SkRect::MakeXYWH(0,0,840,840), this->taskManPtr, this->freeTimeMap);
 	this->mainView = new TM_HorizontalView(SkRect::MakeXYWH(0,0,this->window_ptr.getWindowWidth(),this->window_ptr.getWindowHeight()), {
@@ -56,11 +60,14 @@ TM_ApplicationManager::TM_ApplicationManager()
 					return {taskManPtr->getStartIt(), taskManPtr->getEndIt()};
 				})
 			}),
-
-			new TM_View(SkRect::MakeEmpty(), {0.95,0.05}, {
+			new TM_HorizontalView(SkRect::MakeEmpty(), {
+				new TM_View(SkRect::MakeEmpty(), {0.95,0.05}, { 
 					new TM_FileDrop("Place file here.", SkRect::MakeEmpty(), NULL, NULL),
 					new TM_Button<TM_FileDrop,int>("\uf09b", SkRect::MakeEmpty(), 0, NULL, NULL, {colorScheme[1], colorScheme[2], colorScheme[3], 0, 24, 5, 5, true})
-			})
+				}),
+				this->importTaskInfoViewPtr
+			}),
+					
 		}),
 		this->taskViewPtr
 	});
