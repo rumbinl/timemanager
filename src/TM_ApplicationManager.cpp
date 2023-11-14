@@ -24,40 +24,46 @@ TM_ApplicationManager::TM_ApplicationManager()
 	this->taskManPtr = new TM_TaskManager({}, &this->taskViewPtr, &this->storageManPtr);
 	this->storageManPtr->LoadTasks(this->taskManPtr);
 	this->taskViewPtr = new TM_TaskView(SkRect::MakeXYWH(0,0,840,840), this->taskManPtr, this->freeTimeMap);
-	this->mainView = new TM_View(SkRect::MakeXYWH(0,0,this->window_ptr.getWindowWidth(),this->window_ptr.getWindowHeight()), {0.05,0.95, 0.95, 0.95}, {
-		new TM_HorizontalView(SkRect::MakeEmpty(), {
-				new TM_Button<TM_View*,int>("\uefe8", SkRect::MakeEmpty(), (int)0, &this->mainView, [](TM_View** context, int data) {
-					(*context)->setRenderObjectExistence(1, true);
-					(*context)->setRenderObjectExistence(2, false);
-					(*context)->setRenderObjectExistence(3, false);
-				}, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true}),
-				new TM_Button<TM_View*,int>("\ue1b2", SkRect::MakeEmpty(), (int)0, &this->mainView, [](TM_View** context, int data) {
-					(*context)->setRenderObjectExistence(1, false);
-					(*context)->setRenderObjectExistence(2, true);
-					(*context)->setRenderObjectExistence(3, false);
-				}, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true}),
-				new TM_Button<TM_View*,int>("\ue9fc", SkRect::MakeEmpty(), (int)0, &this->mainView, [](TM_View** context, int data) {
-					(*context)->setRenderObjectExistence(1, false);
-					(*context)->setRenderObjectExistence(2, false);
-					(*context)->setRenderObjectExistence(3, true);
-				}, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true})
-			})
-			,
-		new TM_HorizontalView(SkRect::MakeEmpty(), {
+	this->mainView = new TM_HorizontalView(SkRect::MakeXYWH(0,0,this->window_ptr.getWindowWidth(),this->window_ptr.getWindowHeight()), {
+		new TM_View(SkRect::MakeEmpty(), {0.05,0.95, 0.95, 0.95}, {
+			new TM_HorizontalView(SkRect::MakeEmpty(), {
+					new TM_Button<TM_RenderObject*,int>("\uefe8", SkRect::MakeEmpty(), (int)0, (TM_RenderObject**)&this->mainView, [](TM_RenderObject** context, int data) {
+						TM_RenderObject* subView = (*context)->getRenderObject(0);
+						(subView)->setRenderObjectExistence(1, true);
+						(subView)->setRenderObjectExistence(2, false);
+						(subView)->setRenderObjectExistence(3, false);
+					}, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true}),
+					new TM_Button<TM_RenderObject*,int>("\ue1b2", SkRect::MakeEmpty(), (int)0, (TM_RenderObject**)&this->mainView, [](TM_RenderObject** context, int data) {
+						TM_RenderObject* subView = (*context)->getRenderObject(0);
+						(subView)->setRenderObjectExistence(1, false);
+						(subView)->setRenderObjectExistence(2, true);
+						(subView)->setRenderObjectExistence(3, false);
+					}, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true}),
+					new TM_Button<TM_RenderObject*,int>("\ue9fc", SkRect::MakeEmpty(), (int)0, (TM_RenderObject**)&this->mainView, [](TM_RenderObject** context, int data) {
+						TM_RenderObject* subView = (*context)->getRenderObject(0);
+						(subView)->setRenderObjectExistence(1, false);
+						(subView)->setRenderObjectExistence(2, false);
+						(subView)->setRenderObjectExistence(3, true);
+					}, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true})
+				})
+				,
+			new TM_HorizontalView(SkRect::MakeEmpty(), {
 				new TM_CalendarView(SkRect::MakeXYWH(0, 0, 840, 840), this->taskManPtr),
-				this->taskViewPtr
 			}),
-		new TM_HorizontalView(SkRect::MakeEmpty(), {
-			new TM_TaskInfoView(this->taskManPtr->getStartIt(), this->taskManPtr->getEndIt(), SkRect::MakeXYWH(0, 0, 0, 150), this->taskManPtr)
-		}),
-		new TM_View(SkRect::MakeEmpty(), {0.95,0.05}, {
-				new TM_FileDrop("Place file here.", SkRect::MakeEmpty(), NULL, NULL),
-				new TM_Button<TM_FileDrop,int>("\uf09b", SkRect::MakeEmpty(), 0, NULL, NULL, {colorScheme[1], colorScheme[2], colorScheme[3], 0, 24, 5, 5, true})
+
+			new TM_HorizontalView(SkRect::MakeEmpty(), {
+				new TM_TaskInfoView(SkRect::MakeXYWH(0, 0, 0, 150), this->taskManPtr, [](TM_TaskManager* taskManPtr) -> std::pair<TM_TaskManIt,TM_TaskManIt> {
+					return {taskManPtr->getStartIt(), taskManPtr->getEndIt()};
+				})
+			}),
+
+			new TM_View(SkRect::MakeEmpty(), {0.95,0.05}, {
+					new TM_FileDrop("Place file here.", SkRect::MakeEmpty(), NULL, NULL),
+					new TM_Button<TM_FileDrop,int>("\uf09b", SkRect::MakeEmpty(), 0, NULL, NULL, {colorScheme[1], colorScheme[2], colorScheme[3], 0, 24, 5, 5, true})
 			})
+		}),
+		this->taskViewPtr
 	});
-	this->mainView->setRenderObjectExistence(1, true);
-	this->mainView->setRenderObjectExistence(2, false);
-	this->mainView->setRenderObjectExistence(3, false);
 }
 
 void TM_ApplicationManager::Run()
