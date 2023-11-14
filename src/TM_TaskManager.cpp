@@ -143,6 +143,8 @@ void TM_TaskManager::openDocXFile(std::string filePath)
 	duckx::TableRow& tableRow = tableNode.rows();
 	int i=0;
 	std::chrono::year_month ym;
+    if(tableRow.has_next())
+        tableRow = tableRow.next();
 	while(tableRow.has_next())
 	{
 		duckx::TableCell& tableCell = tableRow.cells();
@@ -187,7 +189,6 @@ void TM_TaskManager::openDocXFile(std::string filePath)
 				else if(i==3)
 				{
 					name += text;
-                    std::cout<<name<<std::endl;
                     this->addTask(new TM_Task(name, day1, day2, {0,0}, {24,0}));
 				}
 				i++;

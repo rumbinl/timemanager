@@ -24,9 +24,11 @@ void TM_TaskInfoView::Render(TM_RenderInfo renderInfo)
 
         SkScalar yPos = this->getBounds().y()-this->yOffset;
         SkScalar y = yPos+this->yOffset;
+        SkScalar height = this->bounds.height();
 
         int count = 0;
 
+        renderInfo.canvas->save();
         renderInfo.canvas->clipRect(this->bounds);
 
         while(currentIt != itRange.second && (*currentIt != NULL))
@@ -47,8 +49,10 @@ void TM_TaskInfoView::Render(TM_RenderInfo renderInfo)
             currentIt++;
             count ++;
         }
-        this->srcBounds.setWH(0,yPos-y);
-        this->bounds.setXYWH(this->bounds.x(), y, this->bounds.width(), (this->blockHeight)*count - this->viewSetting.paddingY*(count-1));
+        this->srcBounds.setWH(0,(this->blockHeight)*count + this->viewSetting.paddingY*(count-1));
+        this->setBounds(SkRect::MakeXYWH(this->bounds.x(), y, this->bounds.width(), height));
+
+        renderInfo.canvas->restore();
     }
 }
 

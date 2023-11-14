@@ -60,11 +60,11 @@ TM_ApplicationManager::TM_ApplicationManager()
 					return {taskManPtr->getStartIt(), taskManPtr->getEndIt()};
 				})
 			}),
-			new TM_HorizontalView(SkRect::MakeEmpty(), {
+			new TM_View(SkRect::MakeEmpty(), {0.95, 0.05}, {
+				this->importTaskInfoViewPtr,
 				new TM_FileDrop("Place file here.", SkRect::MakeEmpty(), this->importTaskManPtr, [](void* importTaskManPtr, std::string filePath){
 					((TM_TaskManager*)importTaskManPtr)->openDocXFile(filePath);
-				}),
-				this->importTaskInfoViewPtr
+				})
 			}),
 					
 		}),
