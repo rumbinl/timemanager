@@ -1,15 +1,17 @@
 #include <TM_CalendarMonthView.hpp>
 
-
-template <typename ContextType> TM_CalendarMonthView<ContextType>::TM_CalendarMonthView(SkRect bounds, ContextType* contextPtr, void (*setDateFunc)(ContextType* contextPtr, TM_YMD date), TM_YMD (*getDateFunc)(ContextType* contextPtr), TM_ViewSetting viewSetting) : TM_View(bounds, {}, viewSetting)
+TM_CalendarMonthView::TM_CalendarMonthView(SkRect bounds, void* contextPtr, void (*setDateFunc)(void* contextPtr, TM_YMD date), TM_YMD (*getDateFunc)(void* contextPtr), TM_ViewSetting viewSetting) : TM_View(bounds, {}, viewSetting)
 {
-    monthView = new TM_MonthView<ContextType>(SkRect::MakeWH(50,50), contextPtr, setDateFunc, getDateFunc);
+    monthView = new TM_MonthView(SkRect::MakeWH(50,50), contextPtr, setDateFunc, getDateFunc);
     dataView = TM_TextView("", SkRect::MakeWH(0, 5));
     weekDayLabels = TM_HorizontalView(SkRect::MakeEmpty(), {});
-    previousMonth = TM_Button<TM_MonthView<ContextType>,int>("\ue5e0", SkRect::MakeWH(10,0), -1, this->monthView, [](TM_MonthView<ContextType>* monthView, int data) {
+    previousMonth = TM_Button<int>("\ue5e0", SkRect::MakeWH(10,0), -1, this->monthView, [](void* monthViewPtr, int data) {
+
+        TM_MonthView* monthView = (TM_MonthView*)monthViewPtr;
         monthView->setMonthYear(monthView->getMonthYear()-std::chrono::months{1});
     }, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,0,0,true});
-    nextMonth = TM_Button<TM_MonthView<ContextType>,int>("\ue5e1", SkRect::MakeWH(10,0), 1, this->monthView, [](TM_MonthView<ContextType>* monthView, int data) {
+    nextMonth = TM_Button<int>("\ue5e1", SkRect::MakeWH(10,0), 1, this->monthView, [](void* monthViewPtr, int data) {
+        TM_MonthView* monthView = (TM_MonthView*)monthViewPtr;
         monthView->setMonthYear(monthView->getMonthYear()+std::chrono::months{1});
     }, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,0,0,true});
     controlPanel = TM_HorizontalView(SkRect::MakeEmpty(), {&previousMonth, &dataView, &nextMonth}, {0.1, 0.8, 0.1});
@@ -24,20 +26,13 @@ template <typename ContextType> TM_CalendarMonthView<ContextType>::TM_CalendarMo
     this->fit = true;
 }
 
-template <typename ContextType> void TM_CalendarMonthView<ContextType>::Render(TM_RenderInfo renderInfo)
+void TM_CalendarMonthView::Render(TM_RenderInfo renderInfo)
 {
     this->dataView.setText(monthNames[(unsigned)this->monthView->getMonthYear().month()-1]+" "+std::to_string((int)this->monthView->getMonthYear().year()));
     TM_View::Render(renderInfo);
 } 
 
-template <typename ContextType> void TM_CalendarMonthView<ContextType>::setDate(TM_YMD date)
+void TM_CalendarMonthView::setDate(TM_YMD date)
 {
     this->monthView->setDate(date);
 }
-
-#include <TM_CalendarView.hpp>
-#include <TM_TaskManager.hpp>
-#include <TM_TaskView.hpp>
-
-template class TM_CalendarMonthView<TM_TaskManager>;
-template class TM_CalendarMonthView<TM_CalendarView>;

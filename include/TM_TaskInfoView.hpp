@@ -16,7 +16,7 @@ class TM_TaskInfoView : public TM_HorizontalView
         void Render(TM_RenderInfo renderInfo) override;
         bool PollEvents(TM_EventInput eventInput) override;
     private:
-        TM_Button<TM_TaskManager,TM_TaskManIt>* taskName;
+        TM_Button<TM_TaskManIt>* taskName;
         TM_View *startDateView, *endDateView;
         TM_TextView startDate,endDate,startTime,endTime;
         SkScalar blockHeight = 0.0f;

@@ -31,20 +31,20 @@ TM_ApplicationManager::TM_ApplicationManager()
 	this->mainView = new TM_HorizontalView(SkRect::MakeXYWH(0,0,this->window_ptr.getWindowWidth(),this->window_ptr.getWindowHeight()), {
 		new TM_View(SkRect::MakeEmpty(), {0.05,0.95, 0.95, 0.95}, {
 			new TM_HorizontalView(SkRect::MakeEmpty(), {
-					new TM_Button<TM_RenderObject*,int>("\uefe8", SkRect::MakeEmpty(), (int)0, (TM_RenderObject**)&this->mainView, [](TM_RenderObject** context, int data) {
-						TM_RenderObject* subView = (*context)->getRenderObject(0);
+					new TM_Button<int>("\uefe8", SkRect::MakeEmpty(), (int)0, &this->mainView, [](void* context, int data) {
+						TM_RenderObject* subView = (*((TM_RenderObject**)context))->getRenderObject(0);
 						(subView)->setRenderObjectExistence(1, true);
 						(subView)->setRenderObjectExistence(2, false);
 						(subView)->setRenderObjectExistence(3, false);
 					}, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true}),
-					new TM_Button<TM_RenderObject*,int>("\ue1b2", SkRect::MakeEmpty(), (int)0, (TM_RenderObject**)&this->mainView, [](TM_RenderObject** context, int data) {
-						TM_RenderObject* subView = (*context)->getRenderObject(0);
+					new TM_Button<int>("\ue1b2", SkRect::MakeEmpty(), (int)0, &this->mainView, [](void* context, int data) {
+						TM_RenderObject* subView = (*((TM_RenderObject**)context))->getRenderObject(0);
 						(subView)->setRenderObjectExistence(1, false);
 						(subView)->setRenderObjectExistence(2, true);
 						(subView)->setRenderObjectExistence(3, false);
 					}, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true}),
-					new TM_Button<TM_RenderObject*,int>("\ue9fc", SkRect::MakeEmpty(), (int)0, (TM_RenderObject**)&this->mainView, [](TM_RenderObject** context, int data) {
-						TM_RenderObject* subView = (*context)->getRenderObject(0);
+					new TM_Button<int>("\ue9fc", SkRect::MakeEmpty(), (int)0, &this->mainView, [](void* context, int data) {
+						TM_RenderObject* subView = (*((TM_RenderObject**)context))->getRenderObject(0);
 						(subView)->setRenderObjectExistence(1, false);
 						(subView)->setRenderObjectExistence(2, false);
 						(subView)->setRenderObjectExistence(3, true);
@@ -63,7 +63,7 @@ TM_ApplicationManager::TM_ApplicationManager()
 			new TM_HorizontalView(SkRect::MakeEmpty(), {
 				new TM_View(SkRect::MakeEmpty(), {0.95,0.05}, { 
 					new TM_FileDrop("Place file here.", SkRect::MakeEmpty(), NULL, NULL),
-					new TM_Button<TM_FileDrop,int>("\uf09b", SkRect::MakeEmpty(), 0, NULL, NULL, {colorScheme[1], colorScheme[2], colorScheme[3], 0, 24, 5, 5, true})
+					new TM_Button<int>("\uf09b", SkRect::MakeEmpty(), 0, NULL, NULL, {colorScheme[1], colorScheme[2], colorScheme[3], 0, 24, 5, 5, true})
 				}),
 				this->importTaskInfoViewPtr
 			}),

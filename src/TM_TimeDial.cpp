@@ -1,13 +1,13 @@
 #include <TM_TimeDial.hpp>
 
-template <typename T> TM_TimeDial<T>::TM_TimeDial(SkRect bounds, T* timeManPtr, void (*setTime)(T* timeManPtr, TM_Time time), TM_Time (*getTime)(T* timeManPtr), TM_ViewSetting viewSetting) : TM_RenderObject(bounds, viewSetting)
+TM_TimeDial::TM_TimeDial(SkRect bounds, void* timeManPtr, void (*setTime)(void* timeManPtr, TM_Time time), TM_Time (*getTime)(void* timeManPtr), TM_ViewSetting viewSetting) : TM_RenderObject(bounds, viewSetting)
 {
     this->timeManPtr = timeManPtr;
     this->getTime = getTime;
     this->setTime = setTime;
 }
 
-template <typename T> void TM_TimeDial<T>::Render(TM_RenderInfo renderInfo)
+void TM_TimeDial::Render(TM_RenderInfo renderInfo)
 {
     if(this->getCurrentTime() != this->getTime(this->timeManPtr))
         this->setCurrentTime();
@@ -57,7 +57,7 @@ template <typename T> void TM_TimeDial<T>::Render(TM_RenderInfo renderInfo)
     renderInfo.canvas->restore();
 }
 
-template <typename T> SkScalar TM_TimeDial<T>::GetAnglePercentage(TM_EventInput eventInput)
+SkScalar TM_TimeDial::GetAnglePercentage(TM_EventInput eventInput)
 {
     SkScalar xDif = eventInput.mouseX - this->bounds.width()/2.0f, yDif = eventInput.mouseY - this->bounds.height()/2.0f;
     SkScalar angle;
@@ -67,7 +67,7 @@ template <typename T> SkScalar TM_TimeDial<T>::GetAnglePercentage(TM_EventInput 
     return angle*100.0f/(2*M_PI);
 }
 
-template <typename T> SkScalar TM_TimeDial<T>::SubtractAnglePercentages(SkScalar angle1, SkScalar angle2)
+SkScalar TM_TimeDial::SubtractAnglePercentages(SkScalar angle1, SkScalar angle2)
 {
     if(std::fabs(angle1-angle2)>=50)
     {
@@ -76,14 +76,14 @@ template <typename T> SkScalar TM_TimeDial<T>::SubtractAnglePercentages(SkScalar
     return angle1-angle2;
 }
 
-template <typename T> SkScalar TM_TimeDial<T>::AngularMod(SkScalar angle1, SkScalar mod)
+SkScalar TM_TimeDial::AngularMod(SkScalar angle1, SkScalar mod)
 {
     if(angle1<0)
         return angle1+mod;
     return std::fmod(angle1,mod);
 }
 
-template <typename T> SkScalar TM_TimeDial<T>::NormalizeAngle(SkScalar angle)
+SkScalar TM_TimeDial::NormalizeAngle(SkScalar angle)
 {
     if(std::fabs(angle) >= 50)
     {
@@ -94,7 +94,7 @@ template <typename T> SkScalar TM_TimeDial<T>::NormalizeAngle(SkScalar angle)
     return angle;
 }
 
-template <typename T> bool TM_TimeDial<T>::PollEvents(TM_EventInput eventInput)
+bool TM_TimeDial::PollEvents(TM_EventInput eventInput)
 {
     if(this->getCurrentTime() != this->getTime(this->timeManPtr))
         this->setCurrentTime();
@@ -129,20 +129,13 @@ template <typename T> bool TM_TimeDial<T>::PollEvents(TM_EventInput eventInput)
     return should_update;
 }
 
-template <typename T> TM_Time TM_TimeDial<T>::getCurrentTime()
+TM_Time TM_TimeDial::getCurrentTime()
 {
     int minutes = (int)floor(60.0f * 24.0f * this->dialProgressPercentage/200.0f/5.0f)*5;
     return {minutes/60, minutes%60};
 }
-template <typename T> void TM_TimeDial<T>::setCurrentTime()
+void TM_TimeDial::setCurrentTime()
 {
     TM_Time time = this->getTime(this->timeManPtr);
     this->dialProgressPercentage = 200.0f * (time.hours*60.0f + time.minutes)/(24.0f*60.0f);
-}
-
-#include <TM_TaskManager.hpp>
-
-void templateFunc()
-{
-    TM_TimeDial<TM_TaskManager>* timeDial1 = new TM_TimeDial<TM_TaskManager>(SkRect::MakeEmpty());
 }

@@ -1,6 +1,6 @@
 #include <TM_TextBox.hpp>
 
-template <typename ContextType> TM_TextBox<ContextType>::TM_TextBox(SkRect bounds, std::string placeholder, ContextType* contextPtr, std::string (*getStringFunc)(ContextType* contextPtr), void (*setStringFunc)(ContextType* contextPtr, std::string newString), TM_ViewSetting viewSetting) : TM_TextView("", bounds, viewSetting, false)
+TM_TextBox::TM_TextBox(SkRect bounds, std::string placeholder, void* contextPtr, std::string (*getStringFunc)(void* contextPtr), void (*setStringFunc)(void* contextPtr, std::string newString), TM_ViewSetting viewSetting) : TM_TextView("", bounds, viewSetting, false)
 {
     this->placeholder = placeholder;
 	this->content = "";
@@ -9,7 +9,7 @@ template <typename ContextType> TM_TextBox<ContextType>::TM_TextBox(SkRect bound
 	this->setStringFunc = setStringFunc;
 }
 
-template <typename ContextType> void TM_TextBox<ContextType>::Render(TM_RenderInfo renderInfo)
+void TM_TextBox::Render(TM_RenderInfo renderInfo)
 {
 	if(this->getStringFunc != NULL)
 	{
@@ -51,7 +51,7 @@ template <typename ContextType> void TM_TextBox<ContextType>::Render(TM_RenderIn
 	if(this->select) TM_TextView::invertColors();
 }
 
-template <typename ContextType> void TM_TextBox<ContextType>::locatePosition(SkScalar mouseX, std::string text, SkFont* font)
+void TM_TextBox::locatePosition(SkScalar mouseX, std::string text, SkFont* font)
 {
 	SkRect textBounds;
 	int l=0,h=text.size()-1;
@@ -71,7 +71,7 @@ template <typename ContextType> void TM_TextBox<ContextType>::locatePosition(SkS
 		cursorIndex = l;
 }
 
-template <typename ContextType> bool TM_TextBox<ContextType>::PollEvents(TM_EventInput eventInput)
+bool TM_TextBox::PollEvents(TM_EventInput eventInput)
 {
 	bool contains = TM_TextView::getBounds().contains(eventInput.mouseX,eventInput.mouseY);
 	bool ret = false;
@@ -128,7 +128,7 @@ template <typename ContextType> bool TM_TextBox<ContextType>::PollEvents(TM_Even
     return ret;
 }
 
-template <typename ContextType> SkScalar TM_TextBox<ContextType>::getCharWidth(char a, SkFont* font)
+SkScalar TM_TextBox::getCharWidth(char a, SkFont* font)
 {
 	SkGlyphID glyph;
 	font->textToGlyphs(&a, sizeof(char), SkTextEncoding::kUTF8, &glyph, 1);
@@ -136,6 +136,3 @@ template <typename ContextType> SkScalar TM_TextBox<ContextType>::getCharWidth(c
 	font->getWidths(&glyph, 1, &width);
 	return width;
 }
-
-#include <TM_TaskManager.hpp>
-template class TM_TextBox<TM_TaskManager>;

@@ -2,8 +2,8 @@
 
 TM_TaskInfoView::TM_TaskInfoView(SkRect bounds, TM_TaskManager* taskManPtr, std::pair<TM_TaskManIt,TM_TaskManIt> (*getItFunc)(TM_TaskManager* taskManPtr), TM_ViewSetting viewSetting) : TM_HorizontalView(bounds, {}, {}, viewSetting)
 {
-    this->taskName = new TM_Button<TM_TaskManager, TM_TaskManIt>("", SkRect::MakeEmpty(), taskManPtr->getStartIt(), taskManPtr, [](TM_TaskManager* taskManPtr, TM_TaskManIt task) {
-        taskManPtr->setCurrentTask(task);
+    this->taskName = new TM_Button<TM_TaskManIt>("", SkRect::MakeEmpty(), taskManPtr->getStartIt(), (void*)taskManPtr, [](void* taskManPtr, TM_TaskManIt task) {
+        ((TM_TaskManager*)taskManPtr)->setCurrentTask(task);
     });
     this->startDateView = new TM_View(SkRect::MakeEmpty(), {0.5,0.5}, {&this->startTime, &this->startDate}, {colorScheme[3],colorScheme[2],colorScheme[1],0,24,0,0});
     this->endDateView = new TM_View(SkRect::MakeEmpty(), {0.5,0.5}, {&this->endTime, &this->endDate}, {colorScheme[3],colorScheme[2],colorScheme[1],0,24,0,0});

@@ -1,6 +1,6 @@
 #include <TM_MonthView.hpp>
 
-template <typename ContextType> TM_MonthView<ContextType>::TM_MonthView(SkRect bounds, ContextType* contextPtr, void (*setDateFunc)(ContextType* contextPtr, TM_YMD date), TM_YMD (*getDateFunc)(ContextType* contextPtr), TM_ViewSetting viewSetting) : TM_RenderObject(bounds, viewSetting)
+TM_MonthView::TM_MonthView(SkRect bounds, void* contextPtr, void (*setDateFunc)(void* contextPtr, TM_YMD date), TM_YMD (*getDateFunc)(void* contextPtr), TM_ViewSetting viewSetting) : TM_RenderObject(bounds, viewSetting)
 {
     this->idx = indexCal++;
     this->contextPtr = contextPtr;
@@ -8,14 +8,16 @@ template <typename ContextType> TM_MonthView<ContextType>::TM_MonthView(SkRect b
     this->getDateFunc = getDateFunc;
     
     this->dayViewList = std::vector(31, 
-        TM_SelectButton<TM_MonthView<ContextType>,int>("0", 
+        TM_SelectButton<int>("0", 
             SkRect::MakeWH(bounds.width()/7.0f, 0), 0, this, 
-            [](TM_MonthView<ContextType>* monthView, int dayIndex)
+            [](void* monthViewPtr, int dayIndex)
             { 
+                TM_MonthView* monthView = (TM_MonthView*)monthViewPtr;
                 monthView->setDate({monthView->getMonthYear().year(), monthView->getMonthYear().month(), std::chrono::day{(unsigned)dayIndex}}); 
             }, 
-            [](TM_MonthView<ContextType>* monthView, int dayIndex) -> bool 
+            [](void* monthViewPtr, int dayIndex) -> bool 
             {
+                TM_MonthView* monthView = (TM_MonthView*)monthViewPtr;
                 std::chrono::year_month month = monthView->getMonthYear();
                 TM_YMD date = monthView->getDate();
                 return month.year()==date.year() && month.month() == date.month() && dayIndex == static_cast<unsigned int>(monthView->getDate().day());
@@ -32,7 +34,7 @@ template <typename ContextType> TM_MonthView<ContextType>::TM_MonthView(SkRect b
     this->month = std::chrono::year_month{getCurrentDate().year(), getCurrentDate().month()};
 }
 
-template <typename ContextType> void TM_MonthView<ContextType>::Render(TM_RenderInfo renderInfo)
+void TM_MonthView::Render(TM_RenderInfo renderInfo)
 {
     this->updateDate();
     renderInfo.textFont->setSize(this->viewSetting.fontSize);
@@ -68,7 +70,7 @@ template <typename ContextType> void TM_MonthView<ContextType>::Render(TM_Render
 
 }
 
-template<typename ContextType> bool TM_MonthView<ContextType>::PollEvents(TM_EventInput eventInput) 
+bool TM_MonthView::PollEvents(TM_EventInput eventInput) 
 {
     this->updateDate();
     bool select=false;
@@ -82,7 +84,7 @@ template<typename ContextType> bool TM_MonthView<ContextType>::PollEvents(TM_Eve
     return select;
 }
 
-template <typename ContextType> void TM_MonthView<ContextType>::setDate(TM_YMD date)
+void TM_MonthView::setDate(TM_YMD date)
 {
     if(date != ZeroDate)
     {
@@ -91,7 +93,7 @@ template <typename ContextType> void TM_MonthView<ContextType>::setDate(TM_YMD d
     }
 }
 
-template <typename ContextType> void TM_MonthView<ContextType>::updateDate()
+void TM_MonthView::updateDate()
 {
     if(this->getDateFunc!=NULL&& this->contextPtr!=NULL)
     {
@@ -104,23 +106,17 @@ template <typename ContextType> void TM_MonthView<ContextType>::updateDate()
     }
 }
 
-template <typename ContextType> TM_YMD TM_MonthView<ContextType>::getDate()
+TM_YMD TM_MonthView::getDate()
 {
     return this->currentDate;
 }
 
-template <typename ContextType> std::chrono::year_month TM_MonthView<ContextType>::getMonthYear()
+std::chrono::year_month TM_MonthView::getMonthYear()
 {
     return month;
 }
 
-template <typename ContextType> void TM_MonthView<ContextType>::setMonthYear(std::chrono::year_month monthYear)
+void TM_MonthView::setMonthYear(std::chrono::year_month monthYear)
 {
     this->month = monthYear;
 }
-
-#include <TM_CalendarView.hpp>
-#include <TM_CalendarMonthView.hpp>
-
-template class TM_MonthView<TM_TaskManager>;
-template class TM_MonthView<TM_CalendarView>;

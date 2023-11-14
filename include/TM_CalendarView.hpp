@@ -16,7 +16,7 @@ class TM_CalendarView : public TM_View
         void setReferenceDate(TM_YMD date);
         TM_YMD getReferenceDate();
     private:
-        TM_CalendarMonthView<TM_CalendarView>* monthView;
+        TM_CalendarMonthView* monthView;
         TM_CalendarWeekView* weekView;
 		TM_HorizontalView* buttonBar;
 		TM_View* vitalView;

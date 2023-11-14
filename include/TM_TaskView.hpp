@@ -25,11 +25,11 @@ class TM_TaskView : public TM_View
         TM_TaskManager* getTaskManPtr();
     private:
         TM_Task* currentTask=NULL,dummyTask=TM_Task("",getCurrentDate(),getCurrentDate(),{0,0},{0,0}); 
-        TM_TextBox<TM_TaskManager>* textBox;
+        TM_TextBox* textBox;
         TM_View* taskList;
-        TM_Button<TM_TaskView,int>* addSubtaskButton,*scheduleTaskButton,*deleteTaskButton;
+        TM_Button<int>* addSubtaskButton,*scheduleTaskButton,*deleteTaskButton;
         TM_TextView *startDateLabel,*endDateLabel;
-        TM_CalendarMonthView<TM_TaskManager> *startDateMonthView, *endDateMonthView;
+        TM_CalendarMonthView *startDateMonthView, *endDateMonthView;
         TM_YMD date;
         TM_TaskManager* taskManPtr;
         std::map<TM_YMD,int> calendarPtr;
