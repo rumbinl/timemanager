@@ -25,7 +25,7 @@ TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr, std::map<TM_
         // TODO: Add Task
 	}, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true});
 
-    this->deleteTaskButton = new TM_Button<int>("\ue872a", SkRect::MakeWH(0,50), 0, (void*)this->taskManPtr, [](void* context, int data) {
+    this->deleteTaskButton = new TM_Button<int>("\ue872aa", SkRect::MakeWH(0,50), 0, (void*)this->taskManPtr, [](void* context, int data) {
         ((TM_TaskManager*)context)->deleteCurrentTask();
     }, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true});
 

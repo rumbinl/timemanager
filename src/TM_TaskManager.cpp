@@ -143,8 +143,7 @@ void TM_TaskManager::openDocXFile(std::string filePath)
 	duckx::TableRow& tableRow = tableNode.rows();
 	int i=0;
 	std::chrono::year_month ym;
-    if(tableRow.has_next())
-        tableRow = tableRow.next();
+    int lastMonthIndex = 0, lastYear = -1;
 	while(tableRow.has_next())
 	{
 		duckx::TableCell& tableCell = tableRow.cells();

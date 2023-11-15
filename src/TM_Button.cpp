@@ -1,6 +1,6 @@
 #include <TM_Button.hpp>
 
-template <typename DataType> TM_Button<DataType>::TM_Button(std::string text, SkRect bounds, DataType data, void* context, void (*actionFunc)(void* context, DataType data), TM_ViewSetting viewSetting) : TM_TextView(text, bounds, viewSetting)
+template <typename DataType> TM_Button<DataType>::TM_Button(std::string text, SkRect bounds, DataType data, void* context, void (*actionFunc)(void* context, DataType data), TM_ViewSetting viewSetting, bool centered) : TM_TextView(text, bounds, viewSetting, centered)
 {
     this->actionFunc = actionFunc;
     this->context = context;
@@ -32,6 +32,8 @@ template <typename DataType> void TM_Button<DataType>::setData(DataType data)
 }
 
 #include <TM_TaskManager.hpp>
+#include <TM_Task.hpp>
 
 template class TM_Button<int>;
+template class TM_Button<TM_Task*>;
 template class TM_Button<TM_TaskManIt>;

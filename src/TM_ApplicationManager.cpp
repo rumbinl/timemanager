@@ -23,7 +23,7 @@ TM_ApplicationManager::TM_ApplicationManager()
 	this->storageManPtr = new TM_StorageManager("./TM_Stor.db");
 	this->taskManPtr = new TM_TaskManager({}, &this->taskViewPtr, &this->storageManPtr);
 	this->importTaskManPtr = new TM_TaskManager({}, &this->taskViewPtr, NULL);
-	this->importTaskInfoViewPtr = new TM_TaskInfoView(SkRect::MakeWH(0,150), this->importTaskManPtr, [](TM_TaskManager* taskManager) -> std::pair<TM_TaskManIt,TM_TaskManIt> {
+	this->importTaskInfoViewPtr = new TM_ImportTaskInfoView(SkRect::MakeWH(0,150), this->importTaskManPtr, this->taskManPtr, [](TM_TaskManager* taskManager) -> std::pair<TM_TaskManIt,TM_TaskManIt> {
 		return {taskManager->getStartIt(), taskManager->getEndIt()};
 	});
 	this->storageManPtr->LoadTasks(this->taskManPtr);
