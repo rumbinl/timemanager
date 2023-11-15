@@ -17,11 +17,16 @@ class TM_TaskInfoView : public TM_View
         virtual void addTaskInfoObject(TM_TaskManIt taskIt);
         void Render(TM_RenderInfo renderInfo) override;
         bool PollEvents(TM_EventInput eventInput) override;
+<<<<<<< HEAD
     protected:
+=======
+    private:
+>>>>>>> 356156d1cb0065254fa2233aca710f9794f61463
         SkScalar blockHeight = 0.0f;
         TM_TaskManager* taskManPtr;
         std::pair<TM_TaskManIt,TM_TaskManIt> (*getItFunc)(TM_TaskManager* taskManPtr);
         std::vector<TM_TaskInfoSection*> taskInfoSectionList;
+<<<<<<< HEAD
 };
 
 class TM_ImportTaskInfoView : public TM_TaskInfoView
@@ -31,4 +36,6 @@ class TM_ImportTaskInfoView : public TM_TaskInfoView
         void addTaskInfoObject(TM_TaskManIt taskIt) override;
     private:
         TM_TaskManager* mainTaskManPtr;
+=======
+>>>>>>> 356156d1cb0065254fa2233aca710f9794f61463
 };

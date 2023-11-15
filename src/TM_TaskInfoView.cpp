@@ -2,6 +2,11 @@
 
 TM_TaskInfoView::TM_TaskInfoView(SkRect bounds, TM_TaskManager* taskManPtr, std::pair<TM_TaskManIt,TM_TaskManIt> (*getItFunc)(TM_TaskManager* taskManPtr), TM_ViewSetting viewSetting) : TM_View(bounds, {}, {}, viewSetting)
 {
+<<<<<<< HEAD
+=======
+    this->taskInfoSectionList.push_back(new TM_TaskInfoSection(SkRect::MakeWH(0, 150), getItFunc(taskManPtr).first, taskManPtr));
+    this->addRenderObject(this->taskInfoSectionList[0]);
+>>>>>>> 356156d1cb0065254fa2233aca710f9794f61463
     this->taskManPtr = taskManPtr;
     this->getItFunc = getItFunc;
 }
@@ -29,7 +34,14 @@ void TM_TaskInfoView::Render(TM_RenderInfo renderInfo)
         while(currentIt != itRange.second && (*currentIt != NULL))
         {
             if(count>=this->renderObjects.size())
+<<<<<<< HEAD
                 this->addTaskInfoObject(currentIt);
+=======
+            {
+                this->taskInfoSectionList.push_back(new TM_TaskInfoSection(SkRect::MakeWH(0,150), currentIt, taskManPtr));
+                this->addRenderObject(this->taskInfoSectionList[count]);
+            }
+>>>>>>> 356156d1cb0065254fa2233aca710f9794f61463
             else
                 this->taskInfoSectionList[count]->setTaskIt(currentIt);
             this->renderObjects[count]->setBounds(SkRect::MakeXYWH(this->bounds.x(), yPos, this->bounds.width(), this->renderObjects[count]->getBounds().height()));
@@ -60,12 +72,28 @@ bool TM_TaskInfoView::PollEvents(TM_EventInput eventInput)
 
             while(currentIt != itRange.second && (*currentIt != NULL))
             {
+<<<<<<< HEAD
                 if(count>=this->taskInfoSectionList.size())
                     this->addTaskInfoObject(currentIt);
+=======
+                if(count>=this->renderObjects.size())
+                {
+                    this->taskInfoSectionList.push_back(new TM_TaskInfoSection(SkRect::MakeWH(0,150), currentIt, taskManPtr));
+                    this->addRenderObject(this->taskInfoSectionList[count]);
+                }
+>>>>>>> 356156d1cb0065254fa2233aca710f9794f61463
                 else
                     this->taskInfoSectionList[count]->setTaskIt(currentIt);
                 this->renderObjects[count]->setBounds(SkRect::MakeXYWH(this->bounds.x(), yPos, this->bounds.width(), this->renderObjects[count]->getBounds().height()));
 
+<<<<<<< HEAD
+=======
+                select+=this->renderObjects[count]->PollEvents(eventInput);
+
+                yPos += this->renderObjects[count]->getBounds().height() + this->viewSetting.paddingY;
+                
+                count++;
+>>>>>>> 356156d1cb0065254fa2233aca710f9794f61463
                 currentIt++;
                 select+=this->renderObjects[count]->PollEvents(eventInput);
 
