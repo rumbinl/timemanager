@@ -12,7 +12,7 @@ TM_StorageManager::TM_StorageManager(std::string dbFilePath)
 
 void TM_StorageManager::CreateDBTask(TM_Task* taskPtr)
 {
-    std::string queryString = "INSERT INTO TimeSections (Name, startDatetime, endDatetime, headTaskID) VALUES ('"+taskPtr->getName()+"', '"+TM_GetDateTimeString(taskPtr->getStartDate(), taskPtr->getStartTime())+"', '"+TM_GetDateTimeString(taskPtr->getEndDate(), taskPtr->getEndTime())+"',-1);";
+    std::string queryString = "INSERT INTO TimeSections (Name, startDatetime, endDatetime, headTaskID) VALUES ('"+taskPtr->getName()+"', '"+TM_GetDateTimeString(taskPtr->getStartDate(), taskPtr->getStartTime())+"', '"+TM_GetDateTimeString(taskPtr->getEndDate(), taskPtr->getEndTime())+"',"+std::to_string(taskPtr->getHeadTaskID())+");";
     int errorCode;
     if((errorCode = sqlite3_exec(this->dbPtr, queryString.c_str(), NULL, NULL, NULL)) != SQLITE_OK)
         std::cout<<sqlite3_errmsg(this->dbPtr)<<std::endl;
@@ -57,6 +57,7 @@ void TM_StorageManager::LoadTasks(TM_TaskManager* taskManPtr)
         return 0;
     }, taskManPtr, NULL)) != SQLITE_OK)
         std::cout<<sqlite3_errmsg(this->dbPtr)<<std::endl;
+    taskManPtr->initializeSubtasks();
 }
 
 TM_StorageManager::~TM_StorageManager()

@@ -21,7 +21,27 @@ void TM_TaskManager::addSubtask(TM_TaskItIt task)
     if(this->getCurrentTask()) 
     {
         (**task)->setHeadTaskID(this->getCurrentTask()->getDBID());
+        if(this->storageManPtr&&*this->storageManPtr!=NULL)
+            (*this->storageManPtr)->AlterDBTask(**task);
         this->getCurrentTask()->addSubtask(task);
+    }
+}
+
+void TM_TaskManager::initializeSubtasks()
+{
+    TM_TaskItIt subtaskIt = this->dateSortedTasks.begin();
+    while(subtaskIt != this->dateSortedTasks.end())
+    {
+        int headTaskId;
+        if((headTaskId = (**subtaskIt)->getHeadTaskID())!=-1)
+        {
+            TM_TaskIt headTask = this->databaseSortedTasks.find(new TM_Task("", ZeroDate, ZeroDate, {0,0},{0,0},headTaskId));
+            if(headTask != this->databaseSortedTasks.end())
+            {
+                (*headTask)->addSubtask(subtaskIt);
+            }
+        }
+        subtaskIt ++;
     }
 }
 
@@ -46,6 +66,16 @@ void TM_TaskManager::deleteTask(TM_TaskItIt taskIt)
         }
         if(this->storageManPtr&&*this->storageManPtr!=NULL)
             (*this->storageManPtr)->DeleteDBTask(**this->currentTask);
+        if((**taskIt)->getHeadTaskID() != -1)
+        {
+            TM_TaskIt headTaskPtr = this->databaseSortedTasks.find(new TM_Task("", ZeroDate, ZeroDate, {0,0},{0,0},(**taskIt)->getHeadTaskID()));
+            if(headTaskPtr != this->databaseSortedTasks.end())
+            {
+                TM_SubtaskIt subtaskIt = (*headTaskPtr)->getSubtaskList().find(taskIt);
+                if(subtaskIt != (*headTaskPtr)->getSubtaskList().end())
+                    (*headTaskPtr)->getSubtaskList().erase(subtaskIt);
+            }
+        }
         TM_TaskIt deleteTask = *taskIt;
         TM_Task* taskPtr = *deleteTask;
         this->dateSortedTasks.erase(taskIt);
@@ -78,22 +108,12 @@ void TM_TaskManager::setDateTime(TM_YMD startDate, TM_Time startTime, TM_YMD end
     TM_Task* headTaskPtr;
     if(taskPtr->getHeadTaskID() != -1)
     {
-        std::cout<<"Is subtask"<<std::endl;
         headTaskPtr = *this->databaseSortedTasks.find(new TM_Task("", ZeroDate, ZeroDate, {0,0},{0,0},taskPtr->getHeadTaskID()));
-        std::cout<<headTaskPtr->getName()<<std::endl;
         TM_SubtaskIt subtaskIt;
-        std::cout<<(headTaskPtr)->getSubtaskCount()<<std::endl;
-        for(TM_TaskItIt taskIt : headTaskPtr->getSubtaskList())
-        {
-            std::cout<<(**taskIt)->getName()<<' ';
-        }
-        std::cout<<std::endl;
         if((subtaskIt = headTaskPtr->getSubtaskList().find(this->currentTask)) != headTaskPtr->getSubtaskList().end())
         {
-            std::cout<<"Not null"<<std::endl;
             headTaskPtr->getSubtaskList().erase(subtaskIt);
         }
-        std::cout<<"Erased"<<std::endl;
     }
     this->dateSortedTasks.erase(this->currentTask);
 
