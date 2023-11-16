@@ -12,7 +12,8 @@
 #define NAME_COLUMN_IDX 0
 #define STARTDATE_COLUMN_IDX 1
 #define ENDDATE_COLUMN_IDX 2
-#define ID_COLUMN_IDX 3
+#define HEADID_COLUMN_IDX 3
+#define ID_COLUMN_IDX 4
 
 class TM_StorageManager 
 {

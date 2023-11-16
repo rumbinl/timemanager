@@ -36,4 +36,5 @@ template <typename DataType> void TM_Button<DataType>::setData(DataType data)
 
 template class TM_Button<int>;
 template class TM_Button<TM_Task*>;
-template class TM_Button<TM_TaskManIt>;
+template class TM_Button<TM_TaskIt>;
+template class TM_Button<TM_TaskItIt>;

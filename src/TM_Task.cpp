@@ -5,7 +5,7 @@ TM_Task::TM_Task(TM_Task& copyTask)
     *this = copyTask;
 }
 
-TM_Task::TM_Task(std::string name, std::chrono::year_month_day startDate, std::chrono::year_month_day endDate, TM_Time startTime,  TM_Time endTime, int dbID)
+TM_Task::TM_Task(std::string name, std::chrono::year_month_day startDate, std::chrono::year_month_day endDate, TM_Time startTime,  TM_Time endTime, int dbID, int headTaskID)
 {
     this->name = name;
     this->startDate = startDate;
@@ -13,15 +13,7 @@ TM_Task::TM_Task(std::string name, std::chrono::year_month_day startDate, std::c
     this->endDate = endDate;
     this->endTime = endTime;
     this->dbID = dbID;
-}
-
-TM_Task::TM_Task(std::string name, std::chrono::year_month_day startDate, std::chrono::year_month_day endDate, TM_Time startTime, TM_Time endTime)
-{
-    this->name = name;
-    this->startDate = startDate;
-    this->startTime = startTime;
-    this->endDate = endDate;
-    this->endTime = endTime;
+    this->headTaskID = headTaskID;
 }
 
 TM_Task::TM_Task(std::string name, std::chrono::year_month_day startDate, std::chrono::year_month_day deadline, TM_Time startTime, TM_Time endTime, TM_Time duration, std::map<std::chrono::year_month_day,int>* calendarPtr)
@@ -63,17 +55,27 @@ std::string* TM_Task::getNamePtr() { return &this->name; }
 std::chrono::year_month_day* TM_Task::getStartDatePtr() { return &this->startDate; }
 std::chrono::year_month_day* TM_Task::getEndDatePtr() { return &this->endDate; }
 
-std::multiset<TM_Task*,TM_Task::TM_TaskPtrCompare>& TM_Task::getSubtaskList()
+std::multiset<TM_Task::TM_TaskItIt,TM_Task::TM_SubtaskItCompare>& TM_Task::getSubtaskList()
 {
     return this->subtasks;
 }
 
-void TM_Task::setHeadTask(TM_Task* headTask)
+int TM_Task::getSubtaskCount()
 {
-    this->headTask = headTask;
+    return this->subtasks.size();
 }
 
-void TM_Task::addSubtask(TM_Task* subtask)
+void TM_Task::setHeadTaskID(int headTaskID)
+{
+    this->headTaskID = headTaskID;
+}
+
+int TM_Task::getHeadTaskID()
+{
+    return this->headTaskID;
+}
+
+void TM_Task::addSubtask(TM_Task::TM_TaskItIt subtask)
 {
     this->subtasks.insert(subtask);
 }
@@ -82,7 +84,7 @@ void TM_Task::scheduleSubtasks(std::chrono::year_month_day currentDay)
 {
     if(this->subtasks.empty())
         return;
-    for(TM_Task* subtask : this->subtasks)
+    for(TM_TaskItIt subtask : this->subtasks)
     {
     }
 }

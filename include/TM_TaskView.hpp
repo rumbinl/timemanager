@@ -9,6 +9,7 @@
 #include <TM_TaskManager.hpp>
 #include <TM_HorizontalView.hpp>
 #include <TM_TimeDial.hpp>
+#include <TM_TaskInfoView.hpp>
 
 class TM_TaskView : public TM_View
 {
@@ -26,11 +27,11 @@ class TM_TaskView : public TM_View
     private:
         TM_Task* currentTask=NULL,dummyTask=TM_Task("",getCurrentDate(),getCurrentDate(),{0,0},{0,0}); 
         TM_TextBox* textBox;
-        TM_View* taskList;
         TM_Button<int>* addSubtaskButton,*scheduleTaskButton,*deleteTaskButton;
         TM_TextView *startDateLabel,*endDateLabel;
         TM_CalendarMonthView *startDateMonthView, *endDateMonthView;
         TM_YMD date;
         TM_TaskManager* taskManPtr;
+        TM_TaskInfoView* taskInfoViewPtr;
         std::map<TM_YMD,int> calendarPtr;
 };

@@ -21,9 +21,9 @@ TM_ApplicationManager::TM_ApplicationManager()
 	this->skia_canvas_clear_color = colorScheme[BACKGROUND_COLOR_INDEX];
 
 	this->storageManPtr = new TM_StorageManager("./TM_Stor.db");
-	this->taskManPtr = new TM_TaskManager({}, &this->taskViewPtr, &this->storageManPtr);
-	this->importTaskManPtr = new TM_TaskManager({}, &this->taskViewPtr, NULL);
-	this->importTaskInfoViewPtr = new TM_ImportTaskInfoView(SkRect::MakeWH(0,150), this->importTaskManPtr, this->taskManPtr, [](TM_TaskManager* taskManager) -> std::pair<TM_TaskManIt,TM_TaskManIt> {
+	this->taskManPtr = new TM_TaskManager(&this->taskViewPtr, &this->storageManPtr);
+	this->importTaskManPtr = new TM_TaskManager(&this->taskViewPtr, NULL);
+	this->importTaskInfoViewPtr = new TM_ImportTaskInfoView(SkRect::MakeWH(0,150), this->importTaskManPtr, this->taskManPtr, [](TM_TaskManager* taskManager) -> std::pair<TM_TaskItIt,TM_TaskItIt> {
 		return {taskManager->getStartIt(), taskManager->getEndIt()};
 	});
 	this->storageManPtr->LoadTasks(this->taskManPtr);
@@ -56,7 +56,7 @@ TM_ApplicationManager::TM_ApplicationManager()
 			}),
 
 			new TM_HorizontalView(SkRect::MakeEmpty(), {
-				new TM_TaskInfoView(SkRect::MakeXYWH(0, 0, 0, 150), this->taskManPtr, [](TM_TaskManager* taskManPtr) -> std::pair<TM_TaskManIt,TM_TaskManIt> {
+				new TM_TaskInfoView(SkRect::MakeXYWH(0, 0, 0, 150), this->taskManPtr, [](TM_TaskManager* taskManPtr) -> std::pair<TM_TaskItIt,TM_TaskItIt> {
 					return {taskManPtr->getStartIt(), taskManPtr->getEndIt()};
 				})
 			}),

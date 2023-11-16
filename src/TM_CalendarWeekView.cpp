@@ -93,8 +93,9 @@ void TM_CalendarWeekView::Render(TM_RenderInfo renderInfo)
 	renderInfo.textFont->getMetrics(&fontMetrics);
 
 	std::chrono::year_month_day currentDate;
-	for(TM_Task* task : this->taskManPtr->getTaskList()) 
+	for(TM_TaskIt taskIt : this->taskManPtr->getTaskList()) 
 	{
+		TM_Task* task = *taskIt;
 		if(task->getStartDate()>=*this->focusDate && task->getStartDate() < std::chrono::sys_days{*this->focusDate} + std::chrono::days{this->numDays})
 			this->RenderTask(task, this->viewSetting.borderColor, renderInfo);
 	}
@@ -232,11 +233,11 @@ bool TM_CalendarWeekView::PollEvents(TM_EventInput eventInput)
 
 		if(eventInput.mousePressed)
 		{
-			std::multiset<TM_Task*,TM_Task::TM_TaskPtrCompare>::iterator taskIt = this->taskManPtr->getTaskList().begin(); 
+			std::multiset<TM_TaskIt,TM_Task::TM_TaskItCompare>::iterator taskIt = this->taskManPtr->getTaskList().begin(); 
 			while(taskIt!=this->taskManPtr->getTaskList().end())
 			{
-				if((*taskIt)->getStartDate()>=*this->focusDate && (*taskIt)->getStartDate() < std::chrono::sys_days{*this->focusDate} + std::chrono::days{this->numDays})
-					if(this->PollTask(*taskIt, eventInput))
+				if((**taskIt)->getStartDate()>=*this->focusDate && (**taskIt)->getStartDate() < std::chrono::sys_days{*this->focusDate} + std::chrono::days{this->numDays})
+					if(this->PollTask(**taskIt, eventInput))
 					{
 						this->taskManPtr->setCurrentTask(taskIt);
 						this->select = false;

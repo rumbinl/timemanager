@@ -8,19 +8,19 @@
 class TM_TaskInfoSection : public TM_HorizontalView
 {
     public:
-        TM_TaskInfoSection(SkRect bounds, TM_TaskManIt iterator, TM_TaskManager* taskManPtr, TM_ViewSetting viewSetting = {colorScheme[1],colorScheme[2],colorScheme[3],0,24,0,10});
-        virtual void setTaskIt(TM_TaskManIt taskIt);
+        TM_TaskInfoSection(SkRect bounds, TM_TaskItIt iterator, TM_TaskManager* taskManPtr, TM_ViewSetting viewSetting = {colorScheme[1],colorScheme[2],colorScheme[3],0,24,0,10});
+        virtual void setTaskIt(TM_TaskItIt taskIt);
     protected:
-        TM_Button<TM_TaskManIt>* taskName;
+        TM_Button<TM_TaskItIt>* taskName;
         TM_TextView startDate,endDate,startTime,endTime;
 };
 
 class TM_ImportTaskInfoSection : public TM_TaskInfoSection
 {
     public:
-        TM_ImportTaskInfoSection(SkRect bounds, TM_TaskManIt iterator, TM_TaskManager* importTaskManPtr, TM_TaskManager* mainTaskManPtr, TM_ViewSetting viewSetting = {colorScheme[1],colorScheme[2],colorScheme[3],0,24,0,10});
-        void setTaskIt(TM_TaskManIt taskIt) override;
+        TM_ImportTaskInfoSection(SkRect bounds, TM_TaskItIt iterator, TM_TaskManager* importTaskManPtr, TM_TaskManager* mainTaskManPtr, TM_ViewSetting viewSetting = {colorScheme[1],colorScheme[2],colorScheme[3],0,24,0,10});
+        void setTaskIt(TM_TaskItIt taskIt) override;
     private:
-        TM_Button<TM_TaskManIt>* acceptButton,*deleteButton;
+        TM_Button<TM_TaskItIt>* acceptButton,*deleteButton;
         TM_TaskManager* mainTaskManPtr,** taskManPair;
 };

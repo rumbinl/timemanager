@@ -2,98 +2,124 @@
 #include <TM_TaskView.hpp>
 #include <TM_Database.hpp>
 
-TM_TaskManager::TM_TaskManager(std::vector<TM_Task*> tasks, TM_TaskView** outputPtr, TM_StorageManager** storageManPtr)
+TM_TaskManager::TM_TaskManager(TM_TaskView** outputPtr, TM_StorageManager** storageManPtr)
 {
     this->outputPtr = outputPtr;
     this->storageManPtr = storageManPtr;
-    for(TM_Task* task : tasks)
-        this->sortedTasks.insert(task);
 }
 
-void TM_TaskManager::addTask(TM_Task* task)
+TM_TaskItIt TM_TaskManager::addTask(TM_Task* task)
 {
     if(this->storageManPtr&&*this->storageManPtr!=NULL && task->getDBID() == -1)
         (*this->storageManPtr)->CreateDBTask(task);
-    this->sortedTasks.insert(task);
-    for(TM_Task* subtask : task->getSubtaskList())
-        this->sortedTasks.insert(task);
+    TM_TaskIt taskIt = this->databaseSortedTasks.insert(task);
+    return this->dateSortedTasks.insert(taskIt);
 }
 
-void TM_TaskManager::addSubtask(TM_Task* task)
+void TM_TaskManager::addSubtask(TM_TaskItIt task)
 {
     if(this->getCurrentTask()) 
     {
-        task->setHeadTask(this->getCurrentTask());
+        (**task)->setHeadTaskID(this->getCurrentTask()->getDBID());
         this->getCurrentTask()->addSubtask(task);
-        this->sortedTasks.insert(task);
     }
 }
 
-TM_TaskManSet& TM_TaskManager::getTaskList()
+TM_TaskItSet& TM_TaskManager::getTaskList()
 {
-    return this->sortedTasks;
+    return this->dateSortedTasks;
 }
 
 TM_Task* TM_TaskManager::getCurrentTask()
 {
-    return (this->currentTask == this->sortedTasks.end())?NULL:*this->currentTask;
+    return (this->currentTask == this->dateSortedTasks.end())?NULL:**this->currentTask;
+}
+
+void TM_TaskManager::deleteTask(TM_TaskItIt taskIt)
+{
+    if(**taskIt != NULL)
+    {
+        if((**taskIt)->getSubtaskCount()>0)
+        {
+            for(TM_TaskItIt subtask : (**taskIt)->getSubtaskList())
+                this->deleteTask(subtask);
+        }
+        if(this->storageManPtr&&*this->storageManPtr!=NULL)
+            (*this->storageManPtr)->DeleteDBTask(**this->currentTask);
+        TM_TaskIt deleteTask = *taskIt;
+        TM_Task* taskPtr = *deleteTask;
+        this->dateSortedTasks.erase(taskIt);
+        this->databaseSortedTasks.erase(deleteTask);
+        delete taskPtr;
+    }
 }
 
 void TM_TaskManager::deleteCurrentTask()
 {
-    if(this->currentTask!=this->sortedTasks.end())
-    {
-        if(this->storageManPtr&&*this->storageManPtr!=NULL)
-            (*this->storageManPtr)->DeleteDBTask(*this->currentTask);
-        this->sortedTasks.erase(this->currentTask);
-    }
-    this->currentTask = this->sortedTasks.end();
+    if(this->currentTask != this->dateSortedTasks.end())
+        deleteTask(this->currentTask);
+    this->currentTask = this->dateSortedTasks.end();
 }
 
-void TM_TaskManager::setCurrentTask(std::multiset<TM_Task*,TM_Task::TM_TaskPtrCompare>::iterator currentTask)
+void TM_TaskManager::setCurrentTask(TM_TaskItIt currentTask)
 {
     this->currentTask = currentTask;
     if(this->outputPtr!=NULL)
         (*(this->outputPtr))->setExistence(true);
 }
 
-void TM_TaskManager::setStartDateTime(TM_YMD startDate, TM_Time startTime)
+void TM_TaskManager::setDateTime(TM_YMD startDate, TM_Time startTime, TM_YMD endDate, TM_Time endTime)
 {
     if(!this->getCurrentTask() || (this->getCurrentTask()->getStartDate()==this->getCurrentTask()->getEndDate()&&this->getCurrentTask()->getEndTime()<startTime))
         return;
-    TM_Task* tempTask = new TM_Task(**(this->currentTask));
-    delete *this->currentTask;
-    this->sortedTasks.erase(this->currentTask);
-    if(startDate != ZeroDate)
-        tempTask->setStartDate(startDate);
-    if(startTime != ZeroTime)
-        tempTask->setStartTime(startTime);
-    if(this->storageManPtr&&*this->storageManPtr!=NULL)
-        (*this->storageManPtr)->AlterDBTask(tempTask);
-    this->currentTask = this->sortedTasks.insert(tempTask);
-}
+    TM_TaskIt taskIt = *this->currentTask;
+    TM_Task* taskPtr = *taskIt;
 
-void TM_TaskManager::setEndDateTime(TM_YMD endDate, TM_Time endTime)
-{
-    if(this->currentTask == this->sortedTasks.end() || (this->getCurrentTask()->getStartDate()==this->getCurrentTask()->getEndDate()&&endTime<this->getCurrentTask()->getStartTime()))
-        return;
-    TM_Task* tempTask = new TM_Task(**(this->currentTask));
-    delete *this->currentTask;
-    this->sortedTasks.erase(this->currentTask);
+    TM_Task* headTaskPtr;
+    if(taskPtr->getHeadTaskID() != -1)
+    {
+        std::cout<<"Is subtask"<<std::endl;
+        headTaskPtr = *this->databaseSortedTasks.find(new TM_Task("", ZeroDate, ZeroDate, {0,0},{0,0},taskPtr->getHeadTaskID()));
+        std::cout<<headTaskPtr->getName()<<std::endl;
+        TM_SubtaskIt subtaskIt;
+        std::cout<<(headTaskPtr)->getSubtaskCount()<<std::endl;
+        for(TM_TaskItIt taskIt : headTaskPtr->getSubtaskList())
+        {
+            std::cout<<(**taskIt)->getName()<<' ';
+        }
+        std::cout<<std::endl;
+        if((subtaskIt = headTaskPtr->getSubtaskList().find(this->currentTask)) != headTaskPtr->getSubtaskList().end())
+        {
+            std::cout<<"Not null"<<std::endl;
+            headTaskPtr->getSubtaskList().erase(subtaskIt);
+        }
+        std::cout<<"Erased"<<std::endl;
+    }
+    this->dateSortedTasks.erase(this->currentTask);
+
+    if(startDate != ZeroDate)
+        taskPtr->setStartDate(startDate);
+    if(startTime != ZeroTime)
+        taskPtr->setStartTime(startTime);
     if(endDate != ZeroDate)
-        tempTask->setEndDate(endDate);
+        taskPtr->setEndDate(startDate);
     if(endTime != ZeroTime)
-        tempTask->setEndTime(endTime);
+        taskPtr->setEndTime(startTime);
+
     if(this->storageManPtr&&*this->storageManPtr!=NULL)
-        (*this->storageManPtr)->AlterDBTask(tempTask);
-    this->currentTask = this->sortedTasks.insert(tempTask);
+        (*this->storageManPtr)->AlterDBTask(taskPtr);
+
+    if(taskPtr->getHeadTaskID() != -1)
+        headTaskPtr->getSubtaskList().insert(this->currentTask);
+
+    this->currentTask = this->dateSortedTasks.insert(taskIt);
 }
 
 void TM_TaskManager::setTaskName(std::string taskName)
 {
-    (*this->currentTask)->setName(taskName);
+    this->getCurrentTask()->setName(taskName);
     if(this->storageManPtr&&*this->storageManPtr!=NULL)
-        (*this->storageManPtr)->AlterDBTask(*this->currentTask);
+        (*this->storageManPtr)->AlterDBTask(this->getCurrentTask());
 }
 
 int countCells(duckx::TableCell& tableCell)
@@ -188,7 +214,7 @@ void TM_TaskManager::openDocXFile(std::string filePath)
 				else if(i==3)
 				{
 					name += text;
-                    this->addTask(new TM_Task(name, day1, day2, {0,0}, {24,0}));
+                    this->addTask(new TM_Task(name, day1, day2, {0,0}, {24,0},i));
 				}
 				i++;
 				tableCell = tableCell.next();
@@ -213,12 +239,12 @@ TM_Time TM_TaskManager::getEndTime()
     return getCurrentTask()->getEndTime();
 }
 
-TM_TaskManIt TM_TaskManager::getStartIt()
+TM_TaskItIt TM_TaskManager::getStartIt()
 {
-    return this->sortedTasks.begin();
+    return this->dateSortedTasks.begin();
 }
 
-TM_TaskManIt TM_TaskManager::getEndIt()
+TM_TaskItIt TM_TaskManager::getEndIt()
 {
-    return this->sortedTasks.end();
+    return this->dateSortedTasks.end();
 }

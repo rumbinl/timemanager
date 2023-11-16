@@ -12,13 +12,11 @@ class TM_Task
 {
     public:
         TM_Task(TM_Task& copyTask);
-        TM_Task(std::string name, std::chrono::year_month_day startDate, std::chrono::year_month_day endDate, TM_Time startTime,  TM_Time endTime);
-        TM_Task(std::string name, std::chrono::year_month_day startDate, std::chrono::year_month_day endDate, TM_Time startTime,  TM_Time endTime, int dbID);
+        TM_Task(std::string name, std::chrono::year_month_day startDate, std::chrono::year_month_day endDate, TM_Time startTime,  TM_Time endTime, int dbID=-1, int headTaskID=-1);
         TM_Task(std::string name, std::chrono::year_month_day startDate, std::chrono::year_month_day deadline, TM_Time startTime, TM_Time endTime, TM_Time duration, std::map<std::chrono::year_month_day,int>* calendarPtr);
 
-        void addSubtask(TM_Task* subtask);
-
-        void setHeadTask(TM_Task* headTask);
+        void setHeadTaskID(int headTaskID);
+        int getHeadTaskID();
 
         std::string* getNamePtr();
 
@@ -31,10 +29,38 @@ class TM_Task
         std::chrono::year_month_day getStartDate();
         std::chrono::year_month_day getEndDate();
 
-        struct TM_TaskPtrCompare {
-            bool operator()(const TM_Task* a, const TM_Task* b) const
+        bool operator<(const TM_Task& b) const;
+
+        bool operator==(const TM_Task& b) const;
+
+        struct TM_TaskPtrCompare { bool operator()(const TM_Task* a, const TM_Task* b) const {
+            return *a<*b;
+        } };
+
+        typedef std::multiset<TM_Task*,TM_TaskPtrCompare>::iterator TM_TaskIt;
+
+        struct TM_TaskItCompare { 
+            bool operator()(const TM_TaskIt& a, const TM_TaskIt& b) const
             {
-                return *a < *b;
+                return *a<*b;
+            } 
+        };
+
+        typedef std::multiset<TM_TaskIt,TM_TaskItCompare>::iterator TM_TaskItIt;
+
+        struct TM_SubtaskItCompare { 
+            bool operator()(const TM_TaskItIt& a, const TM_TaskItIt& b) const
+            {
+                return (**a)->getDBID()<(**b)->getDBID();
+            } 
+        };
+
+        typedef std::multiset<TM_TaskItIt,TM_SubtaskItCompare>::iterator TM_SubtaskIt;
+
+        struct TM_TaskIDCompare {
+            bool operator()(const TM_Task* a, const TM_Task* b) const 
+            {
+                return a->dbID < b->dbID;
             }
         };
 
@@ -49,10 +75,9 @@ class TM_Task
 
         void scheduleSubtasks(std::chrono::year_month_day currentDay);
 
-        std::multiset<TM_Task*,TM_TaskPtrCompare>& getSubtaskList(); 
-
-        bool operator<(const TM_Task& b) const;
-        bool operator==(const TM_Task& b) const;
+        void addSubtask(TM_TaskItIt subtask);
+        int getSubtaskCount();
+        std::multiset<TM_TaskItIt,TM_SubtaskItCompare>& getSubtaskList(); 
 
         void setDBID(int dbID);
         int getDBID();
@@ -61,9 +86,9 @@ class TM_Task
         std::string name; // once it has subtasks the date time variable automatically becomes the deadline for all subtasks
         std::chrono::year_month_day startDate, endDate;
         TM_Time startTime,endTime;
-        std::multiset<TM_Task*,TM_TaskPtrCompare> subtasks;
-        bool locked = true;
-        TM_Task* headTask = NULL;
-        int dbID=-1;
-};
 
+        std::multiset<TM_TaskItIt,TM_SubtaskItCompare> subtasks = {};
+        bool locked = true;
+        int dbID=-1,headTaskID=-1;
+        TM_TaskIt headTaskIt;
+};
