@@ -11,7 +11,7 @@ class TM_TaskInfoSection : public TM_HorizontalView
         TM_TaskInfoSection(SkRect bounds, TM_TaskItIt iterator, TM_TaskManager* taskManPtr, TM_ViewSetting viewSetting = {colorScheme[1],colorScheme[2],colorScheme[3],0,24,0,10});
         virtual void setTaskIt(TM_TaskItIt taskIt);
     protected:
-        TM_Button<TM_TaskItIt>* taskName;
+        TM_Button<TM_TaskItIt>* taskName,*deleteButton;
         TM_TextView startDate,endDate,startTime,endTime;
 };
 

@@ -5,9 +5,14 @@ TM_TaskInfoSection::TM_TaskInfoSection(SkRect bounds, TM_TaskItIt taskIt, TM_Tas
     this->taskName = new TM_Button<TM_TaskItIt>("", SkRect::MakeEmpty(), taskIt, (void*)taskManPtr, [](void* taskManPtr, TM_TaskItIt task) {
         ((TM_TaskManager*)taskManPtr)->setCurrentTask(task);
     }, {colorScheme[1], colorScheme[2], colorScheme[3], 0, 24, 0, 0}, false);
+    this->deleteButton = new TM_Button<TM_TaskItIt>("\ue872aa", SkRect::MakeEmpty(), taskIt, (void*)taskManPtr, [](void* taskManPtr, TM_TaskItIt taskIt) {
+        TM_TaskManager* taskMan = (TM_TaskManager*)taskManPtr;
+        taskMan->deleteTask(taskIt);
+    }, {colorScheme[1], colorScheme[2], colorScheme[3], 0, 24, 0, 0, true});
     this->addRenderObject(taskName);
     this->addRenderObject(new TM_View(SkRect::MakeEmpty(), {0.5,0.5}, {&this->startTime, &this->startDate}, {colorScheme[3],colorScheme[2],colorScheme[1],0,24,0,0}));
     this->addRenderObject(new TM_View(SkRect::MakeEmpty(), {0.5,0.5}, {&this->endTime, &this->endDate}, {colorScheme[3],colorScheme[2],colorScheme[1],0,24,0,0}));
+    this->addRenderObject(this->deleteButton);
     this->setTaskIt(taskIt);
 }
 
@@ -18,6 +23,7 @@ void TM_TaskInfoSection::setTaskIt(TM_TaskItIt taskIt)
         TM_Task* task = **taskIt;
         this->taskName->setData(taskIt);
         this->taskName->setText(task->getName());
+        this->deleteButton->setData(taskIt);
         this->startDate.setText(TM_GetDateString(task->getStartDate()));
         this->startTime.setText(TM_GetTimeString(task->getStartTime()));
         this->endDate.setText(TM_GetDateString(task->getEndDate()));
@@ -33,21 +39,11 @@ TM_ImportTaskInfoSection::TM_ImportTaskInfoSection(SkRect bounds, TM_TaskItIt ta
     this->taskManPair[0] = mainTaskManPtr;
     this->taskManPair[1] = importTaskManPtr;
 
-    this->taskName = new TM_Button<TM_TaskItIt>("", SkRect::MakeEmpty(), taskIt, (void*)importTaskManPtr, [](void* taskManPtr, TM_TaskItIt task) {
-        ((TM_TaskManager*)taskManPtr)->setCurrentTask(task);
-    }, {colorScheme[1], colorScheme[2], colorScheme[3], 0, 24, 0, 0}, false);
-
     this->acceptButton = new TM_Button<TM_TaskItIt>("\ue5ca", SkRect::MakeEmpty(), taskIt, (void*)taskManPair, [](void* taskManPairPtr, TM_TaskItIt taskIt) {
         TM_TaskManager** taskManPair = (TM_TaskManager**)taskManPairPtr;
         taskManPair[0]->addTask(**taskIt);
         taskManPair[1]->setCurrentTask(taskIt);
         taskManPair[1]->deleteCurrentTask();
-    }, {colorScheme[1], colorScheme[2], colorScheme[3], 0, 24, 0, 0, true});
-
-    this->deleteButton = new TM_Button<TM_TaskItIt>("\ue872aa", SkRect::MakeEmpty(), taskIt, (void*)importTaskManPtr, [](void* taskManPtr, TM_TaskItIt taskIt) {
-        TM_TaskManager* taskMan = (TM_TaskManager*)taskManPtr;
-        taskMan->setCurrentTask(taskIt);
-        taskMan->deleteCurrentTask();
     }, {colorScheme[1], colorScheme[2], colorScheme[3], 0, 24, 0, 0, true});
 
     this->addRenderObject(taskName);

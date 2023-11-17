@@ -233,9 +233,10 @@ bool TM_CalendarWeekView::PollEvents(TM_EventInput eventInput)
 
 		if(eventInput.mousePressed)
 		{
-			std::multiset<TM_TaskIt,TM_Task::TM_TaskItCompare>::iterator taskIt = this->taskManPtr->getTaskList().begin(); 
-			while(taskIt!=this->taskManPtr->getTaskList().end())
+			std::multiset<TM_TaskIt,TM_Task::TM_TaskItCompare>::iterator taskIt = this->taskManPtr->getTaskList().end(); 
+			while(taskIt != this->taskManPtr->getTaskList().begin())
 			{
+				taskIt--;
 				if((**taskIt)->getStartDate()>=*this->focusDate && (**taskIt)->getStartDate() < std::chrono::sys_days{*this->focusDate} + std::chrono::days{this->numDays})
 					if(this->PollTask(**taskIt, eventInput))
 					{
@@ -243,7 +244,6 @@ bool TM_CalendarWeekView::PollEvents(TM_EventInput eventInput)
 						this->select = false;
 						break;
 					}
-				taskIt++;
 			}
 		}
 	}
