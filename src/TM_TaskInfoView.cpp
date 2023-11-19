@@ -30,7 +30,7 @@ void TM_TaskInfoView::Render(TM_RenderInfo renderInfo)
         taskIt = this->taskManPtr->getCurrentTask()->getSubtaskList().begin();
         length = this->taskManPtr->getCurrentTask()->getSubtaskCount();
     }
-    else if(this->getItFunc != NULL)
+    else if(this->getItFunc != NULL && this->taskManPtr != NULL)
     {
         itRange = getItFunc(this->taskManPtr);
         currentIt = itRange.first;
@@ -99,6 +99,7 @@ bool TM_TaskInfoView::PollEvents(TM_EventInput eventInput)
         {
             if(this->subtaskList)
                 currentIt = *(taskIt++);
+
             if(count>=this->taskInfoSectionList.size())
                 this->addTaskInfoObject(currentIt);
             else
@@ -106,8 +107,14 @@ bool TM_TaskInfoView::PollEvents(TM_EventInput eventInput)
 
             this->renderObjects[count]->setBounds(SkRect::MakeXYWH(this->bounds.x(), yPos, this->bounds.width(), this->renderObjects[count]->getBounds().height()));
 
-            currentIt++;
-            select+=this->renderObjects[count]->PollEvents(eventInput);
+            if(!this->subtaskList)
+                currentIt++;
+
+            if(this->renderObjects[count]->PollEvents(eventInput))
+            {
+                select = true;
+                break;
+            }
 
             yPos += this->renderObjects[count]->getBounds().height() + this->viewSetting.paddingY;
             

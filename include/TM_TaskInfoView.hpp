@@ -20,8 +20,8 @@ class TM_TaskInfoView : public TM_View
         bool PollEvents(TM_EventInput eventInput) override;
     protected:
         SkScalar blockHeight = 0.0f;
-        TM_TaskManager* taskManPtr;
-        std::pair<TM_TaskItIt,TM_TaskItIt> (*getItFunc)(TM_TaskManager* taskManPtr);
+        TM_TaskManager* taskManPtr=(TM_TaskManager*)NULL;
+        std::pair<TM_TaskItIt,TM_TaskItIt> (*getItFunc)(TM_TaskManager* taskManPtr)=NULL;
         std::vector<TM_TaskInfoSection*> taskInfoSectionList;
         TM_Task* taskPtr = NULL;
         bool subtaskList = false;

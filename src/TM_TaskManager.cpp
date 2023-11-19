@@ -43,6 +43,7 @@ void TM_TaskManager::initializeSubtasks()
         }
         subtaskIt ++;
     }
+    this->currentTask = dateSortedTasks.end();
 }
 
 TM_TaskItSet& TM_TaskManager::getTaskList()
@@ -59,13 +60,24 @@ void TM_TaskManager::deleteTask(TM_TaskItIt taskIt)
 {
     if(**taskIt != NULL)
     {
+        if(taskIt == this->currentTask)
+        {
+            this->currentTask = this->dateSortedTasks.end();
+        }
         if((**taskIt)->getSubtaskCount()>0)
         {
-            for(TM_TaskItIt subtask : (**taskIt)->getSubtaskList())
-                this->deleteTask(subtask);
+            TM_SubtaskIt subtaskIt = (**taskIt)->getSubtaskList().begin();
+            while(subtaskIt != (**taskIt)->getSubtaskList().end())
+            {
+                TM_SubtaskIt deleteSubtask = subtaskIt++;
+                this->deleteTask(*deleteSubtask);
+            }
         }
         if(this->storageManPtr&&*this->storageManPtr!=NULL)
-            (*this->storageManPtr)->DeleteDBTask(**this->currentTask);
+        {
+            (*this->storageManPtr)->DeleteDBTask(**taskIt);
+        }
+
         if((**taskIt)->getHeadTaskID() != -1)
         {
             TM_TaskIt headTaskPtr = this->databaseSortedTasks.find(new TM_Task("", ZeroDate, ZeroDate, {0,0},{0,0},(**taskIt)->getHeadTaskID()));
