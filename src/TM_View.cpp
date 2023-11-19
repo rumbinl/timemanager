@@ -1,14 +1,24 @@
 #include <TM_View.hpp>
 
-TM_View::TM_View(SkRect bounds, std::vector<TM_RenderObject*> objects, TM_ViewSetting viewSetting) : TM_RenderObject(bounds, viewSetting)
+TM_View::TM_View(SkRect bounds, std::vector<TM_RenderObject*> objects, bool scroll, TM_ViewSetting viewSetting) : TM_RenderObject(bounds, viewSetting)
 {
     this->renderObjects = objects;
 	for(TM_RenderObject* renderObject : this->renderObjects)
 		this->numExists += renderObject->exists();
     this->viewSetting = viewSetting;
+	this->scroll = scroll;
+	this->scrollView = new TM_ScrollView(SkRect::MakeWH(20,bounds.height()), (void*)this, [](void* viewPtr) -> std::vector<SkScalar> {
+		TM_View* view = (TM_View*)viewPtr;
+		return {view->getYOffset()/(view->getSrcBounds().height()-view->getBounds().height()), view->getBounds().height()/view->getSrcBounds().height()};
+	}, [](void* viewPtr, SkScalar scroll) {
+		TM_View* view = (TM_View*)viewPtr;
+		SkScalar scrollOffset = scroll * view->getSrcBounds().height();
+		SkScalar newY = scrollOffset + view->getYOffset();
+		view->setYOffset(fmin(fmax(0, newY),fmax(0, view->getSrcBounds().height()-view->getBounds().height())));
+	});
 }
 
-TM_View::TM_View(SkRect bounds, std::vector<SkScalar> proportionTable, std::vector<TM_RenderObject*> objects, TM_ViewSetting viewSetting) : TM_View(bounds, objects, viewSetting)
+TM_View::TM_View(SkRect bounds, std::vector<SkScalar> proportionTable, std::vector<TM_RenderObject*> objects, TM_ViewSetting viewSetting) : TM_View(bounds, objects, false, viewSetting)
 {
 	this->fit = true;
 	this->proportionTable = proportionTable;	
@@ -38,6 +48,7 @@ void TM_View::Render(TM_RenderInfo renderInfo)
     SkScalar y = 0;
 	
 	SkScalar height = this->bounds.height() - this->viewSetting.paddingY*(this->renderObjects.size()-1);
+	SkScalar contentWidth = scroll?this->bounds.width()-this->scrollView->getBounds().width():this->bounds.width();
 
     for(int i=0;i<renderObjects.size();i++)
     {
@@ -51,7 +62,7 @@ void TM_View::Render(TM_RenderInfo renderInfo)
 					SkRect::MakeXYWH(
 						0, 
 						y, 	
-						this->bounds.width(),
+						contentWidth,
 						height/(SkScalar)getNumExists()
 					)
 				);
@@ -60,13 +71,13 @@ void TM_View::Render(TM_RenderInfo renderInfo)
 					SkRect::MakeXYWH(
 						0, 
 						y, 	
-						this->bounds.width(),
+						contentWidth,
 						this->proportionTable[i] * height 
 					)
 				);
 		}
 		else
-			this->renderObjects[i]->setBounds(SkRect::MakeXYWH(0, y, this->bounds.width(), renderObjects[i]->getBounds().height()));
+			this->renderObjects[i]->setBounds(SkRect::MakeXYWH(0, y, contentWidth, renderObjects[i]->getBounds().height()));
 
 		this->renderObjects[i]->Render(renderInfo);
 
@@ -75,19 +86,28 @@ void TM_View::Render(TM_RenderInfo renderInfo)
 
     this->srcBounds.setWH(this->bounds.width(), y - this->viewSetting.paddingY);
 
+
     renderInfo.canvas->restoreToCount(restore);
+
+	if(scroll)
+	{
+		scrollView->setBounds(SkRect::MakeXYWH(this->bounds.x()+this->bounds.width() - scrollView->getBounds().width(), this->bounds.y(), this->scrollView->getBounds().width(), this->bounds.height()));
+		scrollView->Render(renderInfo);
+	}
 }
 
 
 bool TM_View::PollEvents(TM_EventInput eventInput)
 {
+	bool ret= false;
     if(this->bounds.contains(eventInput.mouseX,eventInput.mouseY))
     {
 		this->select = true;
+
+		if(this->scroll)
+			ret += this->scrollView->PollEvents(eventInput);
         eventInput.mouseX -= this->bounds.x();
         eventInput.mouseY -= this->bounds.y() - this->yOffset;
-
-		bool ret = false;
 		std::vector<bool> existTable(this->renderObjects.size());
 		for(int i=0;i<this->renderObjects.size();i++) existTable[i] = this->renderObjects[i]->exists();
 		SkScalar y = this->viewSetting.paddingY;
@@ -95,12 +115,13 @@ bool TM_View::PollEvents(TM_EventInput eventInput)
             if(existTable[i])
 				ret += (int)this->renderObjects[i]->PollEvents(eventInput);
 
+
 		if(eventInput.scrollY != 0)
 		{
 			SkScalar newY = this->yOffset+eventInput.scrollY;
 			this->yOffset = fmin(fmax(0, newY),fmax(0, this->srcBounds.height()-this->bounds.height()));
+			ret += true;
 		}
-		return ret;
     }
 	else if(this->select)
 	{
@@ -112,7 +133,17 @@ bool TM_View::PollEvents(TM_EventInput eventInput)
             if(existTable[i])
 				this->renderObjects[i]->PollEvents(eventInput);
 		this->select = false;
-		return true;
+		ret = true;
 	}
-    return false;
+    return ret;
+}
+
+SkScalar TM_View::getYOffset()
+{
+	return this->yOffset;
+}
+
+void TM_View::setYOffset(SkScalar newYOffset)
+{
+	this->yOffset = newYOffset;
 }

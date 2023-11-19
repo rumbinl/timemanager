@@ -11,8 +11,8 @@ class TM_RenderObject
         virtual void Render(TM_RenderInfo renderInfo);
         virtual bool PollEvents(TM_EventInput eventInput);
         virtual SkRect getBounds();
-        SkRect getSrcBounds();
         virtual void setBounds(SkRect newBounds);
+        SkRect getSrcBounds();
         void setSrcBounds(SkRect srcBounds);
         bool exists();
         void setExistence(bool existence);

@@ -1,6 +1,6 @@
 #include <TM_CalendarMonthView.hpp>
 
-TM_CalendarMonthView::TM_CalendarMonthView(SkRect bounds, void* contextPtr, void (*setDateFunc)(void* contextPtr, TM_YMD date), TM_YMD (*getDateFunc)(void* contextPtr), TM_ViewSetting viewSetting) : TM_View(bounds, {}, viewSetting)
+TM_CalendarMonthView::TM_CalendarMonthView(SkRect bounds, void* contextPtr, void (*setDateFunc)(void* contextPtr, TM_YMD date), TM_YMD (*getDateFunc)(void* contextPtr), TM_ViewSetting viewSetting) : TM_View(bounds, {}, false, viewSetting)
 {
     monthView = new TM_MonthView(SkRect::MakeWH(50,50), contextPtr, setDateFunc, getDateFunc);
     dataView = TM_TextView("", SkRect::MakeWH(0, 5));

@@ -1,6 +1,6 @@
 #include <TM_TaskView.hpp>
 
-TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr, std::map<TM_YMD,int>& calendarPtr) : TM_View(bounds, {},{colorScheme[0],colorScheme[3],colorScheme[3],0,24,0,10})
+TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr, std::map<TM_YMD,int>& calendarPtr) : TM_View(bounds, {},true,{colorScheme[0],colorScheme[3],colorScheme[3],0,24,0,10})
 {
     this->taskManPtr = taskManPtr;
     this->currentTask = &this->dummyTask;
