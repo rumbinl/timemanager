@@ -10,9 +10,9 @@ class TM_RenderObject
         TM_RenderObject(SkRect bounds, TM_ViewSetting viewSetting={colorScheme[0],colorScheme[3],colorScheme[3],0,24,5,5});
         virtual void Render(TM_RenderInfo renderInfo);
         virtual bool PollEvents(TM_EventInput eventInput);
-        SkRect getBounds();
+        virtual SkRect getBounds();
         SkRect getSrcBounds();
-        void setBounds(SkRect newBounds);
+        virtual void setBounds(SkRect newBounds);
         void setSrcBounds(SkRect srcBounds);
         bool exists();
         void setExistence(bool existence);

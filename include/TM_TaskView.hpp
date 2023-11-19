@@ -30,6 +30,7 @@ class TM_TaskView : public TM_View
         TM_Button<int>* addSubtaskButton,*scheduleTaskButton,*deleteTaskButton;
         TM_TextView *startDateLabel,*endDateLabel;
         TM_CalendarMonthView *startDateMonthView, *endDateMonthView;
+        TM_HeadTaskInfoSection *headTaskViewPtr;
         TM_YMD date;
         TM_TaskManager* taskManPtr;
         TM_TaskInfoView* taskInfoViewPtr;

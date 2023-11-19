@@ -91,7 +91,19 @@ void TM_Task::scheduleSubtasks(std::chrono::year_month_day currentDay)
 
 bool TM_Task::operator<(const TM_Task& b) const 
 {
-    return this->startDate < b.startDate || (this->startDate == b.startDate && this->startTime < b.startTime);
+    if(this->startDate == b.startDate)
+    {
+        if(this->startTime == b.startTime)
+        {
+            if(this->endTime == b.endTime)
+            {
+                return this->dbID < b.dbID;
+            }
+            return this->endTime < b.endTime;
+        }
+        return this->startTime < b.startTime;
+    }
+    return this->startDate < b.startDate;
 }
 
 void TM_Task::setDBID(int dbID)

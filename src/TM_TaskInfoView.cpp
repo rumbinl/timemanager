@@ -12,9 +12,19 @@ TM_TaskInfoView::TM_TaskInfoView(SkRect bounds, TM_TaskManager* taskManPtr, TM_V
     this->subtaskList = true;
 }
 
+void TM_TaskInfoView::setBounds(SkRect newBounds)
+{
+    this->bounds = newBounds;
+}
+
+SkRect TM_TaskInfoView::getBounds() 
+{
+    return SkRect::MakeXYWH(this->bounds.x(), this->bounds.y(), this->bounds.width(), this->bounds.height());
+}
+
 void TM_TaskInfoView::addTaskInfoObject(TM_TaskItIt taskIt)
 {
-    this->taskInfoSectionList.push_back(new TM_TaskInfoSection(SkRect::MakeWH(0,150), taskIt, taskManPtr));
+    this->taskInfoSectionList.push_back(new TM_TaskInfoSection(SkRect::MakeWH(0,100), taskManPtr));
     this->addRenderObject(this->taskInfoSectionList[this->taskInfoSectionList.size()-1]);
 }
 
@@ -40,12 +50,12 @@ void TM_TaskInfoView::Render(TM_RenderInfo renderInfo)
         return;
     }
 
-    SkScalar yPos = this->getBounds().y()-this->yOffset;
+    SkScalar yPos = this->bounds.y()-this->yOffset;
 
     int count = 0;
 
     renderInfo.canvas->save();
-    renderInfo.canvas->clipRect(this->bounds);
+    renderInfo.canvas->clipRect(this->getBounds());
 
     while((!subtaskList && currentIt != itRange.second && **currentIt != NULL) || (subtaskList && count < length))
     {
@@ -53,15 +63,14 @@ void TM_TaskInfoView::Render(TM_RenderInfo renderInfo)
             currentIt = *(taskIt++);
         if(count>=this->renderObjects.size())
             this->addTaskInfoObject(currentIt);
-        else
-            this->taskInfoSectionList[count]->setTaskIt(currentIt);
+        this->taskInfoSectionList[count]->setTaskIt(currentIt);
         this->renderObjects[count]->setBounds(SkRect::MakeXYWH(this->bounds.x(), yPos, this->bounds.width(), this->renderObjects[count]->getBounds().height()));
         this->renderObjects[count]->Render(renderInfo);
         yPos += this->renderObjects[count]->getBounds().height() + this->viewSetting.paddingY;
         currentIt++;
         count ++;
     }
-    this->srcBounds.setWH(0,yPos-this->viewSetting.paddingY);
+    this->srcBounds.setWH(0,yPos-this->viewSetting.paddingY+this->yOffset-this->bounds.y());
 
     renderInfo.canvas->restore();
 }
@@ -92,7 +101,7 @@ bool TM_TaskInfoView::PollEvents(TM_EventInput eventInput)
             currentIt = itRange.first;
         }
 
-        SkScalar yPos = this->getBounds().y()-this->yOffset;
+        SkScalar yPos = this->bounds.y()-this->yOffset;
         int count = 0;
 
         while((!subtaskList && currentIt != itRange.second && **currentIt != NULL) || (subtaskList && count < length))
@@ -102,8 +111,7 @@ bool TM_TaskInfoView::PollEvents(TM_EventInput eventInput)
 
             if(count>=this->taskInfoSectionList.size())
                 this->addTaskInfoObject(currentIt);
-            else
-                this->taskInfoSectionList[count]->setTaskIt(currentIt);
+            this->taskInfoSectionList[count]->setTaskIt(currentIt);
 
             this->renderObjects[count]->setBounds(SkRect::MakeXYWH(this->bounds.x(), yPos, this->bounds.width(), this->renderObjects[count]->getBounds().height()));
 
@@ -136,6 +144,6 @@ TM_ImportTaskInfoView::TM_ImportTaskInfoView(SkRect bounds, TM_TaskManager* impo
 
 void TM_ImportTaskInfoView::addTaskInfoObject(TM_TaskItIt taskIt)
 {
-    this->taskInfoSectionList.push_back(new TM_ImportTaskInfoSection(SkRect::MakeWH(0,150), taskIt, taskManPtr, mainTaskManPtr));
+    this->taskInfoSectionList.push_back(new TM_ImportTaskInfoSection(SkRect::MakeWH(0,100), taskManPtr, mainTaskManPtr));
     this->addRenderObject(this->taskInfoSectionList[this->taskInfoSectionList.size()-1]);
 }

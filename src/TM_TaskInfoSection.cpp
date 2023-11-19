@@ -1,11 +1,11 @@
 #include <TM_TaskInfoSection.hpp>
 
-TM_TaskInfoSection::TM_TaskInfoSection(SkRect bounds, TM_TaskItIt taskIt, TM_TaskManager* taskManPtr, TM_ViewSetting viewSetting) : TM_HorizontalView(bounds, {}, {}, viewSetting)
+TM_TaskInfoSection::TM_TaskInfoSection(SkRect bounds, TM_TaskManager* taskManPtr, TM_ViewSetting viewSetting) : TM_HorizontalView(bounds, {}, {}, viewSetting)
 {
-    this->taskName = new TM_Button<TM_TaskItIt>("", SkRect::MakeEmpty(), taskIt, (void*)taskManPtr, [](void* taskManPtr, TM_TaskItIt task) {
+    this->taskName = new TM_Button<TM_TaskItIt>("", SkRect::MakeEmpty(), taskManPtr->getEndIt(), (void*)taskManPtr, [](void* taskManPtr, TM_TaskItIt task) {
         ((TM_TaskManager*)taskManPtr)->setCurrentTask(task);
     }, {colorScheme[1], colorScheme[2], colorScheme[3], 0, 24, 0, 0}, false);
-    this->deleteButton = new TM_Button<TM_TaskItIt>("\ue872aa", SkRect::MakeEmpty(), taskIt, (void*)taskManPtr, [](void* taskManPtr, TM_TaskItIt taskIt) {
+    this->deleteButton = new TM_Button<TM_TaskItIt>("\ue872aa", SkRect::MakeEmpty(), taskManPtr->getEndIt(), (void*)taskManPtr, [](void* taskManPtr, TM_TaskItIt taskIt) {
         TM_TaskManager* taskMan = (TM_TaskManager*)taskManPtr;
         taskMan->deleteTask(taskIt);
     }, {colorScheme[1], colorScheme[2], colorScheme[3], 0, 24, 0, 0, true});
@@ -13,12 +13,12 @@ TM_TaskInfoSection::TM_TaskInfoSection(SkRect bounds, TM_TaskItIt taskIt, TM_Tas
     this->addRenderObject(new TM_View(SkRect::MakeEmpty(), {0.5,0.5}, {&this->startTime, &this->startDate}, {colorScheme[3],colorScheme[2],colorScheme[1],0,24,0,0}));
     this->addRenderObject(new TM_View(SkRect::MakeEmpty(), {0.5,0.5}, {&this->endTime, &this->endDate}, {colorScheme[3],colorScheme[2],colorScheme[1],0,24,0,0}));
     this->addRenderObject(this->deleteButton);
-    this->setTaskIt(taskIt);
+    this->taskManPtr = taskManPtr;
 }
 
 void TM_TaskInfoSection::setTaskIt(TM_TaskItIt taskIt)
 {
-    if(**taskIt != NULL)
+    if(taskIt != this->taskManPtr->getEndIt())
     {
         TM_Task* task = **taskIt;
         this->taskName->setData(taskIt);
@@ -31,7 +31,7 @@ void TM_TaskInfoSection::setTaskIt(TM_TaskItIt taskIt)
     }
 }
 
-TM_ImportTaskInfoSection::TM_ImportTaskInfoSection(SkRect bounds, TM_TaskItIt taskIt, TM_TaskManager* importTaskManPtr, TM_TaskManager* mainTaskManPtr, TM_ViewSetting viewSetting) : TM_TaskInfoSection(bounds, taskIt, importTaskManPtr, viewSetting)
+TM_ImportTaskInfoSection::TM_ImportTaskInfoSection(SkRect bounds, TM_TaskManager* importTaskManPtr, TM_TaskManager* mainTaskManPtr, TM_ViewSetting viewSetting) : TM_TaskInfoSection(bounds, importTaskManPtr, viewSetting)
 {
     this->renderObjects.clear();
     this->mainTaskManPtr = mainTaskManPtr;
@@ -39,7 +39,7 @@ TM_ImportTaskInfoSection::TM_ImportTaskInfoSection(SkRect bounds, TM_TaskItIt ta
     this->taskManPair[0] = mainTaskManPtr;
     this->taskManPair[1] = importTaskManPtr;
 
-    this->acceptButton = new TM_Button<TM_TaskItIt>("\ue5ca", SkRect::MakeEmpty(), taskIt, (void*)taskManPair, [](void* taskManPairPtr, TM_TaskItIt taskIt) {
+    this->acceptButton = new TM_Button<TM_TaskItIt>("\ue5ca", SkRect::MakeEmpty(), importTaskManPtr->getEndIt(), (void*)taskManPair, [](void* taskManPairPtr, TM_TaskItIt taskIt) {
         TM_TaskManager** taskManPair = (TM_TaskManager**)taskManPairPtr;
         taskManPair[0]->addTask(**taskIt);
         taskManPair[1]->setCurrentTask(taskIt);
@@ -49,7 +49,6 @@ TM_ImportTaskInfoSection::TM_ImportTaskInfoSection(SkRect bounds, TM_TaskItIt ta
     this->addRenderObject(taskName);
     this->addRenderObject(new TM_View(SkRect::MakeEmpty(), {0.5,0.5}, {&this->startDate, &this->endDate}, {colorScheme[3],colorScheme[2],colorScheme[1],0,24,0,0}));
     this->addRenderObject(new TM_View(SkRect::MakeEmpty(), {0.5,0.5}, {this->acceptButton, this->deleteButton}, {colorScheme[3],colorScheme[2],colorScheme[1],0,24,0,0}));
-    this->setTaskIt(taskIt);
 }
 
 void TM_ImportTaskInfoSection::setTaskIt(TM_TaskItIt taskIt)
@@ -62,5 +61,25 @@ void TM_ImportTaskInfoSection::setTaskIt(TM_TaskItIt taskIt)
         this->endDate.setText(TM_GetDateString((**taskIt)->getEndDate()));
         this->deleteButton->setData(taskIt);
         this->acceptButton->setData(taskIt);
+    }
+}
+
+TM_HeadTaskInfoSection::TM_HeadTaskInfoSection(SkRect bounds, TM_TaskManager* taskManPtr, TM_ViewSetting viewSetting) : TM_TaskInfoSection(bounds, taskManPtr, viewSetting)
+{
+    this->taskManPtr = taskManPtr;
+}
+
+void TM_HeadTaskInfoSection::Render(TM_RenderInfo renderInfo)
+{
+    TM_Task* taskPtr;
+    if((taskPtr = this->taskManPtr->getCurrentTask()) != NULL)
+    {
+        TM_TaskItIt headTaskPtr;
+        if(taskPtr->getHeadTaskID()!=-1)
+        {
+            headTaskPtr = this->taskManPtr->getTaskByID(taskPtr->getHeadTaskID());
+            this->setTaskIt(headTaskPtr);
+            TM_HorizontalView::Render(renderInfo);
+        }
     }
 }

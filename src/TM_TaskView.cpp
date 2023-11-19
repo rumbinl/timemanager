@@ -73,6 +73,7 @@ TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr, std::map<TM_
     this->endDateLabel = new TM_TextView("End Date", SkRect::MakeWH(0,50));
 
     this->taskInfoViewPtr = new TM_TaskInfoView(SkRect::MakeWH(0,300), this->taskManPtr);
+    this->headTaskViewPtr = new TM_HeadTaskInfoSection(SkRect::MakeWH(0,100), this->taskManPtr);
 
     this->renderObjects.push_back(this->textBox);
     this->renderObjects.push_back(new TM_HorizontalView(SkRect::MakeWH(0,50), {
@@ -98,6 +99,9 @@ TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr, std::map<TM_
         }),
         this->endDateMonthView
     }));
+    this->renderObjects.push_back(new TM_TextView("Head Task", SkRect::MakeWH(0,50)));
+    this->renderObjects.push_back(this->headTaskViewPtr);
+    this->renderObjects.push_back(new TM_TextView("Subtasks", SkRect::MakeWH(0,50)));
     this->renderObjects.push_back(this->taskInfoViewPtr);
     this->renderObjects.push_back(this->addSubtaskButton);
     //this->renderObjects.push_back(this->scheduleTaskButton);

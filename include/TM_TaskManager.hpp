@@ -34,6 +34,8 @@ class TM_TaskManager
         TM_Task* getCurrentTask();
         TM_TaskItIt getStartIt();
         TM_TaskItIt getEndIt();
+        TM_TaskItIt getCurrentTaskIt();
+        TM_TaskItIt getTaskByID(int id);
         void deleteCurrentTask();
         void deleteTask(TM_TaskItIt taskIt);
 		TM_TaskItSet& getTaskList();

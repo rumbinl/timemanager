@@ -16,6 +16,8 @@ class TM_TaskInfoView : public TM_View
         TM_TaskInfoView(SkRect bounds, TM_TaskManager* taskManPtr, std::pair<TM_TaskItIt,TM_TaskItIt> (*getItFunc)(TM_TaskManager* taskManPtr),  TM_ViewSetting viewSetting = {colorScheme[1],colorScheme[2],colorScheme[3],0,24,0,10});
         TM_TaskInfoView(SkRect bounds, TM_TaskManager* taskManPtr, TM_ViewSetting viewSetting = {colorScheme[1],colorScheme[2],colorScheme[3],0,24,0,10});
         virtual void addTaskInfoObject(TM_TaskItIt taskIt);
+        void setBounds(SkRect newBounds) override;
+        SkRect getBounds() override;
         void Render(TM_RenderInfo renderInfo) override;
         bool PollEvents(TM_EventInput eventInput) override;
     protected:

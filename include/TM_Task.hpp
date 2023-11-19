@@ -90,5 +90,5 @@ class TM_Task
         std::multiset<TM_TaskItIt,TM_SubtaskItCompare> subtasks = {};
         bool locked = true;
         int dbID=-1,headTaskID=-1;
-        TM_TaskIt headTaskIt;
+        //TM_TaskIt headTaskIt;
 };

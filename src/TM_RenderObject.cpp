@@ -3,6 +3,7 @@
 TM_RenderObject::TM_RenderObject(SkRect bounds, TM_ViewSetting viewSetting)
 {
     this->bounds = bounds;
+    this->srcBounds = bounds;
     this->viewSetting = viewSetting;
 	this->numExists = 0;
 }

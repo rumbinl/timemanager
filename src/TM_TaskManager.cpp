@@ -54,6 +54,12 @@ TM_TaskItSet& TM_TaskManager::getTaskList()
 TM_Task* TM_TaskManager::getCurrentTask()
 {
     return (this->currentTask == this->dateSortedTasks.end())?NULL:**this->currentTask;
+
+}
+
+TM_TaskItIt TM_TaskManager::getCurrentTaskIt()
+{
+    return this->currentTask;
 }
 
 void TM_TaskManager::deleteTask(TM_TaskItIt taskIt)
@@ -279,4 +285,13 @@ TM_TaskItIt TM_TaskManager::getStartIt()
 TM_TaskItIt TM_TaskManager::getEndIt()
 {
     return this->dateSortedTasks.end();
+}
+
+TM_TaskItIt TM_TaskManager::getTaskByID(int id)
+{
+    TM_TaskIt headIt = this->databaseSortedTasks.find(new TM_Task("", ZeroDate, ZeroDate, {0,0},{0,0},id));
+    TM_TaskItIt headItIt = this->dateSortedTasks.end();
+    if(headIt != this->databaseSortedTasks.end())
+        headItIt = this->dateSortedTasks.find(headIt);
+    return headItIt;
 }
