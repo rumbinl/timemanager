@@ -8,7 +8,7 @@
 class TM_TaskInfoSection : public TM_HorizontalView
 {
     public:
-        TM_TaskInfoSection(SkRect bounds, TM_TaskManager* taskManPtr, TM_ViewSetting viewSetting = {colorScheme[1],colorScheme[2],colorScheme[3],0,24,0,10});
+        TM_TaskInfoSection(SkRect bounds, TM_TaskManager* taskManPtr, bool addRenderObjects=true, TM_ViewSetting viewSetting = {colorScheme[1],colorScheme[2],colorScheme[3],0,24,0,10});
         virtual void setTaskIt(TM_TaskItIt taskIt);
     protected:
         TM_Button<TM_TaskItIt>* taskName,*deleteButton;

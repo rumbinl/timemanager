@@ -252,7 +252,7 @@ void TM_TaskManager::openDocXFile(std::string filePath)
 				else if(i==3)
 				{
 					name += text;
-                    this->addTask(new TM_Task(name, day1, day2, {0,0}, {24,0},i));
+                    this->addTask(new TM_Task(name, day1, day2, {0,0}, {24,0}));
 				}
 				i++;
 				tableCell = tableCell.next();
