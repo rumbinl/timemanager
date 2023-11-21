@@ -33,8 +33,7 @@ void TM_TaskManager::scheduleTask(TM_TaskItIt task, TM_Task* headTask)
     TM_YMD lowerBoundDate = headTask->getStartDate(); 
     TM_Time lowerBoundTime = headTask->getStartTime();
 
-    TM_Time taskTime = (**task)->getEndTime() - (**task)->getStartTime();
-    std::cout<<TM_GetTimeString((**task)->getEndTime())<<'-'<<TM_GetTimeString((**task)->getStartTime())<<'='<<TM_GetTimeString(taskTime)<<std::endl;
+    TM_Time taskTime = (**task)->getTaskLength();
 
     while((**taskIt)->getStartDate() < headTask->getStartDate() || ((**taskIt)->getStartDate() == headTask->getStartDate() && (**taskIt)->getStartTime() < headTask->getStartTime()))
     {
@@ -45,12 +44,9 @@ void TM_TaskManager::scheduleTask(TM_TaskItIt task, TM_Task* headTask)
         taskIt++;
     }
 
-    std::cout<<"Moved to current time bound"<<std::endl;
-    std::cout<<TM_GetDateTimeString(lowerBoundDate, lowerBoundTime)<<std::endl;
+    TM_Time currentDayFreeTime={0,0}, maxTimeSlot={0,0}, timeSlot={0,0};
 
-    TM_Time currentDayFreeTime={0,0}, maxTimeSlot={0,0};
-
-    std::vector<std::pair<TM_Time, TM_YMD> > freeDays;
+    TM_FreeDay maxFreeDay = {taskTime, headTask->getStartTime(), headTask->getStartDate()};
 
     while(lowerBoundDate<headTask->getEndDate() || (lowerBoundDate == headTask->getEndDate() && lowerBoundTime < headTask->getEndTime()))
     {
@@ -64,11 +60,11 @@ void TM_TaskManager::scheduleTask(TM_TaskItIt task, TM_Task* headTask)
         TM_Time startTime, endTime;
 
         if(taskIt == dateSortedTasks.end())
-            startDate = headTask->getStartDate(), endDate = headTask->getEndDate(),
-            startTime = headTask->getStartTime(), endTime = headTask->getEndTime();
+            startDate = headTask->getEndDate(), endDate = headTask->getEndDate(),
+            startTime = headTask->getEndTime(), endTime = headTask->getEndTime();
         else
-            startDate = (**taskIt)->getEndDate(), endDate = (**taskIt)->getEndDate(),
-            startTime = (**taskIt)->getEndTime(), endTime = (**taskIt)->getEndTime();
+            startDate = (**taskIt)->getStartDate(), endDate = (**taskIt)->getEndDate(),
+            startTime = (**taskIt)->getStartTime(), endTime = (**taskIt)->getEndTime();
 
         if(startDate == lowerBoundDate)
         {
@@ -76,6 +72,8 @@ void TM_TaskManager::scheduleTask(TM_TaskItIt task, TM_Task* headTask)
             {
                 if(endDate > lowerBoundDate)
                 {
+                    if((maxTimeSlot > taskTime || maxTimeSlot == taskTime) && currentDayFreeTime > maxFreeDay.freeTime)
+                        maxFreeDay = {currentDayFreeTime, lowerBoundTime, lowerBoundDate};
                     lowerBoundDate = endDate, lowerBoundTime = endTime,
                     currentDayFreeTime = maxTimeSlot = {0,0};
                 }
@@ -85,10 +83,14 @@ void TM_TaskManager::scheduleTask(TM_TaskItIt task, TM_Task* headTask)
             else
             {
                 maxTimeSlot = max(maxTimeSlot, startTime - lowerBoundTime);
+
                 currentDayFreeTime = currentDayFreeTime + startTime - lowerBoundTime;
+
+                lowerBoundTime = endTime;
                 if(endDate > lowerBoundDate)
                 {
-                    lowerBoundTime = endTime,
+                    if((maxTimeSlot > taskTime || maxTimeSlot == taskTime) && currentDayFreeTime > maxFreeDay.freeTime)
+                        maxFreeDay = {currentDayFreeTime, lowerBoundTime, lowerBoundDate};
                     lowerBoundDate = endDate,
                     currentDayFreeTime = maxTimeSlot = {0,0};
                 }
@@ -99,26 +101,19 @@ void TM_TaskManager::scheduleTask(TM_TaskItIt task, TM_Task* headTask)
 
         if(startDate > lowerBoundDate)
         {
-            std::cout<<"Less"<<std::endl;
             currentDayFreeTime = currentDayFreeTime + (TM_Time{24,0}-lowerBoundTime);
             maxTimeSlot = max(maxTimeSlot, (TM_Time{24, 0}-lowerBoundTime));
+            if((maxTimeSlot > taskTime || maxTimeSlot == taskTime) && currentDayFreeTime > maxFreeDay.freeTime)
+                        maxFreeDay = {currentDayFreeTime, lowerBoundTime, lowerBoundDate};
             lowerBoundDate = std::chrono::year_month_day{std::chrono::sys_days{lowerBoundDate} + std::chrono::days{1}};
-            std::cout<<TM_GetTimeString(maxTimeSlot)<<std::endl;
-            std::cout<<TM_GetTimeString(taskTime)<<std::endl;
-            if(maxTimeSlot > taskTime || maxTimeSlot == taskTime)
-                freeDays.push_back({currentDayFreeTime, startDate});
+            lowerBoundTime = {0,0};
             currentDayFreeTime = maxTimeSlot = {0,0};
         }
     }
-    if(maxTimeSlot > taskTime || maxTimeSlot == taskTime)
-        freeDays.push_back({currentDayFreeTime, lowerBoundDate});
-    std::sort(freeDays.begin(), freeDays.end());
-    std::cout<<"Scheduling..."<<std::endl;
-    for(int i=0;i<freeDays.size();i++)
-    {
-        std::cout<<"   "<<TM_GetDateString(freeDays[i].second)<<std::endl;
-    }
-    std::cout<<"Scheduled."<<std::endl;
+    TM_Time taskLength = (**task)->getTaskLength();
+    setCurrentTask(task);
+    setDateTime(maxFreeDay.date, maxFreeDay.maxTimeSlot, std::chrono::year_month_day{std::chrono::sys_days{maxFreeDay.date} + TM_GetTimeDateOverflow(maxFreeDay.maxTimeSlot + taskLength)}, TM_NormalizeTime(maxFreeDay.maxTimeSlot + taskLength));
+
 }
 
 void TM_TaskManager::initializeSubtasks()

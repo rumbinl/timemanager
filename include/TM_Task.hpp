@@ -89,6 +89,8 @@ class TM_Task
         TM_Time getStartTime();
         TM_Time getEndTime();
 
+        TM_Time getTaskLength();
+
         void setName(std::string name);
         std::string getName();
 

@@ -18,6 +18,16 @@ typedef std::multiset<TM_TaskIt,TM_Task::TM_TaskItCompare> TM_TaskItSet;
 typedef std::multiset<TM_TaskIt,TM_Task::TM_TaskItCompare>::iterator TM_TaskItIt;
 typedef std::multiset<TM_TaskItIt,TM_Task::TM_SubtaskItCompare>::iterator TM_SubtaskIt;
 
+struct TM_FreeDay 
+{
+    TM_Time freeTime, maxTimeSlot;
+    TM_YMD date;
+    bool operator<(const TM_FreeDay& b) const
+    {
+        return freeTime>b.freeTime;
+    }
+};
+
 class TM_TaskManager 
 {
 	public:

@@ -94,6 +94,21 @@ void TM_Task::setDBID(int dbID)
     this->dbID = dbID;
 }
 
+TM_Time TM_Task::getTaskLength()
+{
+    if(startDate == endDate)
+    {
+        std::cout<<TM_GetTimeString(endTime-startTime)<<std::endl;
+        return endTime - startTime;
+    }
+    else
+    {
+        std::chrono::days dayDif = std::chrono::sys_days{endDate} - std::chrono::sys_days{startDate};
+        return {24 * (dayDif.count()-1) + 24-startTime.hours + endTime.hours, endTime.minutes - startTime.minutes };
+    }
+
+}
+
 int TM_Task::getDBID()
 {
     return this->dbID;

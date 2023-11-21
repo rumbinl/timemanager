@@ -45,3 +45,13 @@ std::string TM_GetDateTimeString(std::chrono::year_month_day ymd, TM_Time time)
 {
     return TM_GetDateString(ymd)+' '+TM_GetTimeString(time);
 }
+
+std::chrono::days TM_GetTimeDateOverflow(TM_Time time)
+{
+    return std::chrono::days{(unsigned)time.hours/24}; 
+}
+
+TM_Time TM_NormalizeTime(TM_Time time)
+{
+    return {time.hours%24, time.minutes};
+}

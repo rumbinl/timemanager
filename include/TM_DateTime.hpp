@@ -44,3 +44,7 @@ std::string TM_GetTimeString(TM_Time time);
 std::string TM_GetDateString(std::chrono::year_month_day ymd);
 
 std::string TM_GetDateTimeString(std::chrono::year_month_day ymd, TM_Time time);
+
+std::chrono::days TM_GetTimeDateOverflow(TM_Time time);
+
+TM_Time TM_NormalizeTime(TM_Time time);
