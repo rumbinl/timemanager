@@ -24,7 +24,7 @@ class TM_TaskManager
 		TM_TaskManager(TM_TaskView** outputPtr, TM_StorageManager** storageManPtr);
         TM_TaskItIt addTask(TM_Task* task);
         void addSubtask(TM_TaskItIt task);
-        void scheduleTask(TM_Task* task, TM_YMD start, TM_YMD end);
+        void scheduleTask(TM_TaskItIt task, TM_Task *headTask);
         void setDateTime(TM_YMD startDate=ZeroDate, TM_Time startTime=ZeroTime, TM_YMD endDate=ZeroDate, TM_Time endTime=ZeroTime);
         void openDocXFile(std::string filePath);
         void initializeSubtasks();

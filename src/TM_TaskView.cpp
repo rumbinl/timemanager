@@ -26,7 +26,12 @@ TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr, std::map<TM_
         }
     }, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true});
 
-    this->scheduleTaskButton = new TM_Button<int>("\ue8b5", SkRect::MakeWH(0,50), 0, this, [](void* context, int data) {
+    this->scheduleTaskButton = new TM_Button<int>("\ue8b5", SkRect::MakeWH(0,50), 0, (void*)this->taskManPtr, [](void* context, int data) {
+        TM_TaskManager* taskMan = (TM_TaskManager*)context;
+        if(taskMan->getCurrentTask() != NULL && taskMan->getCurrentTask()->getHeadTaskID() != -1)
+        {
+            taskMan->scheduleTask(taskMan->getCurrentTaskIt(), **taskMan->getTaskByID(taskMan->getCurrentTask()->getHeadTaskID()));
+        }
         // TODO: Add Task
 	}, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true});
 
@@ -103,12 +108,12 @@ TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr, std::map<TM_
     this->renderObjects.push_back(this->headTaskViewPtr);
     this->renderObjects.push_back(new TM_TextView("Subtasks", SkRect::MakeWH(0,50)));
     this->renderObjects.push_back(this->taskInfoViewPtr);
-    this->renderObjects.push_back(this->addSubtaskButton);
-    //this->renderObjects.push_back(this->scheduleTaskButton);
-    this->renderObjects.push_back(this->deleteTaskButton);
-    this->renderObjects.push_back(new TM_Button<int>("\ue8f5", SkRect::MakeWH(0,50), 0, this, [](void* taskView, int data){
+    this->renderObjects.push_back(new TM_HorizontalView(SkRect::MakeWH(0,50), { this->addSubtaskButton,
+    this->scheduleTaskButton,
+    this->deleteTaskButton,
+    new TM_Button<int>("\ue8f5", SkRect::MakeWH(0,50), 0, this, [](void* taskView, int data){
         ((TM_TaskView*)taskView)->setExistence(false);
-    }, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true}));
+    }, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true})}));
 }
 
 void TM_TaskView::setDate(TM_YMD date)

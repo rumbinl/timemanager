@@ -27,6 +27,100 @@ void TM_TaskManager::addSubtask(TM_TaskItIt task)
     }
 }
 
+void TM_TaskManager::scheduleTask(TM_TaskItIt task, TM_Task* headTask)
+{
+    TM_TaskItIt taskIt = this->dateSortedTasks.begin();
+    TM_YMD lowerBoundDate = headTask->getStartDate(); 
+    TM_Time lowerBoundTime = headTask->getStartTime();
+
+    TM_Time taskTime = (**task)->getEndTime() - (**task)->getStartTime();
+    std::cout<<TM_GetTimeString((**task)->getEndTime())<<'-'<<TM_GetTimeString((**task)->getStartTime())<<'='<<TM_GetTimeString(taskTime)<<std::endl;
+
+    while((**taskIt)->getStartDate() < headTask->getStartDate() || ((**taskIt)->getStartDate() == headTask->getStartDate() && (**taskIt)->getStartTime() < headTask->getStartTime()))
+    {
+        if(lowerBoundDate < (**taskIt)->getEndDate())
+            lowerBoundDate = (**taskIt)->getEndDate(), lowerBoundTime = (**taskIt)->getEndTime();
+        else if(lowerBoundDate == (**taskIt)->getEndDate())
+            lowerBoundTime = max(lowerBoundTime, (**taskIt)->getEndTime());
+        taskIt++;
+    }
+
+    std::cout<<"Moved to current time bound"<<std::endl;
+    std::cout<<TM_GetDateTimeString(lowerBoundDate, lowerBoundTime)<<std::endl;
+
+    TM_Time currentDayFreeTime={0,0}, maxTimeSlot={0,0};
+
+    std::vector<std::pair<TM_Time, TM_YMD> > freeDays;
+
+    while(lowerBoundDate<headTask->getEndDate() || (lowerBoundDate == headTask->getEndDate() && lowerBoundTime < headTask->getEndTime()))
+    {
+        if((**taskIt)->getSubtaskCount())
+        {
+            taskIt++;
+            continue;
+        }
+
+        TM_YMD startDate, endDate;
+        TM_Time startTime, endTime;
+
+        if(taskIt == dateSortedTasks.end())
+            startDate = headTask->getStartDate(), endDate = headTask->getEndDate(),
+            startTime = headTask->getStartTime(), endTime = headTask->getEndTime();
+        else
+            startDate = (**taskIt)->getEndDate(), endDate = (**taskIt)->getEndDate(),
+            startTime = (**taskIt)->getEndTime(), endTime = (**taskIt)->getEndTime();
+
+        if(startDate == lowerBoundDate)
+        {
+            if(startTime < lowerBoundTime)
+            {
+                if(endDate > lowerBoundDate)
+                {
+                    lowerBoundDate = endDate, lowerBoundTime = endTime,
+                    currentDayFreeTime = maxTimeSlot = {0,0};
+                }
+                else
+                    lowerBoundTime = max(lowerBoundTime, endTime);
+            }
+            else
+            {
+                maxTimeSlot = max(maxTimeSlot, startTime - lowerBoundTime);
+                currentDayFreeTime = currentDayFreeTime + startTime - lowerBoundTime;
+                if(endDate > lowerBoundDate)
+                {
+                    lowerBoundTime = endTime,
+                    lowerBoundDate = endDate,
+                    currentDayFreeTime = maxTimeSlot = {0,0};
+                }
+            }
+            taskIt++;
+            continue;
+        }
+
+        if(startDate > lowerBoundDate)
+        {
+            std::cout<<"Less"<<std::endl;
+            currentDayFreeTime = currentDayFreeTime + (TM_Time{24,0}-lowerBoundTime);
+            maxTimeSlot = max(maxTimeSlot, (TM_Time{24, 0}-lowerBoundTime));
+            lowerBoundDate = std::chrono::year_month_day{std::chrono::sys_days{lowerBoundDate} + std::chrono::days{1}};
+            std::cout<<TM_GetTimeString(maxTimeSlot)<<std::endl;
+            std::cout<<TM_GetTimeString(taskTime)<<std::endl;
+            if(maxTimeSlot > taskTime || maxTimeSlot == taskTime)
+                freeDays.push_back({currentDayFreeTime, startDate});
+            currentDayFreeTime = maxTimeSlot = {0,0};
+        }
+    }
+    if(maxTimeSlot > taskTime || maxTimeSlot == taskTime)
+        freeDays.push_back({currentDayFreeTime, lowerBoundDate});
+    std::sort(freeDays.begin(), freeDays.end());
+    std::cout<<"Scheduling..."<<std::endl;
+    for(int i=0;i<freeDays.size();i++)
+    {
+        std::cout<<"   "<<TM_GetDateString(freeDays[i].second)<<std::endl;
+    }
+    std::cout<<"Scheduled."<<std::endl;
+}
+
 void TM_TaskManager::initializeSubtasks()
 {
     TM_TaskItIt subtaskIt = this->dateSortedTasks.begin();

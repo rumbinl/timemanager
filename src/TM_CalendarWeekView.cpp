@@ -116,6 +116,9 @@ void TM_CalendarWeekView::RenderTask(TM_Task* task, SkColor color, TM_RenderInfo
 	paint.setStyle(SkPaint::kFill_Style);
 	paint.setColor(color);
 
+	if(task->getSubtaskCount())
+		paint.setAlpha(155);
+
 	int startIndex = (std::chrono::sys_days{task->getStartDate()}-std::chrono::sys_days{*this->focusDate}).count(),
 		endIndex   = (std::chrono::sys_days{task->getEndDate  ()}-std::chrono::sys_days{*this->focusDate}).count();
 
@@ -147,6 +150,7 @@ void TM_CalendarWeekView::RenderTask(TM_Task* task, SkColor color, TM_RenderInfo
 		renderInfo.textFont->setSize(this->viewSetting.fontSize);
     }
 
+	paint.setAlpha(255);
 	paint.setColor(this->viewSetting.backgroundColor);
 
 	SkFontMetrics fontMetrics;

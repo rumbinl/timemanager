@@ -29,7 +29,26 @@ class TM_Task
         std::chrono::year_month_day getStartDate();
         std::chrono::year_month_day getEndDate();
 
-        bool operator<(const TM_Task& b) const;
+        bool operator<(const TM_Task& b) const 
+        {
+            if(this->startDate == b.startDate)
+            {
+                if(this->startTime == b.startTime)
+                {
+                    if(this->endDate == b.endDate)
+                    {
+                        if(this->endTime == b.endTime)
+                        {
+                            return this->dbID < b.dbID;
+                        }
+                        return this->endTime<b.endTime;
+                    }
+                    return this->endDate < b.endDate;
+                }
+                return this->startTime < b.startTime;
+            }
+            return this->startDate < b.startDate;
+        }
 
         bool operator==(const TM_Task& b) const;
 
@@ -42,7 +61,7 @@ class TM_Task
         struct TM_TaskItCompare { 
             bool operator()(const TM_TaskIt& a, const TM_TaskIt& b) const
             {
-                return *a<*b;
+                return **a<**b;
             } 
         };
 
