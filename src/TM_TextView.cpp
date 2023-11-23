@@ -8,8 +8,18 @@ TM_TextView::TM_TextView(std::string text, SkRect bounds, TM_ViewSetting viewSet
     this->textXOffset = 0;
 }
 
+TM_TextView::TM_TextView(void* context, std::string (*getStringFunc)(void* context), std::string text, SkRect bounds, TM_ViewSetting viewSetting, bool centered) : TM_TextView(text, bounds, viewSetting, centered)
+{
+    this->context = context;
+    this->getStringFunc = getStringFunc;
+}
+
 void TM_TextView::Render(TM_RenderInfo renderInfo)
 {
+    if(this->context != NULL && this->getStringFunc != NULL)
+    {
+        this->text = this->getStringFunc(this->context);
+    }
 	SkFont* font = (this->viewSetting.icon?renderInfo.iconFont:renderInfo.textFont);
 
 	if(this->select) this->invertColors();

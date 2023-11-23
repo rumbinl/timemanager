@@ -12,7 +12,7 @@ class TM_Task
 {
     public:
         TM_Task(TM_Task& copyTask);
-        TM_Task(std::string name, std::chrono::year_month_day startDate, std::chrono::year_month_day endDate, TM_Time startTime,  TM_Time endTime, int dbID=-1, int headTaskID=-1);
+        TM_Task(std::string name, std::chrono::year_month_day startDate, std::chrono::year_month_day endDate, TM_Time startTime,  TM_Time endTime, int dbID=-1, int headTaskID=-1, int repeat=0);
         TM_Task(std::string name, std::chrono::year_month_day startDate, std::chrono::year_month_day deadline, TM_Time startTime, TM_Time endTime, TM_Time duration, std::map<std::chrono::year_month_day,int>* calendarPtr);
 
         void setHeadTaskID(int headTaskID);
@@ -22,6 +22,9 @@ class TM_Task
 
         void setStartDate(std::chrono::year_month_day startDate);
         void setEndDate(std::chrono::year_month_day endDate);
+
+        void setRepeat(int repeat);
+        int getRepeat();
 
         std::chrono::year_month_day* getStartDatePtr();
         std::chrono::year_month_day* getEndDatePtr();
@@ -105,7 +108,8 @@ class TM_Task
     private:
         
         std::string name; // once it has subtasks the date time variable automatically becomes the deadline for all subtasks
-        std::chrono::year_month_day startDate, endDate;
+        std::chrono::year_month_day startDate, endDate; 
+        int repeat = 0;
         TM_Time startTime,endTime;
 
         std::multiset<TM_TaskItIt,TM_SubtaskItCompare> subtasks = {};

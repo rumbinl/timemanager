@@ -5,7 +5,7 @@ TM_Task::TM_Task(TM_Task& copyTask)
     *this = copyTask;
 }
 
-TM_Task::TM_Task(std::string name, std::chrono::year_month_day startDate, std::chrono::year_month_day endDate, TM_Time startTime,  TM_Time endTime, int dbID, int headTaskID)
+TM_Task::TM_Task(std::string name, std::chrono::year_month_day startDate, std::chrono::year_month_day endDate, TM_Time startTime,  TM_Time endTime, int dbID, int headTaskID, int repeat)
 {
     this->name = name;
     this->startDate = startDate;
@@ -14,6 +14,7 @@ TM_Task::TM_Task(std::string name, std::chrono::year_month_day startDate, std::c
     this->endTime = endTime;
     this->dbID = dbID;
     this->headTaskID = headTaskID;
+    this->repeat = repeat;
 }
 
 TM_Task::TM_Task(std::string name, std::chrono::year_month_day startDate, std::chrono::year_month_day deadline, TM_Time startTime, TM_Time endTime, TM_Time duration, std::map<std::chrono::year_month_day,int>* calendarPtr)
@@ -98,7 +99,6 @@ TM_Time TM_Task::getTaskLength()
 {
     if(startDate == endDate)
     {
-        std::cout<<TM_GetTimeString(endTime-startTime)<<std::endl;
         return endTime - startTime;
     }
     else
@@ -112,4 +112,14 @@ TM_Time TM_Task::getTaskLength()
 int TM_Task::getDBID()
 {
     return this->dbID;
+}
+
+void TM_Task::setRepeat(int repeat)
+{
+    this->repeat = repeat;
+}
+
+int TM_Task::getRepeat()
+{
+    return this->repeat;
 }

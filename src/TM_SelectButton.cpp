@@ -11,4 +11,5 @@ template <typename DataType> void TM_SelectButton<DataType>::Render(TM_RenderInf
     TM_TextView::Render(renderInfo);
 }
 
-template class TM_SelectButton< int>;
+template class TM_SelectButton<int>;
+template class TM_SelectButton<bool>;

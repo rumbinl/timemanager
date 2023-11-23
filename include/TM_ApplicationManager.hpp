@@ -47,8 +47,7 @@ class TM_ApplicationManager
         // Runtime attributes
 		bool should_render_update=true, should_terminate=false, pressed=false;
 		std::map<std::chrono::year_month_day,int> freeTimeMap;
-		TM_TaskManager* taskManPtr;
-		TM_TaskManager* importTaskManPtr;
+		TM_TaskManager* taskManPtr, *importTaskManPtr; 
 		TM_TaskInfoView* importTaskInfoViewPtr;
 		TM_TaskView* taskViewPtr;
 		TM_StorageManager* storageManPtr;

@@ -104,6 +104,38 @@ TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr, std::map<TM_
         }),
         this->endDateMonthView
     }));
+    
+    this->renderObjects.push_back(new TM_TextView("Repetition", SkRect::MakeWH(0,50)));
+    this->renderObjects.push_back(new TM_HorizontalView(SkRect::MakeWH(0,50), {
+        new TM_SelectButton<int>("Repeat", SkRect::MakeEmpty(), 0, (void*)this->taskManPtr, [](void* context, int data) {
+            TM_TaskManager* taskManPtr = (TM_TaskManager*)context;
+            taskManPtr->setRepeat(1);
+        }, 
+        [](void* context, int data) -> bool {
+            TM_TaskManager* taskManPtr = (TM_TaskManager*)context;
+            return taskManPtr->getRepeat();
+        }), 
+        new TM_SelectButton<int>("No Repeat", SkRect::MakeEmpty(), 0, (void*)this->taskManPtr, [](void* context, int data) {
+            TM_TaskManager* taskManPtr = (TM_TaskManager*)context;
+            taskManPtr->setRepeat(0);
+        }, 
+        [](void* context, int data) -> bool {
+            TM_TaskManager* taskManPtr = (TM_TaskManager*)context;
+            return !taskManPtr->getRepeat();
+        }),
+        new TM_Button<int>("-", SkRect::MakeEmpty(), -1, (void*)this->taskManPtr, [](void* context, int data) {
+            TM_TaskManager* taskManPtr = (TM_TaskManager*)context;
+            taskManPtr->setRepeat(taskManPtr->getRepeat()-1);
+        }),
+        new TM_TextView((void*)this->taskManPtr, [](void* context) -> std::string {
+            TM_TaskManager* taskManPtr = (TM_TaskManager*)context;
+            return std::to_string(taskManPtr->getRepeat())+" days";
+        }),
+        new TM_Button<int>("+", SkRect::MakeEmpty(), 1, (void*)this->taskManPtr, [](void* context, int data) {
+            TM_TaskManager* taskManPtr = (TM_TaskManager*)context;
+            taskManPtr->setRepeat(taskManPtr->getRepeat()+1);
+        })
+    }));
     this->renderObjects.push_back(new TM_TextView("Head Task", SkRect::MakeWH(0,50)));
     this->renderObjects.push_back(this->headTaskViewPtr);
     this->renderObjects.push_back(new TM_TextView("Subtasks", SkRect::MakeWH(0,50)));

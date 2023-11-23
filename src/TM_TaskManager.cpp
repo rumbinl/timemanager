@@ -384,3 +384,19 @@ TM_TaskItIt TM_TaskManager::getTaskByID(int id)
         headItIt = this->dateSortedTasks.find(headIt);
     return headItIt;
 }
+
+void TM_TaskManager::setRepeat(int repeat)
+{
+    if(this->currentTask != this->getEndIt())
+    {
+        (**this->currentTask)->setRepeat(repeat);
+        (*this->storageManPtr)->AlterDBTask((**this->currentTask));
+    }
+}
+
+int TM_TaskManager::getRepeat()
+{
+    if(this->currentTask != this->getEndIt())
+        return (**this->currentTask)->getRepeat();
+    return 0;
+}

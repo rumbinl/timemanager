@@ -48,6 +48,8 @@ class TM_TaskManager
         TM_TaskItIt getTaskByID(int id);
         void deleteCurrentTask();
         void deleteTask(TM_TaskItIt taskIt);
+        void setRepeat(int repeat);
+        int getRepeat();
 		TM_TaskItSet& getTaskList();
         void setCurrentTask(TM_TaskItIt currentTask);
 	private:
