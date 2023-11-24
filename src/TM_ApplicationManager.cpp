@@ -36,28 +36,18 @@ TM_ApplicationManager::TM_ApplicationManager()
 					(subView)->setRenderObjectExistence(1, true);
 					(subView)->setRenderObjectExistence(2, false);
 					(subView)->setRenderObjectExistence(3, false);
-					(subView)->setRenderObjectExistence(4, false);
 				}, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true}),
 				new TM_Button<int>("\ue1b2", SkRect::MakeEmpty(), (int)0, &this->mainView, [](void* context, int data) {
 					TM_RenderObject* subView = (*((TM_RenderObject**)context))->getRenderObject(0);
 					(subView)->setRenderObjectExistence(1, false);
 					(subView)->setRenderObjectExistence(2, true);
 					(subView)->setRenderObjectExistence(3, false);
-					(subView)->setRenderObjectExistence(4, false);
 				}, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true}),
 				new TM_Button<int>("\ue9fc", SkRect::MakeEmpty(), (int)0, &this->mainView, [](void* context, int data) {
 					TM_RenderObject* subView = (*((TM_RenderObject**)context))->getRenderObject(0);
 					(subView)->setRenderObjectExistence(1, false);
 					(subView)->setRenderObjectExistence(2, false);
 					(subView)->setRenderObjectExistence(3, true);
-					(subView)->setRenderObjectExistence(4, false);
-				}, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true}),
-				new TM_Button<int>("\ue615", SkRect::MakeEmpty(), (int)0, &this->mainView, [](void* context, int data) {
-					TM_RenderObject* subView = (*((TM_RenderObject**)context))->getRenderObject(0);
-					(subView)->setRenderObjectExistence(1, false);
-					(subView)->setRenderObjectExistence(2, false);
-					(subView)->setRenderObjectExistence(3, false);
-					(subView)->setRenderObjectExistence(4, true);
 				}, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true})
 			}),
 
@@ -74,7 +64,6 @@ TM_ApplicationManager::TM_ApplicationManager()
 				})
 			}),
 
-			new TM_CalendarView(SkRect::MakeXYWH(0, 0, 840, 840), this->taskManPtr)
 		}),
 		this->taskViewPtr
 	});
@@ -82,7 +71,6 @@ TM_ApplicationManager::TM_ApplicationManager()
 	(subView)->setRenderObjectExistence(1, true);
 	(subView)->setRenderObjectExistence(2, false);
 	(subView)->setRenderObjectExistence(3, false);
-	(subView)->setRenderObjectExistence(4, false);
 }
 
 void TM_ApplicationManager::Run()

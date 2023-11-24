@@ -35,7 +35,7 @@ void TM_TaskManager::scheduleTask(TM_TaskItIt task, TM_Task* headTask)
 
     TM_Time taskTime = (**task)->getTaskLength();
 
-    while((**taskIt)->getStartDate() < headTask->getStartDate() || ((**taskIt)->getStartDate() == headTask->getStartDate() && (**taskIt)->getStartTime() < headTask->getStartTime()))
+    while(taskIt != this->dateSortedTasks.end() && ((**taskIt)->getStartDate() < headTask->getStartDate() || ((**taskIt)->getStartDate() == headTask->getStartDate() && (**taskIt)->getStartTime() < headTask->getStartTime())))
     {
         if(lowerBoundDate < (**taskIt)->getEndDate())
             lowerBoundDate = (**taskIt)->getEndDate(), lowerBoundTime = (**taskIt)->getEndTime();
@@ -48,9 +48,12 @@ void TM_TaskManager::scheduleTask(TM_TaskItIt task, TM_Task* headTask)
 
     TM_FreeDay maxFreeDay = {taskTime, headTask->getStartTime(), headTask->getStartDate()};
 
+    std::cout<<TM_GetDateString(lowerBoundDate)<<std::endl;
+
     while(lowerBoundDate<headTask->getEndDate() || (lowerBoundDate == headTask->getEndDate() && lowerBoundTime < headTask->getEndTime()))
     {
-        if((**taskIt)->getSubtaskCount())
+        std::cout<<TM_GetDateString(lowerBoundDate)<<std::endl;
+        if(taskIt != this->dateSortedTasks.end() && ((**taskIt)->getSubtaskCount() || (**taskIt)->getDBID() == (**task)->getDBID()))
         {
             taskIt++;
             continue;
@@ -72,6 +75,7 @@ void TM_TaskManager::scheduleTask(TM_TaskItIt task, TM_Task* headTask)
             {
                 if(endDate > lowerBoundDate)
                 {
+                    std::cout<<TM_GetTimeString(currentDayFreeTime)<<' '<<TM_GetTimeString(lowerBoundTime)<<' '<<TM_GetDateString(lowerBoundDate)<<std::endl;
                     if((maxTimeSlot > taskTime || maxTimeSlot == taskTime) && currentDayFreeTime > maxFreeDay.freeTime)
                         maxFreeDay = {currentDayFreeTime, lowerBoundTime, lowerBoundDate};
                     lowerBoundDate = endDate, lowerBoundTime = endTime,
@@ -95,7 +99,8 @@ void TM_TaskManager::scheduleTask(TM_TaskItIt task, TM_Task* headTask)
                     currentDayFreeTime = maxTimeSlot = {0,0};
                 }
             }
-            taskIt++;
+            if(taskIt != this->dateSortedTasks.end())
+                taskIt++;
             continue;
         }
 
@@ -104,16 +109,18 @@ void TM_TaskManager::scheduleTask(TM_TaskItIt task, TM_Task* headTask)
             currentDayFreeTime = currentDayFreeTime + (TM_Time{24,0}-lowerBoundTime);
             maxTimeSlot = max(maxTimeSlot, (TM_Time{24, 0}-lowerBoundTime));
             if((maxTimeSlot > taskTime || maxTimeSlot == taskTime) && currentDayFreeTime > maxFreeDay.freeTime)
-                        maxFreeDay = {currentDayFreeTime, lowerBoundTime, lowerBoundDate};
+            {
+                maxFreeDay = {currentDayFreeTime, lowerBoundTime, lowerBoundDate};
+            }
             lowerBoundDate = std::chrono::year_month_day{std::chrono::sys_days{lowerBoundDate} + std::chrono::days{1}};
             lowerBoundTime = {0,0};
             currentDayFreeTime = maxTimeSlot = {0,0};
         }
     }
+    std::cout<<TM_GetTimeString(maxFreeDay.freeTime)<<' '<<TM_GetTimeString(maxFreeDay.maxTimeSlot)<<' '<<TM_GetDateString(maxFreeDay.date)<<std::endl;
     TM_Time taskLength = (**task)->getTaskLength();
     setCurrentTask(task);
     setDateTime(maxFreeDay.date, maxFreeDay.maxTimeSlot, std::chrono::year_month_day{std::chrono::sys_days{maxFreeDay.date} + TM_GetTimeDateOverflow(maxFreeDay.maxTimeSlot + taskLength)}, TM_NormalizeTime(maxFreeDay.maxTimeSlot + taskLength));
-
 }
 
 void TM_TaskManager::initializeSubtasks()
@@ -207,7 +214,7 @@ void TM_TaskManager::setCurrentTask(TM_TaskItIt currentTask)
 
 void TM_TaskManager::setDateTime(TM_YMD startDate, TM_Time startTime, TM_YMD endDate, TM_Time endTime)
 {
-    if(!this->getCurrentTask() || (this->getCurrentTask()->getStartDate()==this->getCurrentTask()->getEndDate()&&this->getCurrentTask()->getEndTime()<startTime))
+    if(!this->getCurrentTask() || (this->getCurrentTask()->getStartDate()==this->getCurrentTask()->getEndDate()&&this->getCurrentTask()->getEndTime()<this->getCurrentTask()->getStartTime()))
         return;
     TM_TaskIt taskIt = *this->currentTask;
     TM_Task* taskPtr = *taskIt;

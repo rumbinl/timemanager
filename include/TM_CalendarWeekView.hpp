@@ -14,9 +14,12 @@ class TM_CalendarWeekView : public TM_RenderObject
         TM_CalendarWeekView(SkRect bounds, std::chrono::year_month_day* focusDate, TM_TaskManager* taskManPtr, int numDays = 7, SkScalar hourHeight = 50.0, TM_ViewSetting viewSettings={colorScheme[1],colorScheme[2],colorScheme[3],0,24,0,0});
         void Render(TM_RenderInfo renderInfo) override;
         void RenderTimes(TM_RenderInfo renderInfo);
-        void RenderTask(TM_Task* task, SkColor color, TM_RenderInfo renderInfo);
+        void RenderTask(TM_Task* task, TM_YMD startDate, SkColor color, TM_RenderInfo renderInfo);
         bool PollEvents(TM_EventInput eventInput) override;
-        bool PollTask(TM_Task* task, TM_EventInput eventInput);
+        bool PollTask(TM_Task* task, TM_YMD startDate, TM_EventInput eventInput);
+        bool DateRangeInView(TM_YMD startDate, TM_YMD endDate);
+        TM_YMD RepeatFirstOccurence(TM_Task* task);
+        TM_YMD RepeatLastOccurence(TM_Task* task);
         void setDaySpan(int daySpan);
         std::chrono::year_month_day getDateFromMouseX(TM_EventInput eventInput);
         TM_Time getTimeFromMouseY(TM_EventInput eventInput);

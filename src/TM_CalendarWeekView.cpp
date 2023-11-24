@@ -48,6 +48,54 @@ void TM_CalendarWeekView::RenderTimes(TM_RenderInfo renderInfo)
     }
 }
 
+bool TM_CalendarWeekView::DateRangeInView(TM_YMD startDate, TM_YMD endDate)
+{
+	TM_YMD lastDay = std::chrono::year_month_day{std::chrono::sys_days{*this->focusDate} + std::chrono::days{(unsigned)this->numDays - 1}};
+	return (startDate <= *this->focusDate && endDate >= *this->focusDate) || 
+	   (startDate >= *this->focusDate && startDate <= lastDay);
+}
+
+TM_YMD TM_CalendarWeekView::RepeatFirstOccurence(TM_Task* task)
+{
+	TM_YMD lastDay = std::chrono::year_month_day{std::chrono::sys_days{*this->focusDate} + std::chrono::days{(unsigned)this->numDays - 1}},
+		   startDate = task->getStartDate(),
+		   endDate = task->getEndDate();
+	if(task->getStartDate() > lastDay)
+		return ZeroDate;
+	int repeat = task->getRepeat();
+	if(startDate < *focusDate)
+	{
+		TM_YMD firstOccurrence = std::chrono::year_month_day{std::chrono::sys_days{startDate} + std::chrono::days{(unsigned)(((std::chrono::sys_days{*this->focusDate} - std::chrono::sys_days{startDate}).count() -1) /repeat) * (unsigned)repeat}};
+		std::chrono::days taskLength = std::chrono::sys_days{endDate} - std::chrono::sys_days{startDate};
+
+		if(std::chrono::sys_days{std::chrono::sys_days{firstOccurrence}+taskLength} >= std::chrono::sys_days{*this->focusDate})
+		{
+			return firstOccurrence;
+		}
+		else if(std::chrono::sys_days{std::chrono::sys_days{firstOccurrence} + std::chrono::days{(unsigned)repeat}} <= std::chrono::sys_days{lastDay})
+		{
+			return std::chrono::year_month_day{std::chrono::sys_days{std::chrono::sys_days{firstOccurrence} + std::chrono::days{(unsigned)repeat}}};
+		}
+		return ZeroDate;
+	}
+	return startDate;
+}
+
+TM_YMD TM_CalendarWeekView::RepeatLastOccurence(TM_Task* task)
+{
+	TM_YMD lastDay = std::chrono::year_month_day{std::chrono::sys_days{*this->focusDate} + std::chrono::days{(unsigned)this->numDays - 1}},
+		   startDate = task->getStartDate(),
+		   endDate = task->getEndDate();
+	if(task->getStartDate() > lastDay)
+		return ZeroDate;
+	int repeat = task->getRepeat();
+
+	TM_YMD lastOccurrence = std::chrono::year_month_day{std::chrono::sys_days{startDate} + std::chrono::days{(unsigned)(((std::chrono::sys_days{lastDay} - std::chrono::sys_days{startDate}).count()) /repeat) * (unsigned)repeat}};
+	if(lastOccurrence >= *focusDate)
+		return lastOccurrence;
+	return ZeroDate;
+}
+
 void TM_CalendarWeekView::Render(TM_RenderInfo renderInfo)
 {
     SkPaint paint;
@@ -96,41 +144,59 @@ void TM_CalendarWeekView::Render(TM_RenderInfo renderInfo)
 	for(TM_TaskIt taskIt : this->taskManPtr->getTaskList()) 
 	{
 		TM_Task* task = *taskIt;
-		if(task->getStartDate()>=*this->focusDate && task->getStartDate() < std::chrono::sys_days{*this->focusDate} + std::chrono::days{this->numDays})
-			this->RenderTask(task, this->viewSetting.borderColor, renderInfo);
+		SkColor color = this->viewSetting.borderColor;
+		if(task->getSubtaskCount())
+			color = SkColorSetA(color, 100);
+
+		if(!task->getRepeat() && DateRangeInView(task->getStartDate(), task->getEndDate()))
+		{
+			RenderTask(task, task->getStartDate(), color, renderInfo);
+		}
+		else if(task->getRepeat())
+		{
+			TM_YMD startDate = RepeatFirstOccurence(task), endDate = RepeatLastOccurence(task);
+			if(startDate != ZeroDate)
+			{
+				while(startDate <= endDate)
+				{
+					RenderTask(task, startDate, color, renderInfo);
+					startDate = std::chrono::sys_days{startDate} + std::chrono::days{task->getRepeat()};
+				}
+			}
+		}
 	}
     
     if(this->select) 
     { 
 		SkColor color = this->viewSetting.borderColor;
 		color = SkColorSetA(color, 100);
-		RenderTask(&newTask, color, renderInfo);
+		RenderTask(&newTask, newTask.getStartDate(), color, renderInfo);
     }
     
     renderInfo.canvas->restore();
 }
 
-void TM_CalendarWeekView::RenderTask(TM_Task* task, SkColor color, TM_RenderInfo renderInfo)
+void TM_CalendarWeekView::RenderTask(TM_Task* task, TM_YMD startDate, SkColor color, TM_RenderInfo renderInfo)
 {
 	SkPaint paint;
 	paint.setStyle(SkPaint::kFill_Style);
 	paint.setColor(color);
+	std::chrono::days taskLength = std::chrono::sys_days{task->getEndDate()} - std::chrono::sys_days{task->getStartDate()};
+	TM_Time startTime = task->getStartTime(),endTime = task->getEndTime(); 
+	TM_YMD endDate = std::chrono::sys_days{startDate} + taskLength; 
 
-	if(task->getSubtaskCount())
-		paint.setAlpha(155);
-
-	int startIndex = (std::chrono::sys_days{task->getStartDate()}-std::chrono::sys_days{*this->focusDate}).count(),
-		endIndex   = (std::chrono::sys_days{task->getEndDate  ()}-std::chrono::sys_days{*this->focusDate}).count();
+	int startIndex = (std::chrono::sys_days{startDate}-std::chrono::sys_days{*this->focusDate}).count(),
+		endIndex   = (std::chrono::sys_days{endDate}-std::chrono::sys_days{*this->focusDate}).count();
 
 	SkScalar yOff = -this->scrollY+this->viewSetting.paddingY;
-	SkScalar startDayX = this->xOff + dayWidth*startIndex,
-			 startDayY = yOff + this->hourHeight*((SkScalar)TM_TimeMinutes(task->getStartTime())/60.0f),
+	SkScalar startDayX = this->xOff + max(dayWidth*startIndex,-dayWidth),
+			 startDayY = yOff + this->hourHeight*((SkScalar)TM_TimeMinutes(startTime)/60.0f),
 			 endDayX = this->xOff + dayWidth*endIndex,
-			 endDayY = yOff + this->hourHeight*((SkScalar)TM_TimeMinutes(task->getEndTime())/60.0f);
+			 endDayY = yOff + this->hourHeight*((SkScalar)TM_TimeMinutes(endTime)/60.0f);
 	
-    if(task->getStartDate() == task->getEndDate())
+    if(startDate == endDate)
     {
-		SkScalar minutes = std::fmax(TM_TimeMinutes(task->getEndTime()) - TM_TimeMinutes(task->getStartTime()), 15.0f);
+		SkScalar minutes = std::fmax(TM_TimeMinutes(endTime) - TM_TimeMinutes(startTime), 15.0f);
 		SkRect rect = SkRect::MakeXYWH(startDayX, startDayY, dayWidth, this->hourHeight*(minutes/60.0f));
         renderInfo.canvas->drawRect(rect, paint);
 
@@ -138,8 +204,11 @@ void TM_CalendarWeekView::RenderTask(TM_Task* task, SkColor color, TM_RenderInfo
     }
     else 
     {
-		SkRect startDay = SkRect::MakeXYWH(startDayX, startDayY, dayWidth, this->srcBounds.height()-startDayY);
-        renderInfo.canvas->drawRect(startDay, paint);
+		if(startIndex>=0)
+		{
+			SkRect startDay = SkRect::MakeXYWH(startDayX, startDayY, dayWidth, this->srcBounds.height()-startDayY);
+			renderInfo.canvas->drawRect(startDay, paint);
+		}
 
         SkRect coverDays = SkRect::MakeXYWH(startDayX+dayWidth, 0, endDayX-startDayX-dayWidth, this->srcBounds.height());
         renderInfo.canvas->drawRect(coverDays, paint);
@@ -150,7 +219,6 @@ void TM_CalendarWeekView::RenderTask(TM_Task* task, SkColor color, TM_RenderInfo
 		renderInfo.textFont->setSize(this->viewSetting.fontSize);
     }
 
-	paint.setAlpha(255);
 	paint.setColor(this->viewSetting.backgroundColor);
 
 	SkFontMetrics fontMetrics;
@@ -176,23 +244,27 @@ TM_Time TM_CalendarWeekView::getTimeFromMouseY(TM_EventInput eventInput)
 	return {minuteCount/60,minuteCount%60};
 }
 
-bool TM_CalendarWeekView::PollTask(TM_Task* task, TM_EventInput eventInput)
+bool TM_CalendarWeekView::PollTask(TM_Task* task, TM_YMD startDate, TM_EventInput eventInput)
 {
 	eventInput.mouseX -= this->bounds.x();
 	eventInput.mouseY -= this->bounds.y() + this->yOff;
 
-	int startIndex = (std::chrono::sys_days{task->getStartDate()}-std::chrono::sys_days{*this->focusDate}).count(),
-		endIndex   = (std::chrono::sys_days{task->getEndDate  ()}-std::chrono::sys_days{*this->focusDate}).count();
+	std::chrono::days taskLength = std::chrono::sys_days{task->getEndDate()} - std::chrono::sys_days{task->getStartDate()};
+	TM_Time startTime = task->getStartTime(),endTime = task->getEndTime(); 
+	TM_YMD endDate = std::chrono::sys_days{startDate} + taskLength; 
+
+	int startIndex = (std::chrono::sys_days{startDate}-std::chrono::sys_days{*this->focusDate}).count(),
+		endIndex   = (std::chrono::sys_days{endDate}-std::chrono::sys_days{*this->focusDate}).count();
 
 	SkScalar yOff = -this->scrollY+this->viewSetting.paddingY;
 	SkScalar startDayX = this->xOff + dayWidth*startIndex,
-			 startDayY = yOff + this->hourHeight*((SkScalar)TM_TimeMinutes(task->getStartTime())/60.0f),
+			 startDayY = yOff + this->hourHeight*((SkScalar)TM_TimeMinutes(startTime)/60.0f),
 			 endDayX = this->xOff + dayWidth*endIndex,
-			 endDayY = yOff + this->hourHeight*((SkScalar)TM_TimeMinutes(task->getEndTime())/60.0f);
+			 endDayY = yOff + this->hourHeight*((SkScalar)TM_TimeMinutes(endTime)/60.0f);
 	
     if(task->getStartDate() == task->getEndDate())
     {
-		SkScalar minutes = std::fmax(TM_TimeMinutes(task->getEndTime()) - TM_TimeMinutes(task->getStartTime()), 15.0f);
+		SkScalar minutes = std::fmax(TM_TimeMinutes(endTime) - TM_TimeMinutes(startTime), 15.0f);
 		SkRect rect = SkRect::MakeXYWH(startDayX, startDayY, dayWidth, this->hourHeight*(minutes/60.0f));
 		return rect.contains(eventInput.mouseX, eventInput.mouseY);
     }
@@ -241,13 +313,32 @@ bool TM_CalendarWeekView::PollEvents(TM_EventInput eventInput)
 			while(taskIt != this->taskManPtr->getTaskList().begin())
 			{
 				taskIt--;
-				if((**taskIt)->getStartDate()>=*this->focusDate && (**taskIt)->getStartDate() < std::chrono::sys_days{*this->focusDate} + std::chrono::days{this->numDays})
-					if(this->PollTask(**taskIt, eventInput))
+				if(!(**taskIt)->getRepeat() && DateRangeInView((**taskIt)->getStartDate(), (**taskIt)->getEndDate()))
+				{
+					if(this->PollTask(**taskIt, (**taskIt)->getStartDate(), eventInput))
 					{
 						this->taskManPtr->setCurrentTask(taskIt);
 						this->select = false;
 						break;
 					}
+				}
+				else if((**taskIt)->getRepeat())
+				{
+					TM_YMD startDate = RepeatFirstOccurence(**taskIt), endDate = RepeatLastOccurence(**taskIt);
+					if(startDate != ZeroDate)
+					{
+						while(startDate <= endDate)
+						{
+							if(this->PollTask(**taskIt, startDate, eventInput))
+							{
+								this->taskManPtr->setCurrentTask(taskIt);
+								this->select = false;
+								break;
+							}
+							startDate = std::chrono::sys_days{startDate} + std::chrono::days{(**taskIt)->getRepeat()};
+						}
+					}
+				}
 			}
 		}
 	}
