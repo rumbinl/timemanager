@@ -93,7 +93,7 @@ void TM_TaskManager::scheduleTask(TM_TaskItIt task, TM_Task* headTask)
 
         if(startDate == lowerBoundDate)
         {
-            if(startTime < lowerBoundTime)
+            if(startTime < lowerBoundTime || startTime == lowerBoundTime)
             {
                 if(endDate > lowerBoundDate)
                 {
@@ -111,7 +111,6 @@ void TM_TaskManager::scheduleTask(TM_TaskItIt task, TM_Task* headTask)
 
                 currentDayFreeTime = currentDayFreeTime + startTime - lowerBoundTime;
 
-                lowerBoundTime = endTime;
                 if(endDate > lowerBoundDate)
                 {
                     if((maxTimeSlot > taskTime || maxTimeSlot == taskTime) && currentDayFreeTime > maxFreeDay.freeTime)
@@ -119,6 +118,7 @@ void TM_TaskManager::scheduleTask(TM_TaskItIt task, TM_Task* headTask)
                     lowerBoundDate = endDate,
                     currentDayFreeTime = maxTimeSlot = {0,0};
                 }
+                lowerBoundTime = endTime;
             }
             if(rangeIt != timeRangePool.end())
                 rangeIt++;
