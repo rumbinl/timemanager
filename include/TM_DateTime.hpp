@@ -4,8 +4,13 @@
 #include <iostream>
 #include <string>
 
+typedef std::chrono::year_month_day TM_YMD;
+
 static std::string monthNames[12] = {"January","February","March","April","May","June","July","August","September","October","November","December"};
 static std::string dayNames[7] = {"Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"};
+
+#define ZeroDate (TM_YMD{std::chrono::January/1/0})
+#define ZeroTime (TM_Time{-1,-1})
 
 struct TM_Time { int hours, minutes; 
 
@@ -24,7 +29,33 @@ struct TM_Time { int hours, minutes;
         int res = 60*(hours+b.hours) + minutes+b.minutes;
         return {res/60,res%60};
     }
+};
 
+struct TM_TimeRange {
+    TM_YMD startDate, endDate;
+    TM_Time startTime, endTime;
+
+    bool operator==(const TM_TimeRange& b) const
+    {
+        return b.startDate == startDate && b.endDate == endDate && b.startTime == startTime && b.endTime == endTime;
+    }
+
+    bool operator<(const TM_TimeRange& b) const 
+    { 
+        if(startDate == b.startDate) 
+        {
+            if(startTime == b.startTime) 
+            {
+                if(endDate == b.endDate)
+
+                    return endTime < b.endTime;
+
+                return endDate < b.endDate;
+            }
+            return startTime < b.startTime;
+        }
+        return startDate < b.startDate;
+    }
 };
 
 int TM_TimeMinutes(TM_Time time);

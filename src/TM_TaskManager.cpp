@@ -29,45 +29,67 @@ void TM_TaskManager::addSubtask(TM_TaskItIt task)
 
 void TM_TaskManager::scheduleTask(TM_TaskItIt task, TM_Task* headTask)
 {
-    TM_TaskItIt taskIt = this->dateSortedTasks.begin();
     TM_YMD lowerBoundDate = headTask->getStartDate(); 
     TM_Time lowerBoundTime = headTask->getStartTime();
 
     TM_Time taskTime = (**task)->getTaskLength();
 
-    while(taskIt != this->dateSortedTasks.end() && ((**taskIt)->getStartDate() < headTask->getStartDate() || ((**taskIt)->getStartDate() == headTask->getStartDate() && (**taskIt)->getStartTime() < headTask->getStartTime())))
+    std::set<TM_TimeRange> timeRangePool;
+
+    TM_TaskItIt taskIt = this->dateSortedTasks.begin();
+    while(taskIt != this->dateSortedTasks.end())
     {
-        if(lowerBoundDate < (**taskIt)->getEndDate())
-            lowerBoundDate = (**taskIt)->getEndDate(), lowerBoundTime = (**taskIt)->getEndTime();
-        else if(lowerBoundDate == (**taskIt)->getEndDate())
-            lowerBoundTime = max(lowerBoundTime, (**taskIt)->getEndTime());
+        if((**taskIt)->getSubtaskCount() || (**taskIt)->getDBID() == (**task)->getDBID())
+        {
+            taskIt ++;
+            continue;
+        }
+        if(!(**taskIt)->getRepeat() && (**taskIt)->DateRangeInView(headTask->getStartDate(), headTask->getEndDate()))
+        {
+            timeRangePool.insert({(**taskIt)->getStartDate(), (**taskIt)->getEndDate(), (**taskIt)->getStartTime(), (**taskIt)->getEndTime()});
+        }
+        else if((**taskIt)->getRepeat())
+        {
+            TM_YMD startDate = (**taskIt)->RepeatFirstOccurence(headTask->getStartDate(), headTask->getEndDate()), endDate = (**taskIt)->RepeatLastOccurence(headTask->getStartDate(), headTask->getEndDate());
+            if(startDate != ZeroDate)
+            {
+                std::chrono::days taskLength = std::chrono::sys_days{(**taskIt)->getEndDate()} - std::chrono::sys_days{(**taskIt)->getStartDate()};
+                while(startDate <= endDate)
+                {
+                    timeRangePool.insert({startDate, std::chrono::sys_days{startDate} + taskLength, (**taskIt)->getStartTime(), (**taskIt)->getEndTime()});
+                    startDate = std::chrono::sys_days{startDate} + std::chrono::days{(**taskIt)->getRepeat()};
+                }
+            }
+        }
         taskIt++;
+    }
+
+    std::set<TM_TimeRange>::iterator rangeIt = timeRangePool.begin();
+
+    while(rangeIt != timeRangePool.end() && (rangeIt->startDate < headTask->getStartDate() || (rangeIt->startDate == headTask->getStartDate() && rangeIt->startTime < headTask->getStartTime())))
+    {
+        if(lowerBoundDate < rangeIt->endDate)
+            lowerBoundDate = rangeIt->endDate, lowerBoundTime = rangeIt->endTime;
+        else if(lowerBoundDate == rangeIt->endDate)
+            lowerBoundTime = max(lowerBoundTime, rangeIt->endTime);
+        rangeIt++;
     }
 
     TM_Time currentDayFreeTime={0,0}, maxTimeSlot={0,0}, timeSlot={0,0};
 
     TM_FreeDay maxFreeDay = {taskTime, headTask->getStartTime(), headTask->getStartDate()};
 
-    std::cout<<TM_GetDateString(lowerBoundDate)<<std::endl;
-
     while(lowerBoundDate<headTask->getEndDate() || (lowerBoundDate == headTask->getEndDate() && lowerBoundTime < headTask->getEndTime()))
     {
-        std::cout<<TM_GetDateString(lowerBoundDate)<<std::endl;
-        if(taskIt != this->dateSortedTasks.end() && ((**taskIt)->getSubtaskCount() || (**taskIt)->getDBID() == (**task)->getDBID()))
-        {
-            taskIt++;
-            continue;
-        }
-
         TM_YMD startDate, endDate;
         TM_Time startTime, endTime;
 
-        if(taskIt == dateSortedTasks.end())
-            startDate = headTask->getEndDate(), endDate = headTask->getEndDate(),
-            startTime = headTask->getEndTime(), endTime = headTask->getEndTime();
+        if(rangeIt == timeRangePool.end())
+            startDate = headTask->getEndDate(), endDate = std::chrono::sys_days{headTask->getEndDate()}+std::chrono::days{1},
+            startTime = headTask->getEndTime(), endTime = {0,0};
         else
-            startDate = (**taskIt)->getStartDate(), endDate = (**taskIt)->getEndDate(),
-            startTime = (**taskIt)->getStartTime(), endTime = (**taskIt)->getEndTime();
+            startDate = rangeIt->startDate, endDate = rangeIt->endDate,
+            startTime = rangeIt->startTime, endTime = rangeIt->endTime;
 
         if(startDate == lowerBoundDate)
         {
@@ -75,7 +97,6 @@ void TM_TaskManager::scheduleTask(TM_TaskItIt task, TM_Task* headTask)
             {
                 if(endDate > lowerBoundDate)
                 {
-                    std::cout<<TM_GetTimeString(currentDayFreeTime)<<' '<<TM_GetTimeString(lowerBoundTime)<<' '<<TM_GetDateString(lowerBoundDate)<<std::endl;
                     if((maxTimeSlot > taskTime || maxTimeSlot == taskTime) && currentDayFreeTime > maxFreeDay.freeTime)
                         maxFreeDay = {currentDayFreeTime, lowerBoundTime, lowerBoundDate};
                     lowerBoundDate = endDate, lowerBoundTime = endTime,
@@ -99,8 +120,8 @@ void TM_TaskManager::scheduleTask(TM_TaskItIt task, TM_Task* headTask)
                     currentDayFreeTime = maxTimeSlot = {0,0};
                 }
             }
-            if(taskIt != this->dateSortedTasks.end())
-                taskIt++;
+            if(rangeIt != timeRangePool.end())
+                rangeIt++;
             continue;
         }
 
@@ -117,7 +138,6 @@ void TM_TaskManager::scheduleTask(TM_TaskItIt task, TM_Task* headTask)
             currentDayFreeTime = maxTimeSlot = {0,0};
         }
     }
-    std::cout<<TM_GetTimeString(maxFreeDay.freeTime)<<' '<<TM_GetTimeString(maxFreeDay.maxTimeSlot)<<' '<<TM_GetDateString(maxFreeDay.date)<<std::endl;
     TM_Time taskLength = (**task)->getTaskLength();
     setCurrentTask(task);
     setDateTime(maxFreeDay.date, maxFreeDay.maxTimeSlot, std::chrono::year_month_day{std::chrono::sys_days{maxFreeDay.date} + TM_GetTimeDateOverflow(maxFreeDay.maxTimeSlot + taskLength)}, TM_NormalizeTime(maxFreeDay.maxTimeSlot + taskLength));

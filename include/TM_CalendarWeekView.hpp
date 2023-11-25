@@ -17,7 +17,7 @@ class TM_CalendarWeekView : public TM_RenderObject
         void RenderTask(TM_Task* task, TM_YMD startDate, SkColor color, TM_RenderInfo renderInfo);
         bool PollEvents(TM_EventInput eventInput) override;
         bool PollTask(TM_Task* task, TM_YMD startDate, TM_EventInput eventInput);
-        bool DateRangeInView(TM_YMD startDate, TM_YMD endDate);
+        bool DateRangeInView(TM_Task* task);
         TM_YMD RepeatFirstOccurence(TM_Task* task);
         TM_YMD RepeatLastOccurence(TM_Task* task);
         void setDaySpan(int daySpan);

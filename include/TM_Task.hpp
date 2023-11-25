@@ -105,6 +105,10 @@ class TM_Task
 
         void setDBID(int dbID);
         int getDBID();
+
+        bool DateRangeInView(TM_YMD viewStartDate, TM_YMD viewEndDate);
+        TM_YMD RepeatFirstOccurence(TM_YMD viewStartDate, TM_YMD viewEndDate);
+        TM_YMD RepeatLastOccurence(TM_YMD viewStartDate, TM_YMD viewEndDate);
     private:
         
         std::string name; // once it has subtasks the date time variable automatically becomes the deadline for all subtasks

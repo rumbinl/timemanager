@@ -48,52 +48,9 @@ void TM_CalendarWeekView::RenderTimes(TM_RenderInfo renderInfo)
     }
 }
 
-bool TM_CalendarWeekView::DateRangeInView(TM_YMD startDate, TM_YMD endDate)
+bool TM_CalendarWeekView::DateRangeInView(TM_Task* task)
 {
-	TM_YMD lastDay = std::chrono::year_month_day{std::chrono::sys_days{*this->focusDate} + std::chrono::days{(unsigned)this->numDays - 1}};
-	return (startDate <= *this->focusDate && endDate >= *this->focusDate) || 
-	   (startDate >= *this->focusDate && startDate <= lastDay);
-}
-
-TM_YMD TM_CalendarWeekView::RepeatFirstOccurence(TM_Task* task)
-{
-	TM_YMD lastDay = std::chrono::year_month_day{std::chrono::sys_days{*this->focusDate} + std::chrono::days{(unsigned)this->numDays - 1}},
-		   startDate = task->getStartDate(),
-		   endDate = task->getEndDate();
-	if(task->getStartDate() > lastDay)
-		return ZeroDate;
-	int repeat = task->getRepeat();
-	if(startDate < *focusDate)
-	{
-		TM_YMD firstOccurrence = std::chrono::year_month_day{std::chrono::sys_days{startDate} + std::chrono::days{(unsigned)(((std::chrono::sys_days{*this->focusDate} - std::chrono::sys_days{startDate}).count() -1) /repeat) * (unsigned)repeat}};
-		std::chrono::days taskLength = std::chrono::sys_days{endDate} - std::chrono::sys_days{startDate};
-
-		if(std::chrono::sys_days{std::chrono::sys_days{firstOccurrence}+taskLength} >= std::chrono::sys_days{*this->focusDate})
-		{
-			return firstOccurrence;
-		}
-		else if(std::chrono::sys_days{std::chrono::sys_days{firstOccurrence} + std::chrono::days{(unsigned)repeat}} <= std::chrono::sys_days{lastDay})
-		{
-			return std::chrono::year_month_day{std::chrono::sys_days{std::chrono::sys_days{firstOccurrence} + std::chrono::days{(unsigned)repeat}}};
-		}
-		return ZeroDate;
-	}
-	return startDate;
-}
-
-TM_YMD TM_CalendarWeekView::RepeatLastOccurence(TM_Task* task)
-{
-	TM_YMD lastDay = std::chrono::year_month_day{std::chrono::sys_days{*this->focusDate} + std::chrono::days{(unsigned)this->numDays - 1}},
-		   startDate = task->getStartDate(),
-		   endDate = task->getEndDate();
-	if(task->getStartDate() > lastDay)
-		return ZeroDate;
-	int repeat = task->getRepeat();
-
-	TM_YMD lastOccurrence = std::chrono::year_month_day{std::chrono::sys_days{startDate} + std::chrono::days{(unsigned)(((std::chrono::sys_days{lastDay} - std::chrono::sys_days{startDate}).count()) /repeat) * (unsigned)repeat}};
-	if(lastOccurrence >= *focusDate)
-		return lastOccurrence;
-	return ZeroDate;
+	return task->DateRangeInView(*this->focusDate, std::chrono::year_month_day{std::chrono::sys_days{*this->focusDate} + std::chrono::days{(unsigned)this->numDays - 1}});
 }
 
 void TM_CalendarWeekView::Render(TM_RenderInfo renderInfo)
@@ -148,13 +105,14 @@ void TM_CalendarWeekView::Render(TM_RenderInfo renderInfo)
 		if(task->getSubtaskCount())
 			color = SkColorSetA(color, 100);
 
-		if(!task->getRepeat() && DateRangeInView(task->getStartDate(), task->getEndDate()))
+		if(!task->getRepeat() && DateRangeInView(task))
 		{
 			RenderTask(task, task->getStartDate(), color, renderInfo);
 		}
 		else if(task->getRepeat())
 		{
-			TM_YMD startDate = RepeatFirstOccurence(task), endDate = RepeatLastOccurence(task);
+			TM_YMD lastDay = std::chrono::year_month_day{std::chrono::sys_days{*this->focusDate} + std::chrono::days{(unsigned)this->numDays - 1}},
+			       startDate = task->RepeatFirstOccurence(*this->focusDate, lastDay), endDate = task->RepeatLastOccurence(*this->focusDate, lastDay);
 			if(startDate != ZeroDate)
 			{
 				while(startDate <= endDate)
@@ -313,7 +271,7 @@ bool TM_CalendarWeekView::PollEvents(TM_EventInput eventInput)
 			while(taskIt != this->taskManPtr->getTaskList().begin())
 			{
 				taskIt--;
-				if(!(**taskIt)->getRepeat() && DateRangeInView((**taskIt)->getStartDate(), (**taskIt)->getEndDate()))
+				if(!(**taskIt)->getRepeat() && DateRangeInView(**taskIt))
 				{
 					if(this->PollTask(**taskIt, (**taskIt)->getStartDate(), eventInput))
 					{
@@ -324,7 +282,8 @@ bool TM_CalendarWeekView::PollEvents(TM_EventInput eventInput)
 				}
 				else if((**taskIt)->getRepeat())
 				{
-					TM_YMD startDate = RepeatFirstOccurence(**taskIt), endDate = RepeatLastOccurence(**taskIt);
+					TM_YMD lastDay = std::chrono::year_month_day{std::chrono::sys_days{*this->focusDate} + std::chrono::days{(unsigned)this->numDays - 1}},
+					       startDate = (**taskIt)->RepeatFirstOccurence(*this->focusDate, lastDay), endDate = (**taskIt)->RepeatLastOccurence(*this->focusDate, lastDay);
 					if(startDate != ZeroDate)
 					{
 						while(startDate <= endDate)

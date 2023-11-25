@@ -123,3 +123,48 @@ int TM_Task::getRepeat()
 {
     return this->repeat;
 }
+
+bool TM_Task::DateRangeInView(TM_YMD viewStartDate, TM_YMD viewEndDate)
+{
+	return (this->getStartDate() <= viewStartDate && this->getEndDate() >= viewStartDate) || 
+	   (this->getStartDate() >= viewStartDate && this->getStartDate() <= viewEndDate);
+}
+
+TM_YMD TM_Task::RepeatFirstOccurence(TM_YMD viewStartDate, TM_YMD viewEndDate)
+{
+	TM_YMD startDate = this->getStartDate(),
+		   endDate = this->getEndDate();
+	if(this->getStartDate() > viewEndDate)
+		return ZeroDate;
+	int repeat = this->getRepeat();
+	if(startDate < viewStartDate)
+	{
+		TM_YMD firstOccurrence = std::chrono::year_month_day{std::chrono::sys_days{startDate} + std::chrono::days{(unsigned)(((std::chrono::sys_days{viewStartDate} - std::chrono::sys_days{startDate}).count() -1) /repeat) * (unsigned)repeat}};
+		std::chrono::days taskLength = std::chrono::sys_days{endDate} - std::chrono::sys_days{startDate};
+
+		if(std::chrono::sys_days{std::chrono::sys_days{firstOccurrence}+taskLength} >= std::chrono::sys_days{viewStartDate})
+		{
+			return firstOccurrence;
+		}
+		else if(std::chrono::sys_days{std::chrono::sys_days{firstOccurrence} + std::chrono::days{(unsigned)repeat}} <= std::chrono::sys_days{viewEndDate})
+		{
+			return std::chrono::year_month_day{std::chrono::sys_days{std::chrono::sys_days{firstOccurrence} + std::chrono::days{(unsigned)repeat}}};
+		}
+		return ZeroDate;
+	}
+	return startDate;
+}
+
+TM_YMD TM_Task::RepeatLastOccurence(TM_YMD viewStartDate, TM_YMD viewEndDate)
+{
+	TM_YMD startDate = this->getStartDate(),
+		   endDate = this->getEndDate();
+	if(this->getStartDate() > viewEndDate)
+		return ZeroDate;
+	int repeat = this->getRepeat();
+
+	TM_YMD lastOccurrence = std::chrono::year_month_day{std::chrono::sys_days{startDate} + std::chrono::days{(unsigned)(((std::chrono::sys_days{viewEndDate} - std::chrono::sys_days{startDate}).count()) /repeat) * (unsigned)repeat}};
+	if(lastOccurrence >= viewStartDate)
+		return lastOccurrence;
+	return ZeroDate;
+}
