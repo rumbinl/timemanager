@@ -8,7 +8,7 @@ TM_TaskInfoSection::TM_TaskInfoSection(SkRect bounds, TM_TaskManager* taskManPtr
     
     if(addRenderObjects)
     {
-        this->deleteButton = new TM_Button<TM_TaskItIt>("\ue872aa", SkRect::MakeEmpty(), taskManPtr->getEndIt(), (void*)taskManPtr, [](void* taskManPtr, TM_TaskItIt taskIt) {
+        this->deleteButton = new TM_Button<TM_TaskItIt>("\ue872", SkRect::MakeEmpty(), taskManPtr->getEndIt(), (void*)taskManPtr, [](void* taskManPtr, TM_TaskItIt taskIt) {
             TM_TaskManager* taskMan = (TM_TaskManager*)taskManPtr;
             taskMan->deleteTask(taskIt);
         }, {colorScheme[1], colorScheme[2], colorScheme[3], 0, 24, 0, 0, true});
