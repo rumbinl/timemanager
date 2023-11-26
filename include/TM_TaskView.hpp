@@ -10,6 +10,7 @@
 #include <TM_HorizontalView.hpp>
 #include <TM_TimeDial.hpp>
 #include <TM_TaskInfoView.hpp>
+#include <TM_TimerView.hpp>
 
 class TM_TaskView : public TM_View
 {
@@ -32,6 +33,7 @@ class TM_TaskView : public TM_View
         TM_CalendarMonthView *startDateMonthView, *endDateMonthView;
         TM_HeadTaskInfoSection *headTaskViewPtr;
         TM_YMD date;
+        TM_TimerView* timerViewPtr;
         TM_TaskManager* taskManPtr;
         TM_TaskInfoView* taskInfoViewPtr;
         std::map<TM_YMD,int> calendarPtr;

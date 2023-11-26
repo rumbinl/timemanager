@@ -33,7 +33,7 @@ unsigned TM_NumMonthDays(std::chrono::year_month_day ymd)
 
 std::string TM_GetTimeString(TM_Time time)
 {
-    return (time.hours<10?"0":"")+std::to_string(time.hours)+':'+(time.minutes<10?"0":"")+std::to_string(time.minutes)+":00";
+    return (time.hours<10?"0":"")+std::to_string(time.hours)+':'+(time.minutes<10?"0":"")+std::to_string(time.minutes)+":"+(time.seconds<10?"0":"")+std::to_string(time.seconds);
 }
 
 std::string TM_GetDateString(std::chrono::year_month_day ymd)
@@ -54,4 +54,9 @@ std::chrono::days TM_GetTimeDateOverflow(TM_Time time)
 TM_Time TM_NormalizeTime(TM_Time time)
 {
     return {time.hours%24, time.minutes};
+}
+
+TM_Time TM_GetTimeFromSeconds(int seconds)
+{
+    return {seconds/3600, (seconds%3600)/60, seconds%60};
 }

@@ -18,7 +18,6 @@ class TM_CalendarView : public TM_View
     private:
         TM_CalendarMonthView* monthView;
         TM_CalendarWeekView* weekView;
-		TM_HorizontalView* buttonBar;
 		TM_View* vitalView;
         TM_YMD currentDate;
         TM_TaskManager* taskManPtr;

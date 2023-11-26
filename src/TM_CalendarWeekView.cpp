@@ -21,7 +21,7 @@ void TM_CalendarWeekView::RenderTimes(TM_RenderInfo renderInfo)
 	SkScalar yOff = -this->scrollY, y = 0.0f;
     SkScalar dayWidth = (this->bounds.width()-xOff)/(SkScalar)numDays;
 
-	this->hourHeight = this->bounds.height()/12.0f;
+	this->hourHeight = std::fmin(this->bounds.height()/12.0f, 40.0f);
     
 	for(int i=0;i<24;i++)
 	{

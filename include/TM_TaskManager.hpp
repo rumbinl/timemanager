@@ -46,6 +46,7 @@ class TM_TaskManager
         TM_TaskItIt getEndIt();
         TM_TaskItIt getCurrentTaskIt();
         TM_TaskItIt getTaskByID(int id);
+        void setTaskProgress(TM_Time progress);
         void deleteCurrentTask();
         void deleteTask(TM_TaskItIt taskIt);
         void setRepeat(int repeat);

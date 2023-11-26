@@ -137,6 +137,10 @@ void TM_TaskManager::scheduleTask(TM_TaskItIt task, TM_Task* headTask)
             lowerBoundTime = {0,0};
             currentDayFreeTime = maxTimeSlot = {0,0};
         }
+
+        if(startDate < lowerBoundDate)
+            if(rangeIt != timeRangePool.end())
+                rangeIt++;
     }
     TM_Time taskLength = (**task)->getTaskLength();
     setCurrentTask(task);
@@ -271,9 +275,20 @@ void TM_TaskManager::setDateTime(TM_YMD startDate, TM_Time startTime, TM_YMD end
 
 void TM_TaskManager::setTaskName(std::string taskName)
 {
-    this->getCurrentTask()->setName(taskName);
+    if(this->getCurrentTask() != NULL)
+        this->getCurrentTask()->setName(taskName);
     if(this->storageManPtr&&*this->storageManPtr!=NULL)
         (*this->storageManPtr)->AlterDBTask(this->getCurrentTask());
+}
+
+void TM_TaskManager::setTaskProgress(TM_Time progress)
+{
+    if(this->getCurrentTask() != NULL)
+    {
+        this->getCurrentTask()->setProgress(progress);
+        if(this->storageManPtr&&*this->storageManPtr!=NULL)
+            (*this->storageManPtr)->AlterDBTask(this->getCurrentTask());
+    }
 }
 
 int countCells(duckx::TableCell& tableCell)
