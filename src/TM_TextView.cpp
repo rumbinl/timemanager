@@ -8,7 +8,7 @@ TM_TextView::TM_TextView(std::string text, SkRect bounds, TM_ViewSetting viewSet
     this->textXOffset = 0;
 }
 
-TM_TextView::TM_TextView(void* context, std::string (*getStringFunc)(void* context), std::string text, SkRect bounds, TM_ViewSetting viewSetting, bool centered) : TM_TextView(text, bounds, viewSetting, centered)
+TM_TextView::TM_TextView(void* context, std::string (*getStringFunc)(void* context), SkRect bounds, TM_ViewSetting viewSetting, bool centered) : TM_TextView("", bounds, viewSetting, centered)
 {
     this->context = context;
     this->getStringFunc = getStringFunc;

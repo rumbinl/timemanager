@@ -80,3 +80,8 @@ void TM_TimerView::stopCountdown()
     this->countingDown = false;
     this->countdownThread.detach();
 }
+
+bool TM_TimerView::isCountingDown()
+{
+    return this->countingDown;
+}

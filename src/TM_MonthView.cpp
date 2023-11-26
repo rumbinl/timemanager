@@ -10,7 +10,7 @@ TM_MonthView::TM_MonthView(SkRect bounds, void* contextPtr, void (*setDateFunc)(
     this->dayViewList = std::vector(31, 
         TM_SelectButton<int>("0", 
             SkRect::MakeWH(bounds.width()/7.0f, 0), 0, this, 
-            [](void* monthViewPtr, int dayIndex,TM_Button<int>* self)
+            [](void* monthViewPtr, int dayIndex)
             { 
                 TM_MonthView* monthView = (TM_MonthView*)monthViewPtr;
                 monthView->setDate({monthView->getMonthYear().year(), monthView->getMonthYear().month(), std::chrono::day{(unsigned)dayIndex}}); 

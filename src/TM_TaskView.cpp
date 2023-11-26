@@ -1,6 +1,6 @@
 #include <TM_TaskView.hpp>
 
-TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr, std::map<TM_YMD,int>& calendarPtr) : TM_View(bounds, {},true,{colorScheme[0],colorScheme[3],colorScheme[3],0,24,0,10})
+TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr) : TM_View(bounds, {},true,{colorScheme[0],colorScheme[3],colorScheme[3],0,24,10,10})
 {
     this->taskManPtr = taskManPtr;
     this->currentTask = &this->dummyTask;
@@ -16,8 +16,7 @@ TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr, std::map<TM_
                                                         if(taskManager->getCurrentTask()!=NULL)
                                                             taskManager->setTaskName(newString);
                                                    }, {colorScheme[1],colorScheme[2],colorScheme[3],1,48,5});
-    this->calendarPtr = calendarPtr;
-    this->addSubtaskButton = new TM_Button<int>("\uf23a", SkRect::MakeWH(0,50), 0, (void*)this->taskManPtr, [](void* context, int data, TM_Button<int>* self) {
+    this->addSubtaskButton = new TM_Button<int>("\uf23a", SkRect::MakeWH(0,50), 0, (void*)this->taskManPtr, [](void* context, int data) {
         TM_TaskManager* taskManPtr = (TM_TaskManager*)context;
         TM_Task* currentTask;
         if((currentTask = taskManPtr->getCurrentTask())!=NULL)
@@ -26,7 +25,7 @@ TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr, std::map<TM_
         }
     }, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true});
 
-    this->scheduleTaskButton = new TM_Button<int>("\ue8b5", SkRect::MakeWH(0,50), 0, (void*)this->taskManPtr, [](void* context, int data, TM_Button<int>* self) {
+    this->scheduleTaskButton = new TM_Button<int>("\ue8b5", SkRect::MakeWH(0,50), 0, (void*)this->taskManPtr, [](void* context, int data) {
         TM_TaskManager* taskMan = (TM_TaskManager*)context;
         if(taskMan->getCurrentTask() != NULL && taskMan->getCurrentTask()->getHeadTaskID() != -1)
         {
@@ -35,7 +34,7 @@ TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr, std::map<TM_
         // TODO: Add Task
 	}, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true});
 
-    this->deleteTaskButton = new TM_Button<int>("\ue872", SkRect::MakeWH(0,50), 0, (void*)this->taskManPtr, [](void* context, int data, TM_Button<int>* self) {
+    this->deleteTaskButton = new TM_Button<int>("\ue872", SkRect::MakeWH(0,50), 0, (void*)this->taskManPtr, [](void* context, int data) {
         ((TM_TaskManager*)context)->deleteCurrentTask();
     }, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true});
 
@@ -116,9 +115,12 @@ TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr, std::map<TM_
         this->endDateMonthView
     }));
     
-    this->renderObjects.push_back(new TM_TextView("Repetition", SkRect::MakeWH(0,50)));
+    this->renderObjects.push_back(new TM_Button<bool>("Repetition", SkRect::MakeWH(0,50), false, (void*)this, [](void* context, bool data) {
+        TM_TaskView* taskView = (TM_TaskView*)context;
+        taskView->setRenderObjectExistence(4,!taskView->getRenderObjectExistence(4));
+    }));
     this->renderObjects.push_back(new TM_HorizontalView(SkRect::MakeWH(0,50), {
-        new TM_SelectButton<int>("Repeat", SkRect::MakeEmpty(), 0, (void*)this->taskManPtr, [](void* context, int data, TM_Button<int>* self) {
+        new TM_SelectButton<int>("Repeat", SkRect::MakeEmpty(), 0, (void*)this->taskManPtr, [](void* context, int data) {
             TM_TaskManager* taskManPtr = (TM_TaskManager*)context;
             taskManPtr->setRepeat(1);
         }, 
@@ -126,7 +128,7 @@ TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr, std::map<TM_
             TM_TaskManager* taskManPtr = (TM_TaskManager*)context;
             return taskManPtr->getRepeat();
         }), 
-        new TM_SelectButton<int>("No Repeat", SkRect::MakeEmpty(), 0, (void*)this->taskManPtr, [](void* context, int data, TM_Button<int>* self) {
+        new TM_SelectButton<int>("No Repeat", SkRect::MakeEmpty(), 0, (void*)this->taskManPtr, [](void* context, int data) {
             TM_TaskManager* taskManPtr = (TM_TaskManager*)context;
             taskManPtr->setRepeat(0);
         }, 
@@ -134,46 +136,67 @@ TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr, std::map<TM_
             TM_TaskManager* taskManPtr = (TM_TaskManager*)context;
             return !taskManPtr->getRepeat();
         }),
-        new TM_Button<int>("-", SkRect::MakeEmpty(), -1, (void*)this->taskManPtr, [](void* context, int data, TM_Button<int>* self) {
+        new TM_Button<int>("-", SkRect::MakeEmpty(), -1, (void*)this->taskManPtr, [](void* context, int data) {
             TM_TaskManager* taskManPtr = (TM_TaskManager*)context;
-            taskManPtr->setRepeat(taskManPtr->getRepeat()-1);
+            taskManPtr->setRepeat(max((int)taskManPtr->getRepeat()-1,0));
         }),
         new TM_TextView((void*)this->taskManPtr, [](void* context) -> std::string {
             TM_TaskManager* taskManPtr = (TM_TaskManager*)context;
             return std::to_string(taskManPtr->getRepeat())+" days";
         }),
-        new TM_Button<int>("+", SkRect::MakeEmpty(), 1, (void*)this->taskManPtr, [](void* context, int data, TM_Button<int>* self) {
+        new TM_Button<int>("+", SkRect::MakeEmpty(), 1, (void*)this->taskManPtr, [](void* context, int data) {
             TM_TaskManager* taskManPtr = (TM_TaskManager*)context;
             taskManPtr->setRepeat(taskManPtr->getRepeat()+1);
         })
     }));
-    this->renderObjects.push_back(new TM_TextView("Head Task", SkRect::MakeWH(0,50)));
+    this->renderObjects.push_back(new TM_Button<bool>("Head Task", SkRect::MakeWH(0,50), false, (void*)this, [](void* context, bool data) {
+        TM_TaskView* taskView = (TM_TaskView*)context;
+        taskView->setRenderObjectExistence(6,!taskView->getRenderObjectExistence(6));
+    }));
     this->renderObjects.push_back(this->headTaskViewPtr);
-    this->renderObjects.push_back(new TM_TextView("Subtasks", SkRect::MakeWH(0,50)));
+    this->renderObjects.push_back(new TM_Button<bool>("Subtasks", SkRect::MakeWH(0,50), false, (void*)this, [](void* context, bool data) {
+        TM_TaskView* taskView = (TM_TaskView*)context;
+        taskView->setRenderObjectExistence(8,!taskView->getRenderObjectExistence(8));
+    }));
     this->renderObjects.push_back(this->taskInfoViewPtr);
-    this->renderObjects.push_back(new TM_TextView("Countdown", SkRect::MakeWH(0,50)));
+    this->renderObjects.push_back(new TM_Button<bool>("Countdown", SkRect::MakeWH(0,50), false, (void*)this, [](void* context, bool data) {
+        TM_TaskView* taskView = (TM_TaskView*)context;
+        taskView->setRenderObjectExistence(10,!taskView->getRenderObjectExistence(10));
+    }));
     this->renderObjects.push_back(new TM_View(SkRect::MakeWH(0,300), {0.8,0.2,0.2},{
         this->timerViewPtr, 
-        new TM_Button<bool>("\ue037", SkRect::MakeEmpty(), false, (void*)this->timerViewPtr, [](void* contextPtr, bool data, TM_Button<bool>* self) {
-            TM_TimerView* timerViewPtr = (TM_TimerView*)contextPtr;
-            if(self->getText() == "\ue037")
-            {
-                timerViewPtr->startCountdown();
-                self->setText("\ue034");
-            }
-            else
-            {
-                timerViewPtr->stopCountdown();
-                self->setText("\ue037");
-            }
-        }, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,0,0,true})
-    }));
+        new TM_HorizontalView(SkRect::MakeEmpty(), {
+            new TM_Button<bool>([](void* contextPtr) -> std::string {
+                    TM_TimerView* timerViewPtr = (TM_TimerView*)contextPtr;
+                    if(timerViewPtr->isCountingDown()) 
+                        return "\ue034";
+                    return "\ue037";
+                },
+                SkRect::MakeEmpty(), false, (void*)this->timerViewPtr, [](void* contextPtr, bool data) {
+                    TM_TimerView* timerViewPtr = (TM_TimerView*)contextPtr;
+                    if(timerViewPtr->isCountingDown())
+                        timerViewPtr->stopCountdown();
+                    else
+                        timerViewPtr->startCountdown();
+                }, 
+            {colorScheme[0],colorScheme[2],SkColorSetRGB(0,0,0xff),0,24,0,0,true}),
+            new TM_Button<bool>("\ue877", SkRect::MakeEmpty(), false, (void*)this->timerViewPtr, [](void* contextPtr, bool data) {
+                }, {colorScheme[0],colorScheme[2],SkColorSetRGB(0x32,0xde,0x84),0,24,0,0,true})
+            })
+        })
+    );
+    this->renderObjects.push_back(new TM_GradientView(SkRect::MakeWH(0,300)));
     this->renderObjects.push_back(new TM_HorizontalView(SkRect::MakeWH(0,50), { this->addSubtaskButton,
     this->scheduleTaskButton,
     this->deleteTaskButton,
-    new TM_Button<int>("\ue8f5", SkRect::MakeWH(0,50), 0, this, [](void* taskView, int data, TM_Button<int>* self){
+    new TM_Button<int>("\ue8f5", SkRect::MakeWH(0,50), 0, this, [](void* taskView, int data){
         ((TM_TaskView*)taskView)->setExistence(false);
     }, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true})}));
+
+    this->setRenderObjectExistence(4,false);
+    this->setRenderObjectExistence(6,false);
+    this->setRenderObjectExistence(8,false);
+    this->setRenderObjectExistence(10,false);
 }
 
 void TM_TaskView::setDate(TM_YMD date)
@@ -189,11 +212,6 @@ TM_YMD TM_TaskView::getDate()
 std::string TM_TaskView::getText()
 {
 	return this->textBox->getText();
-}
-
-std::map<TM_YMD,int>* TM_TaskView::getCalendarPtr()
-{
-    return &this->calendarPtr;
 }
 
 void TM_TaskView::setTask(TM_Task* taskPtr)

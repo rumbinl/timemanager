@@ -5,11 +5,11 @@ TM_CalendarMonthView::TM_CalendarMonthView(SkRect bounds, void* contextPtr, void
     monthView = new TM_MonthView(SkRect::MakeWH(50,50), contextPtr, setDateFunc, getDateFunc);
     dataView = TM_TextView("", SkRect::MakeWH(0, 5));
     weekDayLabels = TM_HorizontalView(SkRect::MakeEmpty(), {});
-    previousMonth = TM_Button<int>("\ue5e0", SkRect::MakeWH(10,0), -1, this->monthView, [](void* monthViewPtr, int data, TM_Button<int>* self) {
+    previousMonth = TM_Button<int>("\ue5e0", SkRect::MakeWH(10,0), -1, this->monthView, [](void* monthViewPtr, int data) {
         TM_MonthView* monthView = (TM_MonthView*)monthViewPtr;
         monthView->setMonthYear(monthView->getMonthYear()-std::chrono::months{1});
     }, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,0,0,true});
-    nextMonth = TM_Button<int>("\ue5e1", SkRect::MakeWH(10,0), 1, this->monthView, [](void* monthViewPtr, int data, TM_Button<int>* self) {
+    nextMonth = TM_Button<int>("\ue5e1", SkRect::MakeWH(10,0), 1, this->monthView, [](void* monthViewPtr, int data) {
         TM_MonthView* monthView = (TM_MonthView*)monthViewPtr;
         monthView->setMonthYear(monthView->getMonthYear()+std::chrono::months{1});
     }, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,0,0,true});

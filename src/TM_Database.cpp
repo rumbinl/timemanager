@@ -52,7 +52,7 @@ void TM_StorageManager::LoadTasks(TM_TaskManager* taskManPtr)
         std::chrono::year_month_day endDate = getDateFromVars(d,m,y);
         TM_Time endTime = {hr, mn};
 
-        taskManPtr->addTask(new TM_Task(columnData[NAME_COLUMN_IDX], startDate, endDate, startTime, endTime, std::atoi(columnData[ID_COLUMN_IDX]), std::atoi(columnData[HEADID_COLUMN_IDX]), std::atoi(columnData[REPEAT_COLUMN_IDX]), TM_GetTimeFromSeconds(std::atoi(columnData[PROGRESS_COLUMN_IDX]))));
+        taskManPtr->addTask(new TM_Task(columnData[NAME_COLUMN_IDX], startDate, endDate, startTime, endTime, std::atoi(columnData[ID_COLUMN_IDX]), std::atoi(columnData[HEADID_COLUMN_IDX]), std::atoi(columnData[REPEAT_COLUMN_IDX]), TM_GetTimeFromSeconds(std::stoul(columnData[PROGRESS_COLUMN_IDX]))));
 
         return 0;
     }, taskManPtr, NULL)) != SQLITE_OK)

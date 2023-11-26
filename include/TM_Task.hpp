@@ -24,8 +24,8 @@ class TM_Task
         void setProgress(TM_Time progress);
         TM_Time getProgress();
 
-        void setRepeat(int repeat);
-        int getRepeat();
+        void setRepeat(unsigned repeat);
+        unsigned getRepeat();
 
         std::chrono::year_month_day* getStartDatePtr();
         std::chrono::year_month_day* getEndDatePtr();
@@ -114,7 +114,7 @@ class TM_Task
         
         std::string name; // once it has subtasks the date time variable automatically becomes the deadline for all subtasks
         std::chrono::year_month_day startDate, endDate; 
-        int repeat = 0;
+        unsigned repeat = 0;
         TM_Time startTime,endTime, progress={0,0};
 
         std::multiset<TM_TaskItIt,TM_SubtaskItCompare> subtasks = {};

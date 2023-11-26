@@ -8,7 +8,7 @@ class TM_TextView : public TM_RenderObject
 {
     public:
         TM_TextView(std::string text="", SkRect bounds=SkRect::MakeEmpty(), TM_ViewSetting viewSetting={colorScheme[1],colorScheme[2],colorScheme[3],0,24,0,0}, bool centered=true);
-        TM_TextView(void* context, std::string (*getStringFunc)(void* context), std::string text="", SkRect bounds=SkRect::MakeEmpty(), TM_ViewSetting viewSetting={colorScheme[1],colorScheme[2],colorScheme[3],0,24,0,0}, bool centered=true);
+        TM_TextView(void* context, std::string (*getStringFunc)(void* context), SkRect bounds=SkRect::MakeEmpty(), TM_ViewSetting viewSetting={colorScheme[1],colorScheme[2],colorScheme[3],0,24,0,0}, bool centered=true);
         void Render(TM_RenderInfo renderInfo);
         static void Render(std::string text, SkRect bounds, TM_RenderInfo renderInfo, TM_ViewSetting viewSetting={colorScheme[1],colorScheme[2],colorScheme[3],1,16,5}, bool centered=true);
         void setText(std::string newText);

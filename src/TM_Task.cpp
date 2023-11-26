@@ -98,12 +98,12 @@ int TM_Task::getDBID()
     return this->dbID;
 }
 
-void TM_Task::setRepeat(int repeat)
+void TM_Task::setRepeat(unsigned repeat)
 {
-    this->repeat = repeat;
+    this->repeat = repeat<0?0:repeat;
 }
 
-int TM_Task::getRepeat()
+unsigned TM_Task::getRepeat()
 {
     return this->repeat;
 }
@@ -120,19 +120,19 @@ TM_YMD TM_Task::RepeatFirstOccurence(TM_YMD viewStartDate, TM_YMD viewEndDate)
 		   endDate = this->getEndDate();
 	if(this->getStartDate() > viewEndDate)
 		return ZeroDate;
-	int repeat = this->getRepeat();
+	unsigned repeat = this->getRepeat();
 	if(startDate < viewStartDate)
 	{
-		TM_YMD firstOccurrence = std::chrono::year_month_day{std::chrono::sys_days{startDate} + std::chrono::days{(unsigned)(((std::chrono::sys_days{viewStartDate} - std::chrono::sys_days{startDate}).count() -1) /repeat) * (unsigned)repeat}};
+		TM_YMD firstOccurrence = std::chrono::year_month_day{std::chrono::sys_days{startDate} + std::chrono::days{(unsigned)(((std::chrono::sys_days{viewStartDate} - std::chrono::sys_days{startDate}).count() -1) /repeat) * repeat}};
 		std::chrono::days taskLength = std::chrono::sys_days{endDate} - std::chrono::sys_days{startDate};
 
 		if(std::chrono::sys_days{std::chrono::sys_days{firstOccurrence}+taskLength} >= std::chrono::sys_days{viewStartDate})
 		{
 			return firstOccurrence;
 		}
-		else if(std::chrono::sys_days{std::chrono::sys_days{firstOccurrence} + std::chrono::days{(unsigned)repeat}} <= std::chrono::sys_days{viewEndDate})
+		else if(std::chrono::sys_days{std::chrono::sys_days{firstOccurrence} + std::chrono::days{repeat}} <= std::chrono::sys_days{viewEndDate})
 		{
-			return std::chrono::year_month_day{std::chrono::sys_days{std::chrono::sys_days{firstOccurrence} + std::chrono::days{(unsigned)repeat}}};
+			return std::chrono::year_month_day{std::chrono::sys_days{std::chrono::sys_days{firstOccurrence} + std::chrono::days{repeat}}};
 		}
 		return ZeroDate;
 	}

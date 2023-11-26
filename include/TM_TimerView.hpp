@@ -14,6 +14,7 @@ class TM_TimerView : public TM_RenderObject
         void Render(TM_RenderInfo renderInfo) override;
         void startCountdown();
         void stopCountdown();
+        bool isCountingDown();
     private:
         void* contextPtr;
         std::pair<TM_Time,TM_Time> (*getProgress)(void* contextPtr);

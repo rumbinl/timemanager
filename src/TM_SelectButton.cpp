@@ -1,6 +1,6 @@
 #include <TM_SelectButton.hpp>
 
-template <typename DataType> TM_SelectButton<DataType>::TM_SelectButton(std::string text, SkRect bounds, DataType data, void* context, void (*actionFunc)(void* context, DataType data, TM_Button<DataType>* self), bool (*isSelectedFunc)(void* context, DataType data), TM_ViewSetting viewSetting):TM_Button<DataType>(text, bounds, data, context, actionFunc, viewSetting)
+template <typename DataType> TM_SelectButton<DataType>::TM_SelectButton(std::string text, SkRect bounds, DataType data, void* context, void (*actionFunc)(void* context, DataType data), bool (*isSelectedFunc)(void* context, DataType data), TM_ViewSetting viewSetting):TM_Button<DataType>(text, bounds, data, context, actionFunc, viewSetting)
 {
     this->isSelectedFunc = isSelectedFunc;  
 }

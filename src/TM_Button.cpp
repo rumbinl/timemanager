@@ -1,6 +1,13 @@
 #include <TM_Button.hpp>
 
-template <typename DataType> TM_Button<DataType>::TM_Button(std::string text, SkRect bounds, DataType data, void* context, void (*actionFunc)(void* context, DataType data, TM_Button<DataType>* self), TM_ViewSetting viewSetting, bool centered) : TM_TextView(text, bounds, viewSetting, centered)
+template <typename DataType> TM_Button<DataType>::TM_Button(std::string text, SkRect bounds, DataType data, void* context, void (*actionFunc)(void* context, DataType data), TM_ViewSetting viewSetting, bool centered) : TM_TextView(text, bounds, viewSetting, centered)
+{
+    this->actionFunc = actionFunc;
+    this->context = context;
+    this->data = data;
+}
+
+template <typename DataType> TM_Button<DataType>::TM_Button(std::string (*getStringFunc)(void* contextPtr), SkRect bounds, DataType data, void* context, void (*actionFunc)(void* context, DataType data), TM_ViewSetting viewSetting, bool centered) : TM_TextView(context, getStringFunc, bounds, viewSetting, centered)
 {
     this->actionFunc = actionFunc;
     this->context = context;
@@ -13,7 +20,7 @@ template <typename DataType> bool TM_Button<DataType>::PollEvents(TM_EventInput 
     {
         if(eventInput.mousePressed)
             if(actionFunc != NULL)
-                (*actionFunc)(this->context, this->data, this);
+                (*actionFunc)(this->context, this->data);
         this->select=true;
         return true;
     }
