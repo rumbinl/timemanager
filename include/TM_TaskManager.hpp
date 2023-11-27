@@ -50,6 +50,7 @@ class TM_TaskManager
         void deleteCurrentTask();
         void deleteTask(TM_TaskItIt taskIt);
         void setRepeat(int repeat);
+        void setColor(SkColor color);
         int getRepeat();
 		TM_TaskItSet& getTaskList();
         void setCurrentTask(TM_TaskItIt currentTask);

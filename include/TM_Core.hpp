@@ -3,6 +3,7 @@
 #include <SDL3/SDL.h>
 
 #include <iostream>
+#include <algorithm>
 
 #include <string>
 #include <locale>
@@ -38,10 +39,11 @@ static int indexCal = 0;
 #define M_PI (3.14159265358979323846f)
 #endif
 
-#ifndef max
+/*#ifndef max
 #define max(a,b) ((a>b)?(a):(b))
 #endif
 
 #ifndef min
 #define min(a,b) ((a<b)?(a):(b))
 #endif
+*/

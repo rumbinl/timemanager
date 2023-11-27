@@ -138,7 +138,6 @@ void TM_CalendarWeekView::RenderTask(TM_Task* task, TM_YMD startDate, SkColor co
 {
 	SkPaint paint;
 	paint.setStyle(SkPaint::kFill_Style);
-	paint.setColor(color);
 	std::chrono::days taskLength = std::chrono::sys_days{task->getEndDate()} - std::chrono::sys_days{task->getStartDate()};
 	TM_Time startTime = task->getStartTime(),endTime = task->getEndTime(); 
 	TM_YMD endDate = std::chrono::sys_days{startDate} + taskLength; 
@@ -147,10 +146,13 @@ void TM_CalendarWeekView::RenderTask(TM_Task* task, TM_YMD startDate, SkColor co
 		endIndex   = (std::chrono::sys_days{endDate}-std::chrono::sys_days{*this->focusDate}).count();
 
 	SkScalar yOff = -this->scrollY+this->viewSetting.paddingY;
-	SkScalar startDayX = this->xOff + max(dayWidth*startIndex,-dayWidth),
+	SkScalar startDayX = this->xOff + std::fmax(dayWidth*startIndex,-dayWidth),
 			 startDayY = yOff + this->hourHeight*((SkScalar)TM_TimeMinutes(startTime)/60.0f),
 			 endDayX = this->xOff + dayWidth*endIndex,
 			 endDayY = yOff + this->hourHeight*((SkScalar)TM_TimeMinutes(endTime)/60.0f);
+	SkPoint points[2] = {{startDayX, startDayY},{endDayX+dayWidth,this->bounds.height()}};
+	SkColor colors[2] = {task->getColor(), SK_ColorWHITE};
+	paint.setShader(SkGradientShader::MakeLinear(points, colors, NULL, 2, SkTileMode::kClamp));
 	
     if(startDate == endDate)
     {
@@ -177,6 +179,7 @@ void TM_CalendarWeekView::RenderTask(TM_Task* task, TM_YMD startDate, SkColor co
 		renderInfo.textFont->setSize(this->viewSetting.fontSize);
     }
 
+	paint.setShader(nullptr);
 	paint.setColor(this->viewSetting.backgroundColor);
 
 	SkFontMetrics fontMetrics;
@@ -314,7 +317,7 @@ bool TM_CalendarWeekView::PollEvents(TM_EventInput eventInput)
 
 void TM_CalendarWeekView::setDaySpan(int daySpan)
 {
-    this->numDays = max(daySpan,1);
+    this->numDays = std::max(daySpan,1);
 }
 
 int TM_CalendarWeekView::getDaySpan()

@@ -12,7 +12,7 @@ class TM_Task
 {
     public:
         TM_Task(TM_Task& copyTask);
-        TM_Task(std::string name, std::chrono::year_month_day startDate, std::chrono::year_month_day endDate, TM_Time startTime,  TM_Time endTime, int dbID=-1, int headTaskID=-1, int repeat=0, TM_Time progress = {0,0});
+        TM_Task(std::string name, std::chrono::year_month_day startDate, std::chrono::year_month_day endDate, TM_Time startTime,  TM_Time endTime, int dbID=-1, int headTaskID=-1, int repeat=0, TM_Time progress = {0,0}, uint32_t color=0xFF0000ff);
 
         void setHeadTaskID(int headTaskID);
         int getHeadTaskID();
@@ -90,6 +90,9 @@ class TM_Task
         void setStartTime(TM_Time startTime);
         void setEndTime(TM_Time endTime);
 
+        uint32_t getColor();
+        void setColor(uint32_t color);
+
         TM_Time getStartTime();
         TM_Time getEndTime();
 
@@ -120,5 +123,6 @@ class TM_Task
         std::multiset<TM_TaskItIt,TM_SubtaskItCompare> subtasks = {};
         bool locked = true;
         int dbID=-1,headTaskID=-1;
+        uint32_t color=0xff000000;
         //TM_TaskIt headTaskIt;
 };

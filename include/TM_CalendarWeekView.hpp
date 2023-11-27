@@ -8,6 +8,8 @@
 #include <TM_TextView.hpp>
 #include <TM_TaskManager.hpp>
 
+#include <include/effects/SkGradientShader.h>
+
 class TM_CalendarWeekView : public TM_RenderObject
 {
     public:

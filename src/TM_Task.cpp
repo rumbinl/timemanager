@@ -5,7 +5,7 @@ TM_Task::TM_Task(TM_Task& copyTask)
     *this = copyTask;
 }
 
-TM_Task::TM_Task(std::string name, std::chrono::year_month_day startDate, std::chrono::year_month_day endDate, TM_Time startTime,  TM_Time endTime, int dbID, int headTaskID, int repeat, TM_Time progress)
+TM_Task::TM_Task(std::string name, std::chrono::year_month_day startDate, std::chrono::year_month_day endDate, TM_Time startTime,  TM_Time endTime, int dbID, int headTaskID, int repeat, TM_Time progress, uint32_t color)
 {
     this->name = name;
     this->startDate = startDate;
@@ -16,6 +16,7 @@ TM_Task::TM_Task(std::string name, std::chrono::year_month_day startDate, std::c
     this->headTaskID = headTaskID;
     this->repeat = repeat;
     this->progress = progress;
+    this->color = color;
 }
 
 void TM_Task::setProgress(TM_Time progress) { this->progress = progress; };
@@ -39,6 +40,9 @@ std::string TM_Task::getName() { return this->name; }
 std::string* TM_Task::getNamePtr() { return &this->name; }
 std::chrono::year_month_day* TM_Task::getStartDatePtr() { return &this->startDate; }
 std::chrono::year_month_day* TM_Task::getEndDatePtr() { return &this->endDate; }
+
+uint32_t TM_Task::getColor() { return this->color; }
+void TM_Task::setColor(uint32_t color) { this->color = color; }
 
 std::multiset<TM_Task::TM_TaskItIt,TM_Task::TM_SubtaskItCompare>& TM_Task::getSubtaskList()
 {

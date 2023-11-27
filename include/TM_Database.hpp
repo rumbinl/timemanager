@@ -15,7 +15,8 @@
 #define HEADID_COLUMN_IDX 3
 #define REPEAT_COLUMN_IDX 4
 #define PROGRESS_COLUMN_IDX 5
-#define ID_COLUMN_IDX 6
+#define COLOR_COLUMN_IDX 6
+#define ID_COLUMN_IDX 7
 
 class TM_StorageManager 
 {

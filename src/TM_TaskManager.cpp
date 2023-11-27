@@ -71,7 +71,7 @@ void TM_TaskManager::scheduleTask(TM_TaskItIt task, TM_Task* headTask)
         if(lowerBoundDate < rangeIt->endDate)
             lowerBoundDate = rangeIt->endDate, lowerBoundTime = rangeIt->endTime;
         else if(lowerBoundDate == rangeIt->endDate)
-            lowerBoundTime = max(lowerBoundTime, rangeIt->endTime);
+            lowerBoundTime = std::max(lowerBoundTime, rangeIt->endTime);
         rangeIt++;
     }
 
@@ -103,11 +103,11 @@ void TM_TaskManager::scheduleTask(TM_TaskItIt task, TM_Task* headTask)
                     currentDayFreeTime = maxTimeSlot = {0,0};
                 }
                 else
-                    lowerBoundTime = max(lowerBoundTime, endTime);
+                    lowerBoundTime = std::max(lowerBoundTime, endTime);
             }
             else
             {
-                maxTimeSlot = max(maxTimeSlot, startTime - lowerBoundTime);
+                maxTimeSlot = std::max(maxTimeSlot, startTime - lowerBoundTime);
 
                 currentDayFreeTime = currentDayFreeTime + startTime - lowerBoundTime;
 
@@ -128,7 +128,7 @@ void TM_TaskManager::scheduleTask(TM_TaskItIt task, TM_Task* headTask)
         if(startDate > lowerBoundDate)
         {
             currentDayFreeTime = currentDayFreeTime + (TM_Time{24,0}-lowerBoundTime);
-            maxTimeSlot = max(maxTimeSlot, (TM_Time{24, 0}-lowerBoundTime));
+            maxTimeSlot = std::max(maxTimeSlot, (TM_Time{24, 0}-lowerBoundTime));
             if((maxTimeSlot > taskTime || maxTimeSlot == taskTime) && currentDayFreeTime > maxFreeDay.freeTime)
             {
                 maxFreeDay = {currentDayFreeTime, lowerBoundTime, lowerBoundDate};
@@ -432,6 +432,15 @@ void TM_TaskManager::setRepeat(int repeat)
     if(this->currentTask != this->getEndIt())
     {
         (**this->currentTask)->setRepeat(repeat);
+        (*this->storageManPtr)->AlterDBTask((**this->currentTask));
+    }
+}
+
+void TM_TaskManager::setColor(SkColor color)
+{
+    if(this->currentTask != this->getEndIt())
+    {
+        (**this->currentTask)->setColor(color);
         (*this->storageManPtr)->AlterDBTask((**this->currentTask));
     }
 }

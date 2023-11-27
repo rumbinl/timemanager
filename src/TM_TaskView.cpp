@@ -138,7 +138,7 @@ TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr) : TM_View(bo
         }),
         new TM_Button<int>("-", SkRect::MakeEmpty(), -1, (void*)this->taskManPtr, [](void* context, int data) {
             TM_TaskManager* taskManPtr = (TM_TaskManager*)context;
-            taskManPtr->setRepeat(max((int)taskManPtr->getRepeat()-1,0));
+            taskManPtr->setRepeat(std::max((int)taskManPtr->getRepeat()-1,0));
         }),
         new TM_TextView((void*)this->taskManPtr, [](void* context) -> std::string {
             TM_TaskManager* taskManPtr = (TM_TaskManager*)context;
@@ -185,7 +185,16 @@ TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr) : TM_View(bo
             })
         })
     );
-    this->renderObjects.push_back(new TM_GradientView(SkRect::MakeWH(0,300)));
+    this->renderObjects.push_back(new TM_GradientView(SkRect::MakeWH(100,100), this->taskManPtr, [](void* contextPtr) -> uint32_t {
+        TM_TaskManager* taskManPtr = (TM_TaskManager*)contextPtr;
+        if(taskManPtr->getCurrentTask() != NULL)
+            return taskManPtr->getCurrentTask()->getColor();
+        return 0xFFff0000;
+    }, 
+    [](void* contextPtr, uint32_t color) {
+        TM_TaskManager* taskManPtr = (TM_TaskManager*)contextPtr;
+        taskManPtr->setColor(color);
+    }));
     this->renderObjects.push_back(new TM_HorizontalView(SkRect::MakeWH(0,50), { this->addSubtaskButton,
     this->scheduleTaskButton,
     this->deleteTaskButton,

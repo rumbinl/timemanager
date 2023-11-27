@@ -14,7 +14,7 @@ void TM_TextBox::Render(TM_RenderInfo renderInfo)
 	if(this->getStringFunc != NULL)
 	{
 		this->content = this->getStringFunc(this->contextPtr);
-		this->cursorIndex = min(this->content.size(), this->cursorIndex);
+		this->cursorIndex = std::fmin(this->content.size(), this->cursorIndex);
 	}
 	SkFont* font = renderInfo.textFont;
     if(!this->fitted)
@@ -85,7 +85,7 @@ bool TM_TextBox::PollEvents(TM_EventInput eventInput)
 	if(this->getStringFunc != NULL)
 	{
 		this->content = this->getStringFunc(this->contextPtr);
-		this->cursorIndex = min(this->content.size(), this->cursorIndex);
+		this->cursorIndex = std::fmin(this->content.size(), this->cursorIndex);
 	}
 
 	if(contains)

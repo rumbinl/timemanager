@@ -6,13 +6,13 @@ TM_StorageManager::TM_StorageManager(std::string dbFilePath)
 
     int errorCode;
 
-    if((errorCode = sqlite3_exec(this->dbPtr, "CREATE TABLE IF NOT EXISTS TimeSections (Name varchar(255), startDatetime DATETIME, endDatetime DATETIME, headTaskID INTEGER, repeat INTEGER, progress INTEGER, ID INTEGER PRIMARY KEY AUTOINCREMENT);", NULL, NULL, NULL)) != SQLITE_OK)
+    if((errorCode = sqlite3_exec(this->dbPtr, "CREATE TABLE IF NOT EXISTS TimeSections (Name varchar(255), startDatetime DATETIME, endDatetime DATETIME, headTaskID INTEGER, repeat INTEGER, progress INTEGER, color UNSIGNED INTEGER, ID INTEGER PRIMARY KEY AUTOINCREMENT);", NULL, NULL, NULL)) != SQLITE_OK)
         std::cout<<sqlite3_errmsg(this->dbPtr)<<std::endl;
 }
 
 void TM_StorageManager::CreateDBTask(TM_Task* taskPtr)
 {
-    std::string queryString = "INSERT INTO TimeSections (Name, startDatetime, endDatetime, headTaskID, repeat, progress) VALUES ('"+taskPtr->getName()+"', '"+TM_GetDateTimeString(taskPtr->getStartDate(), taskPtr->getStartTime())+"', '"+TM_GetDateTimeString(taskPtr->getEndDate(), taskPtr->getEndTime())+"',"+std::to_string(taskPtr->getHeadTaskID())+", 0, 0);";
+    std::string queryString = "INSERT INTO TimeSections (Name, startDatetime, endDatetime, headTaskID, repeat, progress, color) VALUES ('"+taskPtr->getName()+"', '"+TM_GetDateTimeString(taskPtr->getStartDate(), taskPtr->getStartTime())+"', '"+TM_GetDateTimeString(taskPtr->getEndDate(), taskPtr->getEndTime())+"',"+std::to_string(taskPtr->getHeadTaskID())+", 0, 0, "+std::to_string(0xFF0000ff)+");";
     int errorCode;
     if((errorCode = sqlite3_exec(this->dbPtr, queryString.c_str(), NULL, NULL, NULL)) != SQLITE_OK)
         std::cout<<sqlite3_errmsg(this->dbPtr)<<std::endl;
@@ -22,7 +22,7 @@ void TM_StorageManager::CreateDBTask(TM_Task* taskPtr)
 
 void TM_StorageManager::AlterDBTask(TM_Task* taskPtr)
 {
-    std::string queryString = "UPDATE TimeSections SET Name='"+taskPtr->getName()+"', startDatetime='"+TM_GetDateTimeString(taskPtr->getStartDate(), taskPtr->getStartTime())+"', endDatetime='"+TM_GetDateTimeString(taskPtr->getEndDate(), taskPtr->getEndTime())+"', headTaskID="+std::to_string(taskPtr->getHeadTaskID())+", repeat="+std::to_string(taskPtr->getRepeat())+", progress="+std::to_string(taskPtr->getProgress().getSeconds())+" WHERE ID="+std::to_string(taskPtr->getDBID())+";";
+    std::string queryString = "UPDATE TimeSections SET Name='"+taskPtr->getName()+"', startDatetime='"+TM_GetDateTimeString(taskPtr->getStartDate(), taskPtr->getStartTime())+"', endDatetime='"+TM_GetDateTimeString(taskPtr->getEndDate(), taskPtr->getEndTime())+"', headTaskID="+std::to_string(taskPtr->getHeadTaskID())+", repeat="+std::to_string(taskPtr->getRepeat())+", progress="+std::to_string(taskPtr->getProgress().getSeconds())+", color="+std::to_string(taskPtr->getColor())+" WHERE ID="+std::to_string(taskPtr->getDBID())+";";
     int errorCode;
     if((errorCode = sqlite3_exec(this->dbPtr, queryString.c_str(), NULL, NULL, NULL)) != SQLITE_OK)
         std::cout<<sqlite3_errmsg(this->dbPtr)<<std::endl;
@@ -52,7 +52,7 @@ void TM_StorageManager::LoadTasks(TM_TaskManager* taskManPtr)
         std::chrono::year_month_day endDate = getDateFromVars(d,m,y);
         TM_Time endTime = {hr, mn};
 
-        taskManPtr->addTask(new TM_Task(columnData[NAME_COLUMN_IDX], startDate, endDate, startTime, endTime, std::atoi(columnData[ID_COLUMN_IDX]), std::atoi(columnData[HEADID_COLUMN_IDX]), std::atoi(columnData[REPEAT_COLUMN_IDX]), TM_GetTimeFromSeconds(std::stoul(columnData[PROGRESS_COLUMN_IDX]))));
+        taskManPtr->addTask(new TM_Task(columnData[NAME_COLUMN_IDX], startDate, endDate, startTime, endTime, std::atoi(columnData[ID_COLUMN_IDX]), std::atoi(columnData[HEADID_COLUMN_IDX]), std::atoi(columnData[REPEAT_COLUMN_IDX]), TM_GetTimeFromSeconds(std::stoul(columnData[PROGRESS_COLUMN_IDX])), std::stoul(columnData[COLOR_COLUMN_IDX])));
 
         return 0;
     }, taskManPtr, NULL)) != SQLITE_OK)
