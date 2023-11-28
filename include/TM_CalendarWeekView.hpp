@@ -33,6 +33,6 @@ class TM_CalendarWeekView : public TM_RenderObject
         std::vector<TM_TextView> dayLabels;
         int pressWeekIndexStart = -1, pressWeekIndexEnd = -1,pressDayIndexStart = -1, pressDayIndexEnd = -1;
         int scrollY=0.0f, pressIndexStart=-1, pressIndexEnd=-1,numDays=1;
-        SkScalar hourHeight,labelHeight,dayWidth,yOff,xOff=0.0f;
+        SkScalar hourHeight,labelHeight,dayWidth,yOff,xOff=0.0f,radius=20;
         std::chrono::year_month_day* focusDate;
 };

@@ -18,7 +18,8 @@ void TM_HorizontalView::Render(TM_RenderInfo renderInfo)
 		renderInfo.canvas->drawRect(this->bounds, p);
 	}
 	renderInfo.canvas->save();
-	//renderInfo.canvas->clipRect(this->bounds);
+	if(this->viewSetting.cornerRadius>0)
+		renderInfo.canvas->clipRRect(SkRRect::MakeRectXY(this->bounds, this->viewSetting.cornerRadius, this->viewSetting.cornerRadius), true);
 	renderInfo.canvas->translate(this->bounds.x(), this->bounds.y());
 
 	SkScalar x = 0, i=0;

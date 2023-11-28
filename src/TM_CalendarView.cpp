@@ -4,8 +4,8 @@ TM_CalendarView::TM_CalendarView(SkRect bounds, TM_TaskManager* taskManPtr) : TM
 {
     this->taskManPtr = taskManPtr;
     this->currentDate = getCurrentDate();
-    this->weekView = new TM_CalendarWeekView(SkRect::MakeXYWH(0, 0, 0, 480), &this->currentDate, taskManPtr);
-    this->monthView = new TM_CalendarMonthView(SkRect::MakeXYWH(0, 0, 250, 250), (void*)this, 
+    this->weekView = new TM_CalendarWeekView(SkRect::MakeWH(0, 480), &this->currentDate, taskManPtr);
+    this->monthView = new TM_CalendarMonthView(SkRect::MakeWH(0, 250), (void*)this, 
 		[](void* calendarView, TM_YMD date){
 
 			((TM_CalendarView*)calendarView)->setReferenceDate(date);
@@ -19,7 +19,7 @@ TM_CalendarView::TM_CalendarView(SkRect bounds, TM_TaskManager* taskManPtr) : TM
 	this->vitalView = new TM_View(SkRect::MakeEmpty(), {}, {
 		this->monthView,
 		new TM_View(SkRect::MakeEmpty(), {0.10, 0.90}, { 
-			new TM_HorizontalView(SkRect::MakeEmpty(), { 
+			new TM_HorizontalView(SkRect::MakeWH(200,0), { 
 				new TM_Button<int>("\ue3cb\ue8f3", SkRect::MakeEmpty(), 0, this->weekView, 
 					[](void* contextPtr, int data)
 					{
@@ -33,7 +33,7 @@ TM_CalendarView::TM_CalendarView(SkRect bounds, TM_TaskManager* taskManPtr) : TM
 						TM_CalendarWeekView* context = (TM_CalendarWeekView*)contextPtr;
 						context->setDaySpan(context->getDaySpan()+1);
 					}, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true})
-			}),
+			}, {}, {colorScheme[0], colorScheme[2], colorScheme[3], 0, 24, 0, 0, false, 20}),
 			this->weekView
 		})
 	});
@@ -44,13 +44,13 @@ TM_CalendarView::TM_CalendarView(SkRect bounds, TM_TaskManager* taskManPtr) : TM
 			if(context->getRenderObject(1)->getRenderObjectExistence(0) == true)
 				return "\ue8f4\uebcc";
 			return "\ue8f5\uebcc";
-		}, SkRect::MakeWH(0,50), 0, (void*)this, 
+		}, SkRect::MakeWH(TM_NormalWidth,50), 0, (void*)this, 
 			[](void* contextPtr,int data) 
 			{
 				TM_RenderObject* context = (TM_RenderObject*)contextPtr;
 				context->getRenderObject(1)->setRenderObjectExistence(0,!context->getRenderObject(1)->getRenderObjectExistence(0));
 			}, 
-		{colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true})
+		{colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true,20})
 	);
 
     this->addRenderObject(this->vitalView);

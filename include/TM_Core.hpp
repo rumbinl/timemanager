@@ -30,8 +30,12 @@
 
 #define BACKGROUND_COLOR_INDEX 0
 static SkColor colorScheme[4] = {SkColorSetRGB(0xee,0xf3,0xf9),SkColorSetRGB(0xb3,0xcd,0xe4),SkColorSetRGB(0x53,0x76,0x92),SkColorSetRGB(0x1d,0x3f,0x58)};
+//static SkColor colorScheme[4] = {0xff101e3f,0xfff78620,SkColorSetRGB(0x53,0x76,0x92),0xffffffff};
 
 static SkScalar scrollSensFactor = 5.0;
+
+static const SkScalar TM_NormalWidth = 600;
+static const SkScalar TM_SmallWidth = 200;
 
 static int indexCal = 0;
 

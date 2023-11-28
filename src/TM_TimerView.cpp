@@ -63,7 +63,7 @@ void TM_TimerView::startCountdown()
         while(this->countingDown)
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-            if(this->setProgress!=NULL)
+            if(this->setProgress!=NULL && this->countingDown)
             {
                 this->setProgress(this->contextPtr, this->getProgress(this->contextPtr).first + TM_Time{0,0,1});
                 SDL_Event event;

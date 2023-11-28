@@ -19,10 +19,11 @@ class TM_RenderObject
 		void setRenderObjectExistence(int index, bool existence);
         bool getRenderObjectExistence(int index);
 		void addRenderObject(TM_RenderObject* renderObject);
+        SkRect getMaxBounds();
 		TM_RenderObject* getRenderObject(int index);
 		int getNumExists();
     protected:
-        SkRect bounds, srcBounds;
+        SkRect bounds, srcBounds, maxBounds;
         TM_ViewSetting viewSetting;
         std::vector<TM_RenderObject*> renderObjects;
 		int numExists=0;

@@ -28,14 +28,15 @@ void TM_TextView::Render(TM_RenderInfo renderInfo)
     paint.setColor(this->viewSetting.backgroundColor);
     paint.setStyle(SkPaint::kFill_Style);
 
-    renderInfo.canvas->drawRect(this->bounds,paint);
+    paint.setAntiAlias(true);
+    renderInfo.canvas->drawRRect(SkRRect::MakeRectXY(this->bounds, this->viewSetting.cornerRadius, this->viewSetting.cornerRadius),paint);
 
     if(viewSetting.borderThickness>0)
     {
         paint.setStyle(SkPaint::kStroke_Style);
         paint.setColor(this->viewSetting.borderColor);
         paint.setStrokeWidth(this->viewSetting.borderThickness-1);
-        renderInfo.canvas->drawRect(this->bounds,paint);
+        renderInfo.canvas->drawRRect(SkRRect::MakeRectXY(this->bounds, this->viewSetting.cornerRadius, this->viewSetting.cornerRadius),paint);
     }
 
     renderInfo.canvas->save();

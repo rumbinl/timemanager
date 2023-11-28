@@ -127,7 +127,6 @@ void TM_CalendarWeekView::Render(TM_RenderInfo renderInfo)
     if(this->select) 
     { 
 		SkColor color = this->viewSetting.borderColor;
-		color = SkColorSetA(color, 100);
 		RenderTask(&newTask, newTask.getStartDate(), color, renderInfo);
     }
     
@@ -150,15 +149,20 @@ void TM_CalendarWeekView::RenderTask(TM_Task* task, TM_YMD startDate, SkColor co
 			 startDayY = yOff + this->hourHeight*((SkScalar)TM_TimeMinutes(startTime)/60.0f),
 			 endDayX = this->xOff + dayWidth*endIndex,
 			 endDayY = yOff + this->hourHeight*((SkScalar)TM_TimeMinutes(endTime)/60.0f);
-	SkPoint points[2] = {{startDayX, startDayY},{endDayX+dayWidth,this->bounds.height()}};
-	SkColor colors[2] = {task->getColor(), SK_ColorWHITE};
+	SkPoint points[2] = {{startDayX, std::fmin(startDayY,endDayY)},{endDayX+dayWidth,std::max(endDayY, startDayY)}};
+	SkColor colors[2] = {task->getColor(), this->viewSetting.backgroundColor};
+	
+	if(task->getSubtaskCount())
+		colors[0] = SkColorSetA(colors[0], 100);
+
 	paint.setShader(SkGradientShader::MakeLinear(points, colors, NULL, 2, SkTileMode::kClamp));
 	
+	paint.setAntiAlias(true);
     if(startDate == endDate)
     {
 		SkScalar minutes = std::fmax(TM_TimeMinutes(endTime) - TM_TimeMinutes(startTime), 15.0f);
 		SkRect rect = SkRect::MakeXYWH(startDayX, startDayY, dayWidth, this->hourHeight*(minutes/60.0f));
-        renderInfo.canvas->drawRect(rect, paint);
+        renderInfo.canvas->drawRRect(SkRRect::MakeRectXY(rect, 10, 10), paint);
 
 		renderInfo.textFont->setSize(std::fmin(this->viewSetting.fontSize, this->hourHeight*(minutes/60.0f)));
     }
@@ -166,21 +170,32 @@ void TM_CalendarWeekView::RenderTask(TM_Task* task, TM_YMD startDate, SkColor co
     {
 		if(startIndex>=0)
 		{
+			SkVector corners[] = {{radius, radius}, {radius, radius}, {0, 0}, {0, 0}};
 			SkRect startDay = SkRect::MakeXYWH(startDayX, startDayY, dayWidth, this->srcBounds.height()-startDayY);
-			renderInfo.canvas->drawRect(startDay, paint);
+			SkRRect startDayRRect;
+			startDayRRect.setRectRadii(startDay, corners);
+			renderInfo.canvas->drawRRect(startDayRRect, paint);
 		}
 
         SkRect coverDays = SkRect::MakeXYWH(startDayX+dayWidth, 0, endDayX-startDayX-dayWidth, this->srcBounds.height());
         renderInfo.canvas->drawRect(coverDays, paint);
 
         SkRect endDay = SkRect::MakeXYWH(endDayX, 0, dayWidth, endDayY);
-        renderInfo.canvas->drawRect(endDay, paint);
+		SkVector corners[] = {{0, 0}, {0, 0}, {radius, radius}, {radius, radius}};
+		SkRRect endDayRRect;
+		endDayRRect.setRectRadii(endDay, corners);
+        renderInfo.canvas->drawRRect(endDayRRect, paint);
 
 		renderInfo.textFont->setSize(this->viewSetting.fontSize);
     }
 
 	paint.setShader(nullptr);
-	paint.setColor(this->viewSetting.backgroundColor);
+	int r = (task->getColor()%(1<<24))>>16, g = (task->getColor()%(1<<16))>>8, b = task->getColor() % (1<<8);
+	SkScalar luma = 0.2126f * (SkScalar)r + 0.7152f * (SkScalar)g + 0.0722f * (SkScalar)b;
+	if(luma<40.0f)
+		paint.setColor(SK_ColorWHITE);
+	else
+		paint.setColor(SK_ColorBLACK);
 
 	SkFontMetrics fontMetrics;
 	renderInfo.textFont->getMetrics(&fontMetrics);

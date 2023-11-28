@@ -6,6 +6,7 @@ TM_RenderObject::TM_RenderObject(SkRect bounds, TM_ViewSetting viewSetting)
     this->srcBounds = bounds;
     this->viewSetting = viewSetting;
 	this->numExists = 0;
+    this->maxBounds = bounds;
 }
 
 void TM_RenderObject::Render(TM_RenderInfo renderInfo)
@@ -76,4 +77,9 @@ bool TM_RenderObject::getRenderObjectExistence(int index)
 TM_RenderObject* TM_RenderObject::getRenderObject(int index)
 {
 	return this->renderObjects[index];
+}
+
+SkRect TM_RenderObject::getMaxBounds()
+{
+    return this->maxBounds;
 }

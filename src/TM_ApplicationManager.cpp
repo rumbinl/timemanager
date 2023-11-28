@@ -51,7 +51,7 @@ TM_ApplicationManager::TM_ApplicationManager()
 				}, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true})
 			}),
 
-			new TM_CalendarView(SkRect::MakeXYWH(0, 0, 840, 840), this->taskManPtr),
+			new TM_CalendarView(SkRect::MakeXYWH(0, 0, 0, 840), this->taskManPtr),
 
 			new TM_TaskInfoView(SkRect::MakeXYWH(0, 0, 0, 150), this->taskManPtr, [](TM_TaskManager* taskManPtr) -> std::pair<TM_TaskItIt,TM_TaskItIt> {
 				return {taskManPtr->getStartIt(), taskManPtr->getEndIt()};
