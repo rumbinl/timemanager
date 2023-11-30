@@ -1,9 +1,12 @@
 #pragma once
 
+#define NOMINMAX
+
 #include <SDL3/SDL.h>
 
 #include <iostream>
 #include <algorithm>
+#include <cmath>
 
 #include <string>
 #include <locale>
@@ -45,6 +48,22 @@ static int indexCal = 0;
 
 /*#ifndef max
 #define max(a,b) ((a>b)?(a):(b))
+#endif
+
+#ifdef max
+#undef max
+#endif
+
+#ifdef min
+#undef min
+#endif
+
+#ifdef fmax
+#undef fmax
+#endif
+
+#ifdef fmin
+#undef fmin
 #endif
 
 #ifndef min

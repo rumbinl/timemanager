@@ -7,6 +7,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 add_executable(Timeman src/TM_Main.cpp)
 set_property(TARGET Timeman PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded")
 add_definitions(-D_ITERATOR_DEBUG_LEVEL=0)
+add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
+add_compile_options("$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 
 include_directories(PUBLIC include/)
 
@@ -21,6 +23,7 @@ if (WIN32)
 	include_directories(PUBLIC "C:\\Program Files (x86)\\gl3w")
 	include_directories(PUBLIC "C:\\Program Files (x86)\\SDL3\\include")
 	include_directories(PUBLIC "C:\\Program Files (x86)\\skia")
+	include_directories(PUBLIC "C:\\Program Files (x86)\\duckx\\include")
 endif (WIN32)
 
 add_subdirectory(src)
