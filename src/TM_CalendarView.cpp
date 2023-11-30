@@ -1,6 +1,6 @@
 #include <TM_CalendarView.hpp>
 
-TM_CalendarView::TM_CalendarView(SkRect bounds, TM_TaskManager* taskManPtr) : TM_View(bounds, {0.05,0.95},{}, {colorScheme[0],colorScheme[3],colorScheme[3],0,24,0,10})
+TM_CalendarView::TM_CalendarView(SkRect bounds, TM_TaskManager* taskManPtr) : TM_View(bounds, {1.0},{}, {colorScheme[0],colorScheme[3],colorScheme[3],0,24,0,10})
 {
     this->taskManPtr = taskManPtr;
     this->currentDate = getCurrentDate();
@@ -37,21 +37,6 @@ TM_CalendarView::TM_CalendarView(SkRect bounds, TM_TaskManager* taskManPtr) : TM
 			this->weekView
 		})
 	});
-
-	this->addRenderObject(new TM_Button<int>(
-		[](void* contextPtr) -> std::string {
-			TM_RenderObject* context = (TM_RenderObject*)contextPtr;
-			if(context->getRenderObject(1)->getRenderObjectExistence(0) == true)
-				return "\ue8f4\uebcc";
-			return "\ue8f5\uebcc";
-		}, SkRect::MakeWH(TM_NormalWidth,50), 0, (void*)this, 
-			[](void* contextPtr,int data) 
-			{
-				TM_RenderObject* context = (TM_RenderObject*)contextPtr;
-				context->getRenderObject(1)->setRenderObjectExistence(0,!context->getRenderObject(1)->getRenderObjectExistence(0));
-			}, 
-		{colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true,20})
-	);
 
     this->addRenderObject(this->vitalView);
 }

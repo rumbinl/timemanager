@@ -48,9 +48,9 @@ void TM_View::Render(TM_RenderInfo renderInfo)
 
 	renderInfo.canvas->translate(this->bounds.x(), this->bounds.y()-this->yOffset);
 
-    SkScalar y = 0;
+    SkScalar y = this->viewSetting.paddingY;
 	
-	SkScalar height = this->bounds.height() - this->viewSetting.paddingY*(this->renderObjects.size()-1);
+	SkScalar height = this->bounds.height() - this->viewSetting.paddingY*(this->renderObjects.size());
 	SkScalar contentWidth = scroll?this->bounds.width()-this->scrollView->getBounds().width():this->bounds.width();
 
     for(int i=0;i<renderObjects.size();i++)

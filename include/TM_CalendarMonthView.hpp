@@ -18,6 +18,6 @@ class TM_CalendarMonthView : public TM_View
     private:
         TM_MonthView* monthView;
         TM_TextView dataView;
-        TM_HorizontalView weekDayLabels, controlPanel;
+        TM_HorizontalView controlPanel;
         TM_Button<int> nextMonth, previousMonth;
 };

@@ -1,11 +1,12 @@
 #pragma once
 
 #include <TM_Core.hpp>
-#include <TM_RenderObject.hpp>
 #include <TM_TaskManager.hpp>
 #include <TM_SelectButton.hpp>
+#include <TM_View.hpp>
+#include <TM_HorizontalView.hpp>
 
-class TM_MonthView : public TM_RenderObject
+class TM_MonthView : public TM_View
 {
     public:
         TM_MonthView(SkRect bounds=SkRect::MakeEmpty(), 
@@ -35,5 +36,6 @@ class TM_MonthView : public TM_RenderObject
         TM_YMD (*getDateFunc)(void* contextPtr)=NULL;
         TM_YMD currentDate;
         std::vector<TM_SelectButton<int> > dayViewList;
+        TM_HorizontalView* weekDayLabels;
         std::chrono::year_month month;
 };

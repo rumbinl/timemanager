@@ -50,7 +50,7 @@ void TM_TaskInfoView::Render(TM_RenderInfo renderInfo)
         return;
     }
 
-    SkScalar yPos = this->bounds.y()-this->yOffset;
+    SkScalar yPos = this->bounds.y()-this->yOffset+this->viewSetting.paddingY;
 
     int count = 0;
 

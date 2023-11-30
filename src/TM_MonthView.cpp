@@ -1,12 +1,15 @@
 #include <TM_MonthView.hpp>
 
-TM_MonthView::TM_MonthView(SkRect bounds, void* contextPtr, void (*setDateFunc)(void* contextPtr, TM_YMD date), TM_YMD (*getDateFunc)(void* contextPtr), TM_ViewSetting viewSetting) : TM_RenderObject(bounds, viewSetting)
+TM_MonthView::TM_MonthView(SkRect bounds, void* contextPtr, void (*setDateFunc)(void* contextPtr, TM_YMD date), TM_YMD (*getDateFunc)(void* contextPtr), TM_ViewSetting viewSetting) : TM_View(bounds, {}, {}, viewSetting)
 {
     this->idx = indexCal++;
     this->contextPtr = contextPtr;
     this->setDateFunc = setDateFunc;
     this->getDateFunc = getDateFunc;
-    
+    this->weekDayLabels = new TM_HorizontalView(SkRect::MakeEmpty(), {});
+    for(std::string weekName : dayNames)
+        weekDayLabels->addRenderObject(new TM_TextView(weekName.substr(0,2), SkRect::MakeEmpty(), viewSetting={colorScheme[0],colorScheme[2],colorScheme[3],0,24,0,0}));
+
     this->dayViewList = std::vector(31, 
         TM_SelectButton<int>("0", 
             SkRect::MakeWH(bounds.width()/7.0f, 0), 0, this, 
@@ -29,6 +32,7 @@ TM_MonthView::TM_MonthView(SkRect bounds, void* contextPtr, void (*setDateFunc)(
     {
         dayViewList[i].setText(std::to_string(i+1));
         dayViewList[i].setData(i+1);
+        this->addRenderObject(&dayViewList[i]);
     }
     this->currentDate = getCurrentDate();
     this->month = std::chrono::year_month{getCurrentDate().year(), getCurrentDate().month()};
@@ -44,18 +48,23 @@ void TM_MonthView::Render(TM_RenderInfo renderInfo)
         numRows  = (numDays+firstDay+6)/7;
 
     renderInfo.canvas->save();
-    renderInfo.canvas->clipRect(this->bounds);
+    SkScalar length = std::fmin(this->bounds.width(), this->bounds.height());
+    SkScalar xOffset = (this->bounds.width()-length)/2.0f, yOffset = (this->bounds.height()-length)/2.0f;
+    SkScalar originX = this->bounds.x() + xOffset, originY = this->bounds.y()+yOffset;
+    renderInfo.canvas->clipRect(SkRect::MakeXYWH(originX, originY, length, length));
     renderInfo.canvas->translate(this->bounds.x(), this->bounds.y());
-    SkScalar xStep = this->bounds.width()/7.0f,
-             yStep = this->bounds.height()/(SkScalar)numRows,
-             x=firstDay*xStep,
-             y=0;
+    SkScalar xStep,yStep;xStep = yStep = length/std::fmax(7.0f, (SkScalar)(numRows+1));
+    SkScalar startX, x = startX = xOffset + (length - (xStep * 7.0f))/2.0f + firstDay*xStep,
+             y = yStep + yOffset;
+
+    this->weekDayLabels->setBounds(SkRect::MakeXYWH(xOffset, yOffset, length, yStep));
+    this->weekDayLabels->Render(renderInfo);
 
     for(unsigned i=0; i<numDays; i++)
     {
         if((i+firstDay)%7==0 && i)
         {
-            x-=this->bounds.width();
+            x -= xStep*7.0f;
             y+=yStep;
         }
         this->dayViewList[i].setHeight(yStep);
@@ -73,15 +82,7 @@ void TM_MonthView::Render(TM_RenderInfo renderInfo)
 bool TM_MonthView::PollEvents(TM_EventInput eventInput) 
 {
     this->updateDate();
-    bool select=false;
-    if(this->bounds.contains(eventInput.mouseX,eventInput.mouseY))
-    {
-        eventInput.mouseX -= this->bounds.x();
-        eventInput.mouseY -= this->bounds.y();
-        for(auto& dayButton : dayViewList)
-            select += dayButton.PollEvents(eventInput);
-    }
-    return select;
+    return TM_View::PollEvents(eventInput);
 }
 
 void TM_MonthView::setDate(TM_YMD date)

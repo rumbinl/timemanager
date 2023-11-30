@@ -44,13 +44,17 @@ void TM_TextView::Render(TM_RenderInfo renderInfo)
 
     paint.setColor(this->viewSetting.textColor);
     paint.setStyle(SkPaint::kFill_Style);
-    font->setSize(fmin(this->viewSetting.fontSize,this->bounds.height()));
+    font->setSize(std::fmin(this->viewSetting.fontSize,this->bounds.height()));
 
     SkFontMetrics fontMetrics;
     font->getMetrics(&fontMetrics);
     SkScalar fontHeight = fontMetrics.fDescent,textX,textY;
     SkRect text_bounds;
     font->measureText(this->text.c_str(), this->text.length()*1, SkTextEncoding::kUTF8, &text_bounds, &paint);
+    if(text_bounds.width() > this->bounds.width())
+    {
+        font->setSize(((SkScalar)this->bounds.width()/(SkScalar)text_bounds.width())* (SkScalar)font->getSize());
+    }
     srcBounds.setWH(text_bounds.width(), this->bounds.height());
     if(this->centered)
         textX = this->bounds.x()+this->bounds.width()/2 - text_bounds.width()/2, textY = this->bounds.height()<this->viewSetting.fontSize?this->bounds.y()+this->bounds.height()-fontMetrics.fDescent:this->bounds.y()+this->bounds.height()/2+this->viewSetting.fontSize/2-fontMetrics.fDescent;

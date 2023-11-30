@@ -32,7 +32,7 @@ class TM_ApplicationManager
 		// Font and UI related variables
 		std::vector<SkFont*> skia_fontList;
 		int defaultFont=-1;
-		TM_HorizontalView* mainView;
+		TM_View* mainView;
 		/*TM_CalendarView* calendarView;
 		TM_TaskView* taskView;*/
 
@@ -50,6 +50,7 @@ class TM_ApplicationManager
 		TM_TaskManager* taskManPtr, *importTaskManPtr; 
 		TM_TaskInfoView* importTaskInfoViewPtr;
 		TM_TaskView* taskViewPtr;
+		TM_CalendarView* calendarViewPtr;
 		TM_StorageManager* storageManPtr;
         SkColor skia_canvas_clear_color;
 };

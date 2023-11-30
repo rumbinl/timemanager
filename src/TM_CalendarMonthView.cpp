@@ -4,7 +4,6 @@ TM_CalendarMonthView::TM_CalendarMonthView(SkRect bounds, void* contextPtr, void
 {
     monthView = new TM_MonthView(SkRect::MakeWH(0,50), contextPtr, setDateFunc, getDateFunc);
     dataView = TM_TextView("", SkRect::MakeWH(0, 5));
-    weekDayLabels = TM_HorizontalView(SkRect::MakeEmpty(), {});
     previousMonth = TM_Button<int>("\ue5e0", SkRect::MakeWH(10,0), -1, this->monthView, [](void* monthViewPtr, int data) {
         TM_MonthView* monthView = (TM_MonthView*)monthViewPtr;
         monthView->setMonthYear(monthView->getMonthYear()-std::chrono::months{1});
@@ -13,21 +12,19 @@ TM_CalendarMonthView::TM_CalendarMonthView(SkRect bounds, void* contextPtr, void
         TM_MonthView* monthView = (TM_MonthView*)monthViewPtr;
         monthView->setMonthYear(monthView->getMonthYear()+std::chrono::months{1});
     }, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,0,0,true});
-    controlPanel = TM_HorizontalView(SkRect::MakeEmpty(), {&previousMonth, &dataView, &nextMonth}, {0.1, 0.8, 0.1});
-
-    for(std::string weekName : dayNames)
-        weekDayLabels.addRenderObject(new TM_TextView(weekName.substr(0,2), SkRect::MakeEmpty(), viewSetting={colorScheme[0],colorScheme[2],colorScheme[3],0,24,0,0}));
+    controlPanel = TM_HorizontalView(SkRect::MakeWH(TM_NormalWidth, 50), {&previousMonth, &dataView, &nextMonth}, {0.1, 0.8, 0.1}, {colorScheme[0],colorScheme[2],colorScheme[3],0,24,0,0,false,20});
 
     this->addRenderObject(&this->controlPanel);
-    this->addRenderObject(&this->weekDayLabels);
     this->addRenderObject(this->monthView);
-    this->proportionTable = {0.15,0.05,0.80};
-    this->fit = true;
+    this->proportionTable = {};
+    this->fit = false;
 }
 
 void TM_CalendarMonthView::Render(TM_RenderInfo renderInfo)
 {
     this->dataView.setText(monthNames[(unsigned)this->monthView->getMonthYear().month()-1]+" "+std::to_string((int)this->monthView->getMonthYear().year()));
+    this->controlPanel.setBounds(SkRect::MakeWH(TM_NormalWidth, 50));
+    this->monthView->setBounds(SkRect::MakeWH(0,this->bounds.height()-50));
     TM_View::Render(renderInfo);
 } 
 
