@@ -78,7 +78,7 @@ TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr) : TM_View(bo
     this->taskInfoViewPtr = new TM_TaskInfoView(SkRect::MakeWH(TM_NormalWidth,300), this->taskManPtr);
     this->headTaskViewPtr = new TM_HeadTaskInfoSection(SkRect::MakeWH(TM_NormalWidth,100), this->taskManPtr);
 
-    this->timerViewPtr = new TM_TimerView(SkRect::MakeWH(0, 250), 50, this->taskManPtr, [](void* contextPtr) -> std::pair<TM_Time,TM_Time> {
+    this->timerViewPtr = new TM_TimerView(SkRect::MakeEmpty(), 50, this->taskManPtr, [](void* contextPtr) -> std::pair<TM_Time,TM_Time> {
         TM_TaskManager* taskManPtr = (TM_TaskManager*)contextPtr;
         TM_Task* currentTask;
         if((currentTask = taskManPtr->getCurrentTask()) != NULL)
@@ -96,7 +96,7 @@ TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr) : TM_View(bo
         taskView->setRenderObjectExistence(2,!taskView->getRenderObjectExistence(2));
     }, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,false,20}));
 
-    this->renderObjects.push_back(new TM_View(SkRect::MakeWH(0,640), {0.5, 0.5}, { 
+    this->renderObjects.push_back(new TM_View(SkRect::MakeWH(0,640), {1.0, 0.0}, { 
             new TM_TimeDial(SkRect::MakeEmpty(), this->taskManPtr, 
                 [](void* taskManPtr, TM_Time time) {
                     ((TM_TaskManager*)taskManPtr)->setDateTime(ZeroDate, time);
@@ -106,7 +106,7 @@ TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr) : TM_View(bo
                     return ((TM_TaskManager*)taskManPtr)->getStartTime();
                 }),
             this->startDateMonthView
-        })
+        },{colorScheme[0],colorScheme[2],colorScheme[3],0,24,0,10})
     );
 
     this->renderObjects.push_back(new TM_Button<bool>("End Date/Time", SkRect::MakeWH(TM_SmallWidth,50), false, (void*)this, [](void* context, bool data) {
@@ -114,8 +114,8 @@ TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr) : TM_View(bo
         taskView->setRenderObjectExistence(4,!taskView->getRenderObjectExistence(4));
     }, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,false,20}));
 
-    this->renderObjects.push_back(new TM_View(SkRect::MakeWH(0,640), {0.5, 0.5}, { 
-            new TM_TimeDial(SkRect::MakeWH(0,0), this->taskManPtr, 
+    this->renderObjects.push_back(new TM_View(SkRect::MakeWH(0,640), {1.0, 0.0}, { 
+            new TM_TimeDial(SkRect::MakeEmpty(), this->taskManPtr, 
                 [](void* taskManPtr, TM_Time time) {
                     ((TM_TaskManager*)taskManPtr)->setDateTime(ZeroDate, ZeroTime, ZeroDate, time);
                 }, 
@@ -124,7 +124,7 @@ TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr) : TM_View(bo
                     return ((TM_TaskManager*)taskManPtr)->getEndTime();
                 }),
             this->endDateMonthView
-        })
+        },{colorScheme[0],colorScheme[2],colorScheme[3],0,24,0,10})
     );
     
     this->renderObjects.push_back(new TM_Button<bool>("Repetition", SkRect::MakeWH(TM_SmallWidth,50), false, (void*)this, [](void* context, bool data) {
@@ -182,7 +182,7 @@ TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr) : TM_View(bo
         taskView->setRenderObjectExistence(12,!taskView->getRenderObjectExistence(12));
     }, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,false,20}));
 
-    this->renderObjects.push_back(new TM_View(SkRect::MakeWH(TM_NormalWidth,300), {0.8,0.2,0.2},{
+    this->renderObjects.push_back(new TM_View(SkRect::MakeWH(TM_NormalWidth,300), {0.8,0.2},{
         this->timerViewPtr, 
         new TM_HorizontalView(SkRect::MakeEmpty(), {
             new TM_Button<bool>([](void* contextPtr) -> std::string {
@@ -198,11 +198,11 @@ TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr) : TM_View(bo
                     else
                         timerViewPtr->startCountdown();
                 }, 
-            {colorScheme[0],colorScheme[2],SkColorSetRGB(0,0,0xff),0,24,0,0,true}),
+            {colorScheme[1],colorScheme[2],SkColorSetRGB(0,0,0xff),0,24,0,0,true}),
             new TM_Button<bool>("\ue877", SkRect::MakeEmpty(), false, (void*)this->timerViewPtr, [](void* contextPtr, bool data) {
-                }, {colorScheme[0],colorScheme[2],SkColorSetRGB(0x32,0xde,0x84),0,24,0,0,true})
-            })
-        })
+                }, {colorScheme[1],colorScheme[2],SkColorSetRGB(0x32,0xde,0x84),0,24,0,0,true})
+            }, {},  {colorScheme[0],colorScheme[2],colorScheme[3],0,24,0,0,false,20})
+        }, {colorScheme[0],colorScheme[2],colorScheme[3],0,24,0,10})
     );
     this->renderObjects.push_back(new TM_Button<bool>("Color", SkRect::MakeWH(TM_SmallWidth,50), false, (void*)this, [](void* context, bool data) {
         TM_TaskView* taskView = (TM_TaskView*)context;

@@ -24,7 +24,7 @@ TM_ApplicationManager::TM_ApplicationManager()
 	this->taskManPtr = new TM_TaskManager(&this->taskViewPtr, &this->storageManPtr);
 	this->storageManPtr->LoadTasks(this->taskManPtr);
 	this->importTaskManPtr = new TM_TaskManager(&this->taskViewPtr, NULL);
-	this->importTaskInfoViewPtr = new TM_ImportTaskInfoView(SkRect::MakeWH(0,150), this->importTaskManPtr, this->taskManPtr, [](TM_TaskManager* taskManager) -> std::pair<TM_TaskItIt,TM_TaskItIt> {
+	this->importTaskInfoViewPtr = new TM_ImportTaskInfoView(SkRect::MakeEmpty(), this->importTaskManPtr, this->taskManPtr, [](TM_TaskManager* taskManager) -> std::pair<TM_TaskItIt,TM_TaskItIt> {
 		return {taskManager->getStartIt(), taskManager->getEndIt()};
 	});
 	this->taskViewPtr = new TM_TaskView(SkRect::MakeXYWH(0,0,840,840), this->taskManPtr);
@@ -33,14 +33,14 @@ TM_ApplicationManager::TM_ApplicationManager()
 				new TM_Button<int>(
 					[](void* contextPtr) -> std::string {
 						TM_CalendarView* context = (TM_CalendarView*)(*((TM_CalendarView**)contextPtr));
-						if(context->getRenderObject(0)->getRenderObjectExistence(0) == true)
+						if(context->getRenderObjectExistence(0) == true)
 							return "\ue8f5\uebcc";
 						return "\ue8f4\uebcc";
 					}, SkRect::MakeWH(TM_NormalWidth,50), 0, (void*)&this->calendarViewPtr, 
 						[](void* contextPtr,int data) 
 						{
 							TM_CalendarView* context = (TM_CalendarView*)(*((TM_CalendarView**)contextPtr));
-							context->getRenderObject(0)->setRenderObjectExistence(0,!context->getRenderObject(0)->getRenderObjectExistence(0));
+							context->setRenderObjectExistence(0,!context->getRenderObjectExistence(0));
 						}
 					, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true}),
 				new TM_Button<int>("\uefe8", SkRect::MakeEmpty(), (int)0, &this->mainView, [](void* context, int data) {
@@ -66,18 +66,18 @@ TM_ApplicationManager::TM_ApplicationManager()
 		new TM_HorizontalView(SkRect::MakeEmpty(), {
 			new TM_View(SkRect::MakeEmpty(), {}, {
 
-				this->calendarViewPtr = new TM_CalendarView(SkRect::MakeWH(0, 840), this->taskManPtr),
+				this->calendarViewPtr = new TM_CalendarView(SkRect::MakeEmpty(), this->taskManPtr),
 
-				new TM_TaskInfoView(SkRect::MakeWH(0, 150), this->taskManPtr, [](TM_TaskManager* taskManPtr) -> std::pair<TM_TaskItIt,TM_TaskItIt> {
+				new TM_TaskInfoView(SkRect::MakeEmpty(), this->taskManPtr, [](TM_TaskManager* taskManPtr) -> std::pair<TM_TaskItIt,TM_TaskItIt> {
 					return {taskManPtr->getStartIt(), taskManPtr->getEndIt()};
 				}),
 
-				new TM_View(SkRect::MakeEmpty(), {0.95, 0.05}, {
+				new TM_View(SkRect::MakeEmpty(), {1.00, 0.00}, {
 					this->importTaskInfoViewPtr,
-					new TM_FileDrop("Place file here.", SkRect::MakeEmpty(), this->importTaskManPtr, [](void* importTaskManPtr, std::string filePath){
+					new TM_FileDrop("Place file here.", SkRect::MakeWH(0,150), this->importTaskManPtr, [](void* importTaskManPtr, std::string filePath){
 						((TM_TaskManager*)importTaskManPtr)->openDocXFile(filePath);
 					})
-				})
+				}, {colorScheme[0],colorScheme[2],colorScheme[3],0,24,10,10})
 
 			}, {colorScheme[0],colorScheme[2],colorScheme[3],0,24,0,0}),
 			this->taskViewPtr

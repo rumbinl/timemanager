@@ -57,6 +57,7 @@ void TM_CalendarWeekView::Render(TM_RenderInfo renderInfo)
 {
     SkPaint paint;
 	SkRect text_bounds;
+    renderInfo.textFont->setSize(this->viewSetting.fontSize);
 	renderInfo.textFont->measureText("XX:XX", 5*sizeof(char), SkTextEncoding::kUTF8, &text_bounds, &paint);
 	this->xOff = text_bounds.width();
 
@@ -64,7 +65,6 @@ void TM_CalendarWeekView::Render(TM_RenderInfo renderInfo)
 	paint.setColor(this->viewSetting.backgroundColor);
 
 	renderInfo.canvas->drawRect(this->bounds, paint);
-
 	if(this->viewSetting.borderThickness>0)
 	{
 		paint.setStyle(SkPaint::kStroke_Style);
@@ -72,7 +72,10 @@ void TM_CalendarWeekView::Render(TM_RenderInfo renderInfo)
 		renderInfo.canvas->drawRect(this->bounds, paint);
 	}
 
-    renderInfo.textFont->setSize(this->viewSetting.fontSize);
+	renderInfo.canvas->save();
+	renderInfo.canvas->clipRRect(SkRRect::MakeRectXY(this->bounds, this->viewSetting.cornerRadius, this->viewSetting.cornerRadius));
+	renderInfo.canvas->translate(this->bounds.x(), this->bounds.y());
+
 
     this->dayWidth = (this->bounds.width() - this->xOff)/((SkScalar)this->numDays);
     this->labelHeight = this->viewSetting.fontSize+2*this->viewSetting.paddingY;
@@ -83,14 +86,15 @@ void TM_CalendarWeekView::Render(TM_RenderInfo renderInfo)
     {
         std::chrono::year_month_day currentDate = std::chrono::sys_days{*focusDate} + std::chrono::days{i};
         std::string date = dayNames[weekDayFromDate(currentDate)].substr(0,2)+" "+std::to_string(static_cast<unsigned>(currentDate.day()))+" "+monthNames[static_cast<unsigned>(currentDate.month())-1].substr(0,3);
-        TM_TextView::Render(date, SkRect::MakeXYWH(this->bounds.x()+xOff+i*dayWidth,this->bounds.y(),dayWidth,labelHeight),renderInfo, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,0});
+        TM_TextView::Render(date, SkRect::MakeXYWH(xOff+i*dayWidth,0,dayWidth,labelHeight),renderInfo, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,0});
     }
 
-	renderInfo.canvas->save();
-	renderInfo.canvas->clipRect(SkRect::MakeXYWH(this->bounds.x(),this->bounds.y()+labelHeight,this->bounds.width(),this->bounds.height()-labelHeight));
-	renderInfo.canvas->translate(this->bounds.x(), this->bounds.y()+labelHeight);
+	renderInfo.canvas->translate(0, labelHeight);
+	renderInfo.canvas->clipRect(SkRect::MakeXYWH(0,0,this->bounds.width(),this->bounds.height()-labelHeight));
 
     RenderTimes(renderInfo);
+
+	renderInfo.canvas->clipRect(SkRect::MakeXYWH(xOff,0,this->bounds.width(),this->bounds.height()-labelHeight));
 
     paint.setColor(this->viewSetting.textColor);
 

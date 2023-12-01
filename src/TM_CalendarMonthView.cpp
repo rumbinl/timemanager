@@ -2,7 +2,7 @@
 
 TM_CalendarMonthView::TM_CalendarMonthView(SkRect bounds, void* contextPtr, void (*setDateFunc)(void* contextPtr, TM_YMD date), TM_YMD (*getDateFunc)(void* contextPtr), TM_ViewSetting viewSetting) : TM_View(bounds, {}, false, viewSetting)
 {
-    monthView = new TM_MonthView(SkRect::MakeWH(0,50), contextPtr, setDateFunc, getDateFunc);
+    monthView = new TM_MonthView(SkRect::MakeEmpty(), contextPtr, setDateFunc, getDateFunc);
     dataView = TM_TextView("", SkRect::MakeWH(0, 5));
     previousMonth = TM_Button<int>("\ue5e0", SkRect::MakeWH(10,0), -1, this->monthView, [](void* monthViewPtr, int data) {
         TM_MonthView* monthView = (TM_MonthView*)monthViewPtr;
@@ -16,8 +16,8 @@ TM_CalendarMonthView::TM_CalendarMonthView(SkRect bounds, void* contextPtr, void
 
     this->addRenderObject(&this->controlPanel);
     this->addRenderObject(this->monthView);
-    this->proportionTable = {};
-    this->fit = false;
+    this->proportionTable = {0.0f, 1.0f};
+    this->fit = true;
 }
 
 void TM_CalendarMonthView::Render(TM_RenderInfo renderInfo)

@@ -1,6 +1,6 @@
 #include <TM_GradientView.hpp>
 
-TM_GradientView::TM_GradientView(SkRect bounds, void* contextPtr, uint32_t (*getColor)(void* contextPtr), void (*setColor)(void* contextPtr, uint32_t color)) : TM_RenderObject(bounds)
+TM_GradientView::TM_GradientView(SkRect bounds, void* contextPtr, uint32_t (*getColor)(void* contextPtr), void (*setColor)(void* contextPtr, uint32_t color)) : TM_RenderObject(bounds, {colorScheme[0],colorScheme[3],colorScheme[3],0,24,0,0,false,20})
 {
     this->contextPtr = contextPtr;
     this->getColor = getColor;
@@ -12,14 +12,14 @@ void TM_GradientView::Render(TM_RenderInfo renderInfo)
     if(this->getColor != NULL)
         this->x = getXFromColor(this->getColor(this->contextPtr));
     renderInfo.canvas->save();
-    renderInfo.canvas->clipRect(this->bounds);
+    SkPaint paint;
+    paint.setAntiAlias(true);
+    renderInfo.canvas->clipRRect(SkRRect::MakeRectXY(this->bounds,this->viewSetting.cornerRadius,this->viewSetting.cornerRadius));
     
     SkScalar cx = bounds.width()/2.0f, cy = bounds.width()/2.0f;
     SkPoint points[] = {{this->bounds.x(),cy}, {this->bounds.x()+this->bounds.width(),cy}};
-    SkPaint paint;
 
     paint.setShader(SkGradientShader::MakeLinear(points, this->colors, nullptr, 7, SkTileMode::kClamp));
-    paint.setAntiAlias(true);
     renderInfo.canvas->drawPaint(paint);
     paint.setShader(nullptr);
     

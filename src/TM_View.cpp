@@ -5,7 +5,6 @@ TM_View::TM_View(SkRect bounds, std::vector<TM_RenderObject*> objects, bool scro
     this->renderObjects = objects;
 	for(TM_RenderObject* renderObject : this->renderObjects)
 		this->numExists += renderObject->exists();
-    this->viewSetting = viewSetting;
 	this->scroll = scroll;
 	this->scrollView = new TM_ScrollView(SkRect::MakeWH(20,bounds.height()), (void*)this, 
 		[](void* viewPtr) -> std::vector<SkScalar> {
@@ -29,6 +28,9 @@ TM_View::TM_View(SkRect bounds, std::vector<SkScalar> proportionTable, std::vect
 
 void TM_View::Render(TM_RenderInfo renderInfo)
 {
+
+	this->yOffset = std::fmin(std::fmax(0, this->yOffset),std::fmax(0, this->srcBounds.height()-this->bounds.height()));
+
     SkPaint paint;
     paint.setColor(this->viewSetting.backgroundColor);
     paint.setStyle(SkPaint::kFill_Style);
@@ -44,21 +46,34 @@ void TM_View::Render(TM_RenderInfo renderInfo)
 
     int restore = renderInfo.canvas->save();
 
-    //renderInfo.canvas->clipRect(SkRect::MakeXYWH(this->bounds.x(),this->bounds.y(),this->bounds.width(),this->bounds.height()));
+	if(this->viewSetting.cornerRadius>0)
+	{
+		renderInfo.canvas->clipRRect(SkRRect::MakeRectXY(SkRect::MakeXYWH(this->bounds.x(),this->bounds.y(),this->bounds.width(),this->bounds.height()),this->viewSetting.cornerRadius,this->viewSetting.cornerRadius));
+	}
+	else
+		renderInfo.canvas->clipRect(this->bounds);
 
 	renderInfo.canvas->translate(this->bounds.x(), this->bounds.y()-this->yOffset);
 
     SkScalar y = this->viewSetting.paddingY;
 	
-	SkScalar height = this->bounds.height() - this->viewSetting.paddingY*(this->renderObjects.size());
+	SkScalar height = this->bounds.height() - this->viewSetting.paddingY*(getNumExists() + 1);
 	SkScalar contentWidth = scroll?this->bounds.width()-this->scrollView->getBounds().width():this->bounds.width();
+
+	if(this->fit)
+	{
+		for(int i=0;i<renderObjects.size();i++)
+		{
+			height -= renderObjects[i]->getMaxBounds().height();
+		}
+	}
 
     for(int i=0;i<renderObjects.size();i++)
     {
         if(!this->renderObjects[i]->exists())
             continue; 
 
-		SkScalar width = this->renderObjects[i]->getMaxBounds().width() == 0.0f ? contentWidth : std::fmin(contentWidth, this->renderObjects[i]->getMaxBounds().width()); 
+		SkScalar width = std::fmin(this->renderObjects[i]->getMaxBounds().width() == 0.0f ? contentWidth : std::fmin(contentWidth, this->renderObjects[i]->getMaxBounds().width()), contentWidth - 2 * this->viewSetting.paddingX);
 		SkRect tempBounds = this->renderObjects[i]->getBounds();
 
 		if(this->fit)
@@ -66,31 +81,31 @@ void TM_View::Render(TM_RenderInfo renderInfo)
 			if(!this->proportionTable.size())
 				this->renderObjects[i]->setBounds(
 					SkRect::MakeXYWH(
-						std::fabs(contentWidth-width)/2.0f, 
-						y, 	
+						std::fmax(this->viewSetting.paddingX,std::fabs(contentWidth-width)/2.0f),
+						y,
 						width,
-						height/(SkScalar)getNumExists()
+						this->renderObjects[i]->getMaxBounds().height() != 0 ? this->renderObjects[i]->getMaxBounds().height() : (height/(SkScalar)getNumExists())
 					)
 				);
 			else
 				this->renderObjects[i]->setBounds(
 					SkRect::MakeXYWH(
 						std::fabs(contentWidth-width)/2.0f,
-						y, 	
+						y,
 						width,
-						this->proportionTable[i] * height 
+						this->renderObjects[i]->getMaxBounds().height() != 0 ? this->renderObjects[i]->getMaxBounds().height() : (this->proportionTable[i] * height)
 					)
 				);
 		}
 		else
-			this->renderObjects[i]->setBounds(SkRect::MakeXYWH(std::fabs(contentWidth-width)/2.0f, y, width, renderObjects[i]->getBounds().height()));
+			this->renderObjects[i]->setBounds(SkRect::MakeXYWH(std::fabs(contentWidth-width)/2.0f, y, width, renderObjects[i]->getMaxBounds().height()));
 
 		this->renderObjects[i]->Render(renderInfo);
 
 		y += this->renderObjects[i]->getBounds().height() + this->viewSetting.paddingY;
     }
 
-    this->srcBounds.setWH(this->bounds.width(), y - this->viewSetting.paddingY);
+    this->srcBounds.setWH(this->bounds.width(), y);
 
     renderInfo.canvas->restoreToCount(restore);
 

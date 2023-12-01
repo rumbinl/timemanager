@@ -54,6 +54,7 @@ void TM_TextView::Render(TM_RenderInfo renderInfo)
     if(text_bounds.width() > this->bounds.width())
     {
         font->setSize(((SkScalar)this->bounds.width()/(SkScalar)text_bounds.width())* (SkScalar)font->getSize());
+        text_bounds.setWH(this->bounds.width(), text_bounds.height());
     }
     srcBounds.setWH(text_bounds.width(), this->bounds.height());
     if(this->centered)
