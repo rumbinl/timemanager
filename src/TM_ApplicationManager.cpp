@@ -17,8 +17,6 @@ TM_ApplicationManager::TM_ApplicationManager()
 		std::cout<<"Failed to create Skia canvas!"<<std::endl;
 	}
 
-	std::cout<<this->window_ptr.getDPI()<<std::endl;
-
 	this->should_render_update = true;
 	this->skia_canvas_clear_color = colorScheme[BACKGROUND_COLOR_INDEX];
 
@@ -29,7 +27,7 @@ TM_ApplicationManager::TM_ApplicationManager()
 	this->importTaskInfoViewPtr = new TM_ImportTaskInfoView(SkRect::MakeEmpty(), this->importTaskManPtr, this->taskManPtr, [](TM_TaskManager* taskManager) -> std::pair<TM_TaskItIt,TM_TaskItIt> {
 		return {taskManager->getStartIt(), taskManager->getEndIt()};
 	});
-	this->taskViewPtr = new TM_TaskView(SkRect::MakeXYWH(0,0,840,840), this->taskManPtr);
+	this->taskViewPtr = new TM_TaskView(SkRect::MakeEmpty(), this->taskManPtr);
 	this->mainView = new TM_View(SkRect::MakeXYWH(0,0,this->window_ptr.getWindowWidth(),this->window_ptr.getWindowHeight()), {0.05, 0.95}, {
 		new TM_HorizontalView(SkRect::MakeEmpty(), {
 				new TM_Button<int>("\uefe8", SkRect::MakeEmpty(), (int)0, &this->mainView, [](void* context, int data) {
@@ -63,7 +61,7 @@ TM_ApplicationManager::TM_ApplicationManager()
 
 				new TM_View(SkRect::MakeEmpty(), {1.00, 0.00}, {
 					this->importTaskInfoViewPtr,
-					new TM_FileDrop("Place file here.", SkRect::MakeWH(0,150), this->importTaskManPtr, [](void* importTaskManPtr, std::string filePath){
+					new TM_FileDrop("Place file here.", SkRect::MakeWH(0,75), this->importTaskManPtr, [](void* importTaskManPtr, std::string filePath){
 						((TM_TaskManager*)importTaskManPtr)->openDocXFile(filePath);
 					})
 				}, {colorScheme[0],colorScheme[2],colorScheme[3],0,12,10,10})

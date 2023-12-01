@@ -37,8 +37,9 @@ static SkColor colorScheme[4] = {SkColorSetRGB(0xee,0xf3,0xf9),SkColorSetRGB(0xb
 
 static SkScalar scrollSensFactor = 5.0;
 
-static const SkScalar TM_NormalWidth = 600;
-static const SkScalar TM_SmallWidth = 200;
+static const SkScalar TM_NormalWidth = 300;
+static const SkScalar TM_SmallWidth = 100;
+static const SkScalar TM_NormalHeight = 25;
 
 static int indexCal = 0;
 

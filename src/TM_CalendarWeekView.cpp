@@ -31,8 +31,7 @@ void TM_CalendarWeekView::RenderTimes(TM_RenderInfo renderInfo)
 
 		if(!i)
 		{
-			this->viewSetting.paddingY = text_bounds.height()-fontMetrics.fBottom;
-			y += this->viewSetting.paddingY;
+			y += text_bounds.height()-fontMetrics.fBottom;
 		}
 
 		renderInfo.canvas->drawString(timeString.c_str(), xOff-text_bounds.width(), y+yOff+fontMetrics.fBottom, *renderInfo.textFont, paint);

@@ -46,12 +46,7 @@ void TM_View::Render(TM_RenderInfo renderInfo)
 
     int restore = renderInfo.canvas->save();
 
-	if(this->viewSetting.cornerRadius>0)
-	{
-		renderInfo.canvas->clipRRect(SkRRect::MakeRectXY(SkRect::MakeXYWH(this->bounds.x(),this->bounds.y(),this->bounds.width(),this->bounds.height()),this->viewSetting.cornerRadius,this->viewSetting.cornerRadius));
-	}
-	else
-		renderInfo.canvas->clipRect(this->bounds);
+	renderInfo.canvas->clipRRect(SkRRect::MakeRectXY(this->bounds,this->viewSetting.cornerRadius,this->viewSetting.cornerRadius));
 
 	renderInfo.canvas->translate(this->bounds.x(), this->bounds.y()-this->yOffset);
 
@@ -68,7 +63,7 @@ void TM_View::Render(TM_RenderInfo renderInfo)
 		{
 			if(renderObjects[i]->getMaxBounds().height()>0)
 				nonFitCount++;
-			height -= renderObjects[i]->getMaxBounds().height();
+			height -= renderObjects[i]->getMaxBounds().height()*renderInfo.dpi;
 		}
 	}
 
@@ -77,7 +72,7 @@ void TM_View::Render(TM_RenderInfo renderInfo)
         if(!this->renderObjects[i]->exists())
             continue; 
 
-		SkScalar width = std::fmin(this->renderObjects[i]->getMaxBounds().width() == 0.0f ? contentWidth : std::fmin(contentWidth, this->renderObjects[i]->getMaxBounds().width()), contentWidth - 2 * this->viewSetting.paddingX);
+		SkScalar width = std::fmin(this->renderObjects[i]->getMaxBounds().width() == 0.0f ? contentWidth : std::fmin(contentWidth, this->renderObjects[i]->getMaxBounds().width()*renderInfo.dpi), contentWidth - 2 * this->viewSetting.paddingX);
 		SkRect tempBounds = this->renderObjects[i]->getBounds();
 
 		if(this->fit)
@@ -88,7 +83,7 @@ void TM_View::Render(TM_RenderInfo renderInfo)
 						std::fmax(this->viewSetting.paddingX,std::fabs(contentWidth-width)/2.0f),
 						y,
 						width,
-						this->renderObjects[i]->getMaxBounds().height() != 0 ? this->renderObjects[i]->getMaxBounds().height() : (height/((SkScalar)getNumExists()-nonFitCount))
+						this->renderObjects[i]->getMaxBounds().height() != 0 ? this->renderObjects[i]->getMaxBounds().height()*renderInfo.dpi : (height/((SkScalar)getNumExists()-nonFitCount))
 					)
 				);
 			else
@@ -97,12 +92,12 @@ void TM_View::Render(TM_RenderInfo renderInfo)
 						std::fabs(contentWidth-width)/2.0f,
 						y,
 						width,
-						this->renderObjects[i]->getMaxBounds().height() != 0 ? this->renderObjects[i]->getMaxBounds().height() : (this->proportionTable[i] * height)
+						this->renderObjects[i]->getMaxBounds().height() != 0 ? this->renderObjects[i]->getMaxBounds().height()*renderInfo.dpi : (this->proportionTable[i] * height)
 					)
 				);
 		}
 		else
-			this->renderObjects[i]->setBounds(SkRect::MakeXYWH(std::fabs(contentWidth-width)/2.0f, y, width, renderObjects[i]->getMaxBounds().height()));
+			this->renderObjects[i]->setBounds(SkRect::MakeXYWH(std::fabs(contentWidth-width)/2.0f, y, width, renderObjects[i]->getMaxBounds().height()*renderInfo.dpi));
 
 		this->renderObjects[i]->Render(renderInfo);
 

@@ -146,10 +146,7 @@ void TM_TextView::setHeight(SkScalar newHeight)
 
 void TM_TextView::setHeightFont(SkFont* font, TM_RenderInfo renderInfo)
 {
-    font->setSize(this->viewSetting.fontSize*renderInfo.dpi);
-    SkFontMetrics fontMetrics;
-    font->getMetrics(&fontMetrics);
-    this->bounds.setXYWH(this->bounds.x(), this->bounds.y(), this->bounds.width(), fontMetrics.fDescent-fontMetrics.fAscent+2*this->viewSetting.paddingY);
+    this->bounds.setXYWH(this->bounds.x(), this->bounds.y(), this->bounds.width(), this->viewSetting.fontSize*renderInfo.dpi);
 }
 
 void TM_TextView::setWidth(SkScalar newWidth)

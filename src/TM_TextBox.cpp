@@ -17,6 +17,7 @@ void TM_TextBox::Render(TM_RenderInfo renderInfo)
 		this->cursorIndex = std::fmin(this->content.size(), this->cursorIndex);
 	}
 	SkFont* font = renderInfo.textFont;
+	font->setSize(this->viewSetting.fontSize*renderInfo.dpi);
     if(!this->fitted)
     {
         TM_TextView::setHeightFont(font, renderInfo);

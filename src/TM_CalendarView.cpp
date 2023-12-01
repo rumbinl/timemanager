@@ -25,7 +25,7 @@ TM_CalendarView::TM_CalendarView(SkRect bounds, TM_TaskManager* taskManPtr) : TM
 				if(context->getRenderObjectExistence(1) == true)
 					return "\ue8f5\uebcc";
 				return "\ue8f4\uebcc";
-			}, SkRect::MakeWH(TM_NormalWidth,50), 0, (void*)this, 
+			}, SkRect::MakeWH(TM_NormalWidth,TM_NormalHeight), 0, (void*)this, 
 				[](void* contextPtr,int data) 
 				{
 					TM_CalendarView* context = (TM_CalendarView*)contextPtr;
@@ -35,7 +35,7 @@ TM_CalendarView::TM_CalendarView(SkRect bounds, TM_TaskManager* taskManPtr) : TM
 	this->addRenderObject(this->monthView);
 	this->addRenderObject(
 		new TM_View(SkRect::MakeEmpty(), {0, 1.0}, { 
-			new TM_HorizontalView(SkRect::MakeWH(0,50), { 
+			new TM_HorizontalView(SkRect::MakeWH(0,TM_NormalHeight), { 
 				new TM_Button<int>("\ue3cb\ue8f3", SkRect::MakeEmpty(), 0, this->weekView, 
 					[](void* contextPtr, int data)
 					{

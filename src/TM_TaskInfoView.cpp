@@ -67,7 +67,7 @@ void TM_TaskInfoView::Render(TM_RenderInfo renderInfo)
 
         this->taskInfoSectionList[count]->setTaskIt(currentIt);
 
-        SkScalar width = std::fmin(this->bounds.width(), this->renderObjects[count]->getMaxBounds().width());
+        SkScalar width = std::fmin(this->bounds.width(), this->renderObjects[count]->getMaxBounds().width()*renderInfo.dpi);
 
         this->renderObjects[count]->setBounds(SkRect::MakeXYWH(this->bounds.x() + (this->bounds.width()-width)/2.0f, yPos, width, this->renderObjects[count]->getBounds().height()));
 
@@ -149,6 +149,6 @@ TM_ImportTaskInfoView::TM_ImportTaskInfoView(SkRect bounds, TM_TaskManager* impo
 
 void TM_ImportTaskInfoView::addTaskInfoObject()
 {
-    this->taskInfoSectionList.push_back(new TM_ImportTaskInfoSection(SkRect::MakeWH(TM_NormalWidth,100), taskManPtr, mainTaskManPtr, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,0,0,false,20}));
+    this->taskInfoSectionList.push_back(new TM_ImportTaskInfoSection(SkRect::MakeWH(TM_NormalWidth,50), taskManPtr, mainTaskManPtr, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,0,0,false,20}));
     this->addRenderObject(this->taskInfoSectionList[this->taskInfoSectionList.size()-1]);
 }
