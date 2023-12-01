@@ -61,7 +61,6 @@ class TM_TaskManager
         TM_TaskItSet dateSortedTasks;
         TM_TaskItIt currentTask=dateSortedTasks.end();
 
-		std::map<TM_YMD,int> freeTimeMap;
         TM_TaskView** outputPtr;
         TM_StorageManager** storageManPtr;
 };

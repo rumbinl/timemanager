@@ -60,10 +60,14 @@ void TM_View::Render(TM_RenderInfo renderInfo)
 	SkScalar height = this->bounds.height() - this->viewSetting.paddingY*(getNumExists() + 1);
 	SkScalar contentWidth = scroll?this->bounds.width()-this->scrollView->getBounds().width():this->bounds.width();
 
+	int nonFitCount = 0;
+
 	if(this->fit)
 	{
 		for(int i=0;i<renderObjects.size();i++)
 		{
+			if(renderObjects[i]->getMaxBounds().height()>0)
+				nonFitCount++;
 			height -= renderObjects[i]->getMaxBounds().height();
 		}
 	}
@@ -84,7 +88,7 @@ void TM_View::Render(TM_RenderInfo renderInfo)
 						std::fmax(this->viewSetting.paddingX,std::fabs(contentWidth-width)/2.0f),
 						y,
 						width,
-						this->renderObjects[i]->getMaxBounds().height() != 0 ? this->renderObjects[i]->getMaxBounds().height() : (height/(SkScalar)getNumExists())
+						this->renderObjects[i]->getMaxBounds().height() != 0 ? this->renderObjects[i]->getMaxBounds().height() : (height/((SkScalar)getNumExists()-nonFitCount))
 					)
 				);
 			else

@@ -18,6 +18,20 @@ TM_CalendarView::TM_CalendarView(SkRect bounds, TM_TaskManager* taskManPtr) : TM
 
 	this->fit = true;
 
+	this->addRenderObject(
+		new TM_Button<int>(
+			[](void* contextPtr) -> std::string {
+				TM_CalendarView* context = (TM_CalendarView*)contextPtr;
+				if(context->getRenderObjectExistence(1) == true)
+					return "\ue8f5\uebcc";
+				return "\ue8f4\uebcc";
+			}, SkRect::MakeWH(TM_NormalWidth,50), 0, (void*)this, 
+				[](void* contextPtr,int data) 
+				{
+					TM_CalendarView* context = (TM_CalendarView*)contextPtr;
+					context->setRenderObjectExistence(1,!context->getRenderObjectExistence(1));
+				}
+			, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true,20}));
 	this->addRenderObject(this->monthView);
 	this->addRenderObject(
 		new TM_View(SkRect::MakeEmpty(), {0, 1.0}, { 

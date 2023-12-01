@@ -30,19 +30,6 @@ TM_ApplicationManager::TM_ApplicationManager()
 	this->taskViewPtr = new TM_TaskView(SkRect::MakeXYWH(0,0,840,840), this->taskManPtr);
 	this->mainView = new TM_View(SkRect::MakeXYWH(0,0,this->window_ptr.getWindowWidth(),this->window_ptr.getWindowHeight()), {0.05, 0.95}, {
 		new TM_HorizontalView(SkRect::MakeEmpty(), {
-				new TM_Button<int>(
-					[](void* contextPtr) -> std::string {
-						TM_CalendarView* context = (TM_CalendarView*)(*((TM_CalendarView**)contextPtr));
-						if(context->getRenderObjectExistence(0) == true)
-							return "\ue8f5\uebcc";
-						return "\ue8f4\uebcc";
-					}, SkRect::MakeWH(TM_NormalWidth,50), 0, (void*)&this->calendarViewPtr, 
-						[](void* contextPtr,int data) 
-						{
-							TM_CalendarView* context = (TM_CalendarView*)(*((TM_CalendarView**)contextPtr));
-							context->setRenderObjectExistence(0,!context->getRenderObjectExistence(0));
-						}
-					, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true}),
 				new TM_Button<int>("\uefe8", SkRect::MakeEmpty(), (int)0, &this->mainView, [](void* context, int data) {
 					TM_RenderObject* subView = (*((TM_RenderObject**)context))->getRenderObject(1)->getRenderObject(0);
 					(subView)->setRenderObjectExistence(0, true);
