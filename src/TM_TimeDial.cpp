@@ -50,7 +50,7 @@ void TM_TimeDial::Render(TM_RenderInfo renderInfo)
     std::string timeLabel = (time.hours<10?"0":"")+std::to_string(time.hours) + ":" + (time.minutes<10?"0":"")+std::to_string(time.minutes);
     SkRect textBounds;
     SkFontMetrics fontMetrics;
-    renderInfo.textFont->setSize(this->viewSetting.fontSize);
+    renderInfo.textFont->setSize(this->viewSetting.fontSize*renderInfo.dpi);
     renderInfo.textFont->getMetrics(&fontMetrics);
     renderInfo.textFont->measureText(timeLabel.c_str(), timeLabel.length() * sizeof(char), SkTextEncoding::kUTF8, &textBounds);
     renderInfo.canvas->drawSimpleText(timeLabel.c_str(), sizeof(char)*timeLabel.length(), SkTextEncoding::kUTF8, this->bounds.width()/2-textBounds.width()/2, fontMetrics.fDescent+this->bounds.height()/2, *renderInfo.textFont, paint);

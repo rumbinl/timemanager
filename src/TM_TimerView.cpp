@@ -47,7 +47,7 @@ void TM_TimerView::Render(TM_RenderInfo renderInfo)
     SkRect textBounds;
     SkFontMetrics fontMetrics;
 
-    renderInfo.textFont->setSize(this->viewSetting.fontSize);
+    renderInfo.textFont->setSize(this->viewSetting.fontSize*renderInfo.dpi);
     renderInfo.textFont->getMetrics(&fontMetrics);
     renderInfo.textFont->measureText(timeLabel.c_str(), timeLabel.length() * sizeof(char), SkTextEncoding::kUTF8, &textBounds);
 

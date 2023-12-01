@@ -12,7 +12,7 @@ TM_CalendarWeekView::TM_CalendarWeekView(SkRect bounds, std::chrono::year_month_
 void TM_CalendarWeekView::RenderTimes(TM_RenderInfo renderInfo)
 {
     SkPaint paint;
-	renderInfo.textFont->setSize(this->viewSetting.fontSize);
+	renderInfo.textFont->setSize(this->viewSetting.fontSize*renderInfo.dpi);
 	SkFontMetrics fontMetrics;
 	renderInfo.textFont->getMetrics(&fontMetrics);
 	
@@ -57,7 +57,7 @@ void TM_CalendarWeekView::Render(TM_RenderInfo renderInfo)
 {
     SkPaint paint;
 	SkRect text_bounds;
-    renderInfo.textFont->setSize(this->viewSetting.fontSize);
+    renderInfo.textFont->setSize(this->viewSetting.fontSize*renderInfo.dpi);
 	renderInfo.textFont->measureText("XX:XX", 5*sizeof(char), SkTextEncoding::kUTF8, &text_bounds, &paint);
 	this->xOff = text_bounds.width();
 
@@ -78,7 +78,7 @@ void TM_CalendarWeekView::Render(TM_RenderInfo renderInfo)
 
 
     this->dayWidth = (this->bounds.width() - this->xOff)/((SkScalar)this->numDays);
-    this->labelHeight = this->viewSetting.fontSize+2*this->viewSetting.paddingY;
+    this->labelHeight = this->viewSetting.fontSize*renderInfo.dpi+2*this->viewSetting.paddingY;
 
 	this->yOff = labelHeight;
 
@@ -86,7 +86,7 @@ void TM_CalendarWeekView::Render(TM_RenderInfo renderInfo)
     {
         std::chrono::year_month_day currentDate = std::chrono::sys_days{*focusDate} + std::chrono::days{i};
         std::string date = dayNames[weekDayFromDate(currentDate)].substr(0,2)+" "+std::to_string(static_cast<unsigned>(currentDate.day()))+" "+monthNames[static_cast<unsigned>(currentDate.month())-1].substr(0,3);
-        TM_TextView::Render(date, SkRect::MakeXYWH(xOff+i*dayWidth,0,dayWidth,labelHeight),renderInfo, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,0});
+        TM_TextView::Render(date, SkRect::MakeXYWH(xOff+i*dayWidth,0,dayWidth,labelHeight),renderInfo, {colorScheme[1],colorScheme[2],colorScheme[3],0,12,0});
     }
 
 	renderInfo.canvas->translate(0, labelHeight);
@@ -168,7 +168,7 @@ void TM_CalendarWeekView::RenderTask(TM_Task* task, TM_YMD startDate, SkColor co
 		SkRect rect = SkRect::MakeXYWH(startDayX, startDayY, dayWidth, this->hourHeight*(minutes/60.0f));
         renderInfo.canvas->drawRRect(SkRRect::MakeRectXY(rect, 10, 10), paint);
 
-		renderInfo.textFont->setSize(std::fmin(this->viewSetting.fontSize, this->hourHeight*(minutes/60.0f)));
+		renderInfo.textFont->setSize(std::fmin(this->viewSetting.fontSize*renderInfo.dpi, this->hourHeight*(minutes/60.0f)));
     }
     else 
     {
@@ -190,7 +190,7 @@ void TM_CalendarWeekView::RenderTask(TM_Task* task, TM_YMD startDate, SkColor co
 		endDayRRect.setRectRadii(endDay, corners);
         renderInfo.canvas->drawRRect(endDayRRect, paint);
 
-		renderInfo.textFont->setSize(this->viewSetting.fontSize);
+		renderInfo.textFont->setSize(this->viewSetting.fontSize*renderInfo.dpi);
     }
 
 	paint.setShader(nullptr);

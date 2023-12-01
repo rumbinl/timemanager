@@ -1,6 +1,6 @@
 #include <TM_CalendarView.hpp>
 
-TM_CalendarView::TM_CalendarView(SkRect bounds, TM_TaskManager* taskManPtr) : TM_View(bounds,{},{}, {colorScheme[0],colorScheme[3],colorScheme[3],0,24,10,10,false,0})
+TM_CalendarView::TM_CalendarView(SkRect bounds, TM_TaskManager* taskManPtr) : TM_View(bounds,{},{}, {colorScheme[0],colorScheme[3],colorScheme[3],0,12,10,10,false,0})
 {
     this->taskManPtr = taskManPtr;
     this->currentDate = getCurrentDate();
@@ -31,7 +31,7 @@ TM_CalendarView::TM_CalendarView(SkRect bounds, TM_TaskManager* taskManPtr) : TM
 					TM_CalendarView* context = (TM_CalendarView*)contextPtr;
 					context->setRenderObjectExistence(1,!context->getRenderObjectExistence(1));
 				}
-			, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true,20}));
+			, {colorScheme[1],colorScheme[2],colorScheme[3],0,12,5,5,true,20}));
 	this->addRenderObject(this->monthView);
 	this->addRenderObject(
 		new TM_View(SkRect::MakeEmpty(), {0, 1.0}, { 
@@ -41,17 +41,17 @@ TM_CalendarView::TM_CalendarView(SkRect bounds, TM_TaskManager* taskManPtr) : TM
 					{
 						TM_CalendarWeekView* context = (TM_CalendarWeekView*)contextPtr;
 						context->setDaySpan(context->getDaySpan()-1);
-					}, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true}),
+					}, {colorScheme[1],colorScheme[2],colorScheme[3],0,12,5,5,true}),
 
 				new TM_Button<int>("\ue3cd\ue8f3", SkRect::MakeEmpty(), 0, this->weekView, 
 					[](void* contextPtr, int data)
 					{
 						TM_CalendarWeekView* context = (TM_CalendarWeekView*)contextPtr;
 						context->setDaySpan(context->getDaySpan()+1);
-					}, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true})
+					}, {colorScheme[1],colorScheme[2],colorScheme[3],0,12,5,5,true})
 			}),
 			this->weekView
-		}, {colorScheme[0], colorScheme[2], colorScheme[3], 0, 24, 0, 0, false, 20}));
+		}, {colorScheme[0], colorScheme[2], colorScheme[3], 0, 12, 0, 0, false, 20}));
 }
 
 void TM_CalendarView::setReferenceDate(TM_YMD date)

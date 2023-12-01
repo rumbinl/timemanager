@@ -9,8 +9,8 @@
 class TM_View : public TM_RenderObject
 {
     public:
-        TM_View(SkRect bounds, std::vector<TM_RenderObject*> objects, bool scroll=false, TM_ViewSetting viewSetting={colorScheme[0],colorScheme[2],colorScheme[3],0,24,0,0});
-        TM_View(SkRect bounds, std::vector<SkScalar> proportionTable, std::vector<TM_RenderObject*> objects, TM_ViewSetting viewSetting={colorScheme[0],colorScheme[2],colorScheme[3],0,24,0,0});
+        TM_View(SkRect bounds, std::vector<TM_RenderObject*> objects, bool scroll=false, TM_ViewSetting viewSetting={colorScheme[0],colorScheme[2],colorScheme[3],0,12,0,0});
+        TM_View(SkRect bounds, std::vector<SkScalar> proportionTable, std::vector<TM_RenderObject*> objects, TM_ViewSetting viewSetting={colorScheme[0],colorScheme[2],colorScheme[3],0,12,0,0});
         SkScalar getYOffset();
         void setYOffset(SkScalar newYOffset);
         void Render(TM_RenderInfo renderInfo) override;

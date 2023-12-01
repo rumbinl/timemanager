@@ -19,7 +19,7 @@ void TM_TextBox::Render(TM_RenderInfo renderInfo)
 	SkFont* font = renderInfo.textFont;
     if(!this->fitted)
     {
-        TM_TextView::setHeightFont(font);
+        TM_TextView::setHeightFont(font, renderInfo);
         this->fitted = true;
     }
     if(this->content.empty())
@@ -46,7 +46,7 @@ void TM_TextBox::Render(TM_RenderInfo renderInfo)
 		SkRect textBounds;
 		font->measureText(this->content.substr(0,this->cursorIndex).c_str(), this->cursorIndex*sizeof(char), SkTextEncoding::kUTF8, &textBounds);
 		this->cursorX = textBounds.width()+TM_TextView::getTextXOffset();
-		renderInfo.canvas->drawLine(this->bounds.x()+this->cursorX, this->bounds.y(), this->bounds.x()+this->cursorX, this->bounds.y()+this->viewSetting.fontSize-fontMetrics.fDescent, paint);
+		renderInfo.canvas->drawLine(this->bounds.x()+this->cursorX, this->bounds.y(), this->bounds.x()+this->cursorX, this->bounds.y()+this->viewSetting.fontSize*renderInfo.dpi-fontMetrics.fDescent, paint);
 	}
 	if(this->select) TM_TextView::invertColors();
 }
@@ -92,7 +92,7 @@ bool TM_TextBox::PollEvents(TM_EventInput eventInput)
 	{
 		if(eventInput.mousePressed)
 		{
-			eventInput.font->setSize(this->viewSetting.fontSize);
+			eventInput.font->setSize(this->viewSetting.fontSize*eventInput.dpi);
 			this->locatePosition(eventInput.mouseX-this->bounds.x()+TM_TextView::getTextXOffset(),(this->content)+" ",eventInput.font);
 			this->select = true;
 			ret = true;

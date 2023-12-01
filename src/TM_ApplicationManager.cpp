@@ -17,6 +17,8 @@ TM_ApplicationManager::TM_ApplicationManager()
 		std::cout<<"Failed to create Skia canvas!"<<std::endl;
 	}
 
+	std::cout<<this->window_ptr.getDPI()<<std::endl;
+
 	this->should_render_update = true;
 	this->skia_canvas_clear_color = colorScheme[BACKGROUND_COLOR_INDEX];
 
@@ -35,19 +37,19 @@ TM_ApplicationManager::TM_ApplicationManager()
 					(subView)->setRenderObjectExistence(0, true);
 					(subView)->setRenderObjectExistence(1, false);
 					(subView)->setRenderObjectExistence(2, false);
-				}, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true}),
+				}, {colorScheme[1],colorScheme[2],colorScheme[3],0,12,5,5,true}),
 				new TM_Button<int>("\ue1b2", SkRect::MakeEmpty(), (int)0, &this->mainView, [](void* context, int data) {
 					TM_RenderObject* subView = (*((TM_RenderObject**)context))->getRenderObject(1)->getRenderObject(0);
 					(subView)->setRenderObjectExistence(0, false);
 					(subView)->setRenderObjectExistence(1, true);
 					(subView)->setRenderObjectExistence(2, false);
-				}, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,5,true}),
+				}, {colorScheme[1],colorScheme[2],colorScheme[3],0,12,5,5,true}),
 				new TM_Button<int>("\ue9fc", SkRect::MakeEmpty(), (int)0, &this->mainView, [](void* context, int data) {
 					TM_RenderObject* subView = (*((TM_RenderObject**)context))->getRenderObject(1)->getRenderObject(0);
 					(subView)->setRenderObjectExistence(0, false);
 					(subView)->setRenderObjectExistence(1, false);
 					(subView)->setRenderObjectExistence(2, true);
-				}, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,5,0,true})
+				}, {colorScheme[1],colorScheme[2],colorScheme[3],0,12,5,0,true})
 			}),
 
 		new TM_HorizontalView(SkRect::MakeEmpty(), {
@@ -64,12 +66,12 @@ TM_ApplicationManager::TM_ApplicationManager()
 					new TM_FileDrop("Place file here.", SkRect::MakeWH(0,150), this->importTaskManPtr, [](void* importTaskManPtr, std::string filePath){
 						((TM_TaskManager*)importTaskManPtr)->openDocXFile(filePath);
 					})
-				}, {colorScheme[0],colorScheme[2],colorScheme[3],0,24,10,10})
+				}, {colorScheme[0],colorScheme[2],colorScheme[3],0,12,10,10})
 
-			}, {colorScheme[0],colorScheme[2],colorScheme[3],0,24,0,0}),
+			}, {colorScheme[0],colorScheme[2],colorScheme[3],0,12,0,0}),
 			this->taskViewPtr
 		})
-	}, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,0,0});
+	}, {colorScheme[1],colorScheme[2],colorScheme[3],0,12,0,0});
 	TM_RenderObject* subView = this->mainView->getRenderObject(1)->getRenderObject(0);
 	(subView)->setRenderObjectExistence(0, true);
 	(subView)->setRenderObjectExistence(1, false);
@@ -94,7 +96,7 @@ void TM_ApplicationManager::Render()
 	this->skia_canvas->resetMatrix();
 	this->skia_canvas->clear(this->skia_canvas_clear_color);
 
-	TM_RenderInfo renderInfo = {this->skia_canvas, this->skia_fontList[0], this->skia_fontList[1]};
+	TM_RenderInfo renderInfo = {this->skia_canvas, this->skia_fontList[0], this->skia_fontList[1], this->window_ptr.getDPI()};
 	this->mainView->setBounds(SkRect::MakeXYWH(0,0,(SkScalar)this->window_ptr.getWindowWidth(), this->window_ptr.getWindowHeight()));
 	this->mainView->Render(renderInfo);
 

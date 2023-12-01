@@ -7,12 +7,12 @@ TM_CalendarMonthView::TM_CalendarMonthView(SkRect bounds, void* contextPtr, void
     previousMonth = TM_Button<int>("\ue5e0", SkRect::MakeWH(10,0), -1, this->monthView, [](void* monthViewPtr, int data) {
         TM_MonthView* monthView = (TM_MonthView*)monthViewPtr;
         monthView->setMonthYear(monthView->getMonthYear()-std::chrono::months{1});
-    }, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,0,0,true});
+    }, {colorScheme[1],colorScheme[2],colorScheme[3],0,12,0,0,true});
     nextMonth = TM_Button<int>("\ue5e1", SkRect::MakeWH(10,0), 1, this->monthView, [](void* monthViewPtr, int data) {
         TM_MonthView* monthView = (TM_MonthView*)monthViewPtr;
         monthView->setMonthYear(monthView->getMonthYear()+std::chrono::months{1});
-    }, {colorScheme[1],colorScheme[2],colorScheme[3],0,24,0,0,true});
-    controlPanel = TM_HorizontalView(SkRect::MakeWH(TM_NormalWidth, 50), {&previousMonth, &dataView, &nextMonth}, {0.1, 0.8, 0.1}, {colorScheme[0],colorScheme[2],colorScheme[3],0,24,0,0,false,20});
+    }, {colorScheme[1],colorScheme[2],colorScheme[3],0,12,0,0,true});
+    controlPanel = TM_HorizontalView(SkRect::MakeWH(TM_NormalWidth, 50), {&previousMonth, &dataView, &nextMonth}, {0.1, 0.8, 0.1}, {colorScheme[0],colorScheme[2],colorScheme[3],0,12,0,0,false,20});
 
     this->addRenderObject(&this->controlPanel);
     this->addRenderObject(this->monthView);

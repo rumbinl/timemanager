@@ -8,7 +8,7 @@ TM_MonthView::TM_MonthView(SkRect bounds, void* contextPtr, void (*setDateFunc)(
     this->getDateFunc = getDateFunc;
     this->weekDayLabels = new TM_HorizontalView(SkRect::MakeEmpty(), {});
     for(std::string weekName : dayNames)
-        weekDayLabels->addRenderObject(new TM_TextView(weekName.substr(0,2), SkRect::MakeEmpty(), viewSetting={colorScheme[0],colorScheme[2],colorScheme[3],0,24,0,0}));
+        weekDayLabels->addRenderObject(new TM_TextView(weekName.substr(0,2), SkRect::MakeEmpty(), viewSetting={colorScheme[0],colorScheme[2],colorScheme[3],0,12,0,0}));
 
     this->dayViewList = std::vector(31, 
         TM_SelectButton<int>("0", 
@@ -25,7 +25,7 @@ TM_MonthView::TM_MonthView(SkRect bounds, void* contextPtr, void (*setDateFunc)(
                 TM_YMD date = monthView->getDate();
                 return month.year()==date.year() && month.month() == date.month() && dayIndex == static_cast<unsigned int>(monthView->getDate().day());
             }, 
-        {colorScheme[0],colorScheme[2],colorScheme[3],0,24,0,0})
+        {colorScheme[0],colorScheme[2],colorScheme[3],0,12,0,0})
     );
 
     for(int i=0; i<31; i++)
@@ -41,7 +41,7 @@ TM_MonthView::TM_MonthView(SkRect bounds, void* contextPtr, void (*setDateFunc)(
 void TM_MonthView::Render(TM_RenderInfo renderInfo)
 {
     this->updateDate();
-    renderInfo.textFont->setSize(this->viewSetting.fontSize);
+    renderInfo.textFont->setSize(this->viewSetting.fontSize * renderInfo.dpi);
 
     int firstDay = weekDayFromDate({this->month.year(),this->month.month(),std::chrono::day{1}}),
         numDays  = TM_NumMonthDays({this->month.year(),this->month.month(),std::chrono::day{1}}),
