@@ -27,7 +27,7 @@ TM_ApplicationManager::TM_ApplicationManager()
 	this->importTaskInfoViewPtr = new TM_ImportTaskInfoView(SkRect::MakeEmpty(), this->importTaskManPtr, this->taskManPtr, [](TM_TaskManager* taskManager) -> std::pair<TM_TaskItIt,TM_TaskItIt> {
 		return {taskManager->getStartIt(), taskManager->getEndIt()};
 	});
-	this->taskViewPtr = new TM_TaskView(SkRect::MakeEmpty(), this->taskManPtr);
+	this->taskViewPtr = new TM_TaskView(SkRect::MakeEmpty(), this->taskManPtr, this);
 	this->mainView = new TM_View(SkRect::MakeXYWH(0,0,this->window_ptr.getWindowWidth(),this->window_ptr.getWindowHeight()), {0, 1.00}, {
 		new TM_HorizontalView(SkRect::MakeWH(0,TM_NormalHeight), {
 				new TM_Button<int>("\uefe8", SkRect::MakeEmpty(), (int)0, &this->mainView, [](void* context, int data) {
@@ -82,6 +82,7 @@ void TM_ApplicationManager::Run()
     {
         if(this->should_render_update)
         {
+			std::cout<<"Render"<<std::endl;
             this->Render();
             this->should_render_update = false;
         }
@@ -104,52 +105,52 @@ void TM_ApplicationManager::Render()
 
 void TM_ApplicationManager::PollEvents()
 {
-    if(SDL_WaitEvent(&this->SDL_event_ptr))
-    {
-		if(this->SDL_event_ptr.type==SDL_EVENT_QUIT)
-			this->should_terminate=true;
-		else if(this->SDL_event_ptr.type == SDL_EVENT_WINDOW_RESIZED)
-		{
-			this->window_ptr.Handle_resize(&this->SDL_event_ptr);
-			this->skia_canvas = this->window_ptr.Get_skia_canvas_ptr();
-			this->should_render_update = true;
-		}
-		else
-		{
-			float mouseX,mouseY,scrollY=0.0f,scrollX=0.0f;
+    while(!SDL_PollEvent(&this->SDL_event_ptr) && !this->should_render_update);
 
-			bool pressed = SDL_event_ptr.type==SDL_EVENT_MOUSE_BUTTON_DOWN;
+	if(this->SDL_event_ptr.type==SDL_EVENT_QUIT)
+		this->should_terminate=true;
+	else if(this->SDL_event_ptr.type == SDL_EVENT_WINDOW_RESIZED)
+	{
+		this->window_ptr.Handle_resize(&this->SDL_event_ptr);
+		this->skia_canvas = this->window_ptr.Get_skia_canvas_ptr();
+		this->should_render_update = true;
+	}
+	else
+	{
+		float mouseX,mouseY,scrollY=0.0f,scrollX=0.0f;
 
-			std::string inputText = "";
+		bool pressed = SDL_event_ptr.type==SDL_EVENT_MOUSE_BUTTON_DOWN;
 
-			if(SDL_event_ptr.type == SDL_EVENT_TEXT_INPUT)
-				inputText = SDL_event_ptr.text.text;
+		std::string inputText = "";
 
-			SDL_PumpEvents(); 
+		if(SDL_event_ptr.type == SDL_EVENT_TEXT_INPUT)
+			inputText = SDL_event_ptr.text.text;
 
-			bool held = (SDL_GetMouseState(&mouseX,&mouseY)&1)>0; 
+		SDL_PumpEvents(); 
 
-			if(this->SDL_event_ptr.type == SDL_EVENT_MOUSE_WHEEL)
-				scrollY = this->SDL_event_ptr.wheel.y, scrollX = this->SDL_event_ptr.wheel.x;
+		bool held = (SDL_GetMouseState(&mouseX,&mouseY)&1)>0; 
 
-			TM_EventInput eventInput = {
-					mouseX*this->window_ptr.getDPI(), 
-					mouseY*this->window_ptr.getDPI(), 
-					scrollX*scrollSensFactor*(this->SDL_event_ptr.wheel.direction==SDL_MOUSEWHEEL_FLIPPED?-1:1),
-					scrollY*scrollSensFactor*(this->SDL_event_ptr.wheel.direction==SDL_MOUSEWHEEL_FLIPPED?-1:1),
-					this->window_ptr.getDPI(),
-					pressed,held,
-					SDL_event_ptr.type == SDL_EVENT_KEY_DOWN, 
-					SDL_event_ptr.type == SDL_EVENT_DROP_FILE,
-					inputText,(SDL_event_ptr.type == SDL_EVENT_DROP_FILE?SDL_event_ptr.drop.file:""),this->skia_fontList[this->defaultFont],SDL_event_ptr.key.keysym.scancode
-				};
+		if(this->SDL_event_ptr.type == SDL_EVENT_MOUSE_WHEEL)
+			scrollY = this->SDL_event_ptr.wheel.y, scrollX = this->SDL_event_ptr.wheel.x;
 
-			should_render_update = this->mainView->PollEvents(eventInput);
+		TM_EventInput eventInput = {
+				mouseX*this->window_ptr.getDPI(), 
+				mouseY*this->window_ptr.getDPI(), 
+				scrollX*scrollSensFactor*(this->SDL_event_ptr.wheel.direction==SDL_MOUSEWHEEL_FLIPPED?-1:1),
+				scrollY*scrollSensFactor*(this->SDL_event_ptr.wheel.direction==SDL_MOUSEWHEEL_FLIPPED?-1:1),
+				this->window_ptr.getDPI(),
+				pressed,held,
+				SDL_event_ptr.type == SDL_EVENT_KEY_DOWN, 
+				SDL_event_ptr.type == SDL_EVENT_DROP_FILE,
+				inputText,(SDL_event_ptr.type == SDL_EVENT_DROP_FILE?SDL_event_ptr.drop.file:""),this->skia_fontList[this->defaultFont],SDL_event_ptr.key.keysym.scancode,
+				this
+			};
 
-			if(SDL_event_ptr.type == SDL_EVENT_DROP_FILE)
-				SDL_free(SDL_event_ptr.drop.file);
-		}
-    }
+		should_render_update = this->mainView->PollEvents(eventInput);
+
+		if(SDL_event_ptr.type == SDL_EVENT_DROP_FILE)
+			SDL_free(SDL_event_ptr.drop.file);
+	}
 }
 
 void TM_ApplicationManager::LoadFont(std::string fontPath)
@@ -172,6 +173,11 @@ void TM_ApplicationManager::setDefaultFont(int newDefaultFont)
 int TM_ApplicationManager::getDefaultFont()
 {
     return this->defaultFont;
+}
+
+void TM_ApplicationManager::setShouldRenderUpdate()
+{
+	this->should_render_update = true;
 }
 
 TM_ApplicationManager::~TM_ApplicationManager()

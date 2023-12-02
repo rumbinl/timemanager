@@ -1,12 +1,13 @@
 #include <TM_TimerView.hpp>
 
-TM_TimerView::TM_TimerView(SkRect bounds, SkScalar dialThickness, void* contextPtr, std::pair<TM_Time,TM_Time> (*getProgress)(void* contextPtr), void (*setProgress)(void* contextPtr, TM_Time time), TM_ViewSetting viewSetting) : TM_RenderObject(bounds, viewSetting)
+TM_TimerView::TM_TimerView(SkRect bounds, TM_ApplicationManager* appManPtr, SkScalar dialThickness, void* contextPtr, std::pair<TM_Time,TM_Time> (*getProgress)(void* contextPtr), void (*setProgress)(void* contextPtr, TM_Time time), TM_ViewSetting viewSetting) : TM_RenderObject(bounds, viewSetting)
 {
     this->contextPtr = contextPtr;
     this->getProgress = getProgress;
     this->setProgress = setProgress;
     this->dialThickness = dialThickness;
     this->progressText = new TM_TextView("00.00.00", SkRect::MakeEmpty());
+    this->appManPtr = appManPtr;
 }
 
 void TM_TimerView::Render(TM_RenderInfo renderInfo)
@@ -59,18 +60,15 @@ void TM_TimerView::Render(TM_RenderInfo renderInfo)
 void TM_TimerView::startCountdown()
 {
     this->countingDown = true;
-    this->countdownThread = std::thread([this] {
+    this->countdownThread = std::thread([this]() {
         while(this->countingDown)
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
             if(this->setProgress!=NULL && this->countingDown)
             {
                 this->setProgress(this->contextPtr, this->getProgress(this->contextPtr).first + TM_Time{0,0,1});
-                SDL_Event event;
-                event.type = SDL_EVENT_USER;
-                SDL_PushEvent(&event);
+                this->appManPtr->setShouldRenderUpdate();
             }
-
         }
     });
 }

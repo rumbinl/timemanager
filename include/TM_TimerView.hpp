@@ -4,13 +4,14 @@
 #include <TM_RenderObject.hpp>
 #include <TM_Button.hpp>
 #include <TM_TextView.hpp>
+#include <TM_ApplicationManager.hpp>
 
 #include <thread>
 
 class TM_TimerView : public TM_RenderObject
 {
     public:
-        TM_TimerView(SkRect bounds=SkRect::MakeEmpty(), SkScalar dialThickness=0, void* contextPtr=NULL, std::pair<TM_Time,TM_Time> (*getProgress)(void* contextPtr)=NULL, void (*setProgress)(void* contextPtr, TM_Time time)=NULL, TM_ViewSetting viewSetting = {colorScheme[3],colorScheme[2],colorScheme[1],0,12,0,0});
+        TM_TimerView(SkRect bounds=SkRect::MakeEmpty(), TM_ApplicationManager* appManPtr=NULL, SkScalar dialThickness=0, void* contextPtr=NULL, std::pair<TM_Time,TM_Time> (*getProgress)(void* contextPtr)=NULL, void (*setProgress)(void* contextPtr, TM_Time time)=NULL, TM_ViewSetting viewSetting = {colorScheme[3],colorScheme[2],colorScheme[1],0,12,0,0});
         void Render(TM_RenderInfo renderInfo) override;
         void startCountdown();
         void stopCountdown();
@@ -21,6 +22,8 @@ class TM_TimerView : public TM_RenderObject
         void (*setProgress)(void* contextPtr, TM_Time time);
         TM_TextView* progressText;
         SkScalar dialThickness;
+
+        TM_ApplicationManager* appManPtr;
 
         std::thread countdownThread;
         bool countingDown = false;

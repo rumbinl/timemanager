@@ -7,7 +7,6 @@
 #include <TM_Button.hpp>
 #include <TM_Task.hpp>
 #include <TM_TaskManager.hpp>
-#include <TM_TaskView.hpp>
 
 class TM_CalendarView : public TM_View
 {

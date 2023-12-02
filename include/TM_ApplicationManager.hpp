@@ -22,6 +22,7 @@ class TM_ApplicationManager
 		void setDefaultFont(int newDefaultFont);
 		int getDefaultFont();
 		void Run();
+		void setShouldRenderUpdate();
 
 		~TM_ApplicationManager();
 
@@ -33,8 +34,6 @@ class TM_ApplicationManager
 		std::vector<SkFont*> skia_fontList;
 		int defaultFont=-1;
 		TM_View* mainView;
-		/*TM_CalendarView* calendarView;
-		TM_TaskView* taskView;*/
 
         // Pointers to Timeman classes
 		TM_Graphics_Window window_ptr =TM_Graphics_Window("Timeman", 1080, 540);
