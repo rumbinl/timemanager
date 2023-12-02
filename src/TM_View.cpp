@@ -63,7 +63,7 @@ void TM_View::Render(TM_RenderInfo renderInfo)
 		{
 			if(renderObjects[i]->getMaxBounds().height()>0)
 				nonFitCount++;
-			height -= renderObjects[i]->getMaxBounds().height()*renderInfo.dpi;
+			height -= renderObjects[i]->getMaxBounds().height() * renderInfo.dpi;
 		}
 	}
 
@@ -103,6 +103,11 @@ void TM_View::Render(TM_RenderInfo renderInfo)
 
 		y += this->renderObjects[i]->getBounds().height() + this->viewSetting.paddingY;
     }
+
+	if(this->fit)
+	{
+		this->setBounds(SkRect::MakeXYWH(this->bounds.x(), this->bounds.y(), this->bounds.width(), y));
+	}
 
     this->srcBounds.setWH(this->bounds.width(), y);
 

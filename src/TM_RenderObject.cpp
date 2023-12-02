@@ -83,3 +83,8 @@ SkRect TM_RenderObject::getMaxBounds()
 {
     return this->maxBounds;
 }
+
+void TM_RenderObject::setMaxBounds(SkRect maxBounds)
+{
+    this->maxBounds = maxBounds;
+}

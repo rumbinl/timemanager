@@ -28,8 +28,8 @@ TM_ApplicationManager::TM_ApplicationManager()
 		return {taskManager->getStartIt(), taskManager->getEndIt()};
 	});
 	this->taskViewPtr = new TM_TaskView(SkRect::MakeEmpty(), this->taskManPtr);
-	this->mainView = new TM_View(SkRect::MakeXYWH(0,0,this->window_ptr.getWindowWidth(),this->window_ptr.getWindowHeight()), {0.05, 0.95}, {
-		new TM_HorizontalView(SkRect::MakeEmpty(), {
+	this->mainView = new TM_View(SkRect::MakeXYWH(0,0,this->window_ptr.getWindowWidth(),this->window_ptr.getWindowHeight()), {0, 1.00}, {
+		new TM_HorizontalView(SkRect::MakeWH(0,TM_NormalHeight), {
 				new TM_Button<int>("\uefe8", SkRect::MakeEmpty(), (int)0, &this->mainView, [](void* context, int data) {
 					TM_RenderObject* subView = (*((TM_RenderObject**)context))->getRenderObject(1)->getRenderObject(0);
 					(subView)->setRenderObjectExistence(0, true);
@@ -106,7 +106,6 @@ void TM_ApplicationManager::PollEvents()
 {
     if(SDL_WaitEvent(&this->SDL_event_ptr))
     {
-		
 		if(this->SDL_event_ptr.type==SDL_EVENT_QUIT)
 			this->should_terminate=true;
 		else if(this->SDL_event_ptr.type == SDL_EVENT_WINDOW_RESIZED)

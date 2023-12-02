@@ -6,7 +6,8 @@ TM_HorizontalView::TM_HorizontalView(SkRect bounds, std::vector<TM_RenderObject*
 
 void TM_HorizontalView::Render(TM_RenderInfo renderInfo) 
 {
-	SkScalar objectWidth = (this->bounds.width()-this->viewSetting.paddingX * (this->getNumExists()-1))/(SkScalar)this->getNumExists(),
+	SkScalar contentWidth = (this->bounds.width()-this->viewSetting.paddingX * (this->getNumExists()-1)),
+			 objectWidth = contentWidth/(SkScalar)this->getNumExists(),
 			 objectHeight = this->bounds.height() - 2 * this->viewSetting.paddingY;
 
 	if(this->viewSetting.borderThickness>0)
@@ -23,19 +24,35 @@ void TM_HorizontalView::Render(TM_RenderInfo renderInfo)
 	renderInfo.canvas->translate(this->bounds.x(), this->bounds.y());
 
 	SkScalar x = 0, i=0;
+	int nonFitCount = 0;
+
+	if(this->fit)
+	{
+		for(int i=0;i<renderObjects.size();i++)
+		{
+			if(renderObjects[i]->exists())
+			{
+				if(renderObjects[i]->getMaxBounds().width()>0)
+					nonFitCount++;
+				contentWidth -= renderObjects[i]->getMaxBounds().width();
+			}
+		}
+	}
 
 	for(TM_RenderObject* renderObject : this->renderObjects)
 	{
-		if(!renderObject->exists()) continue;
+		if(!renderObject->exists()) { i++; continue;}
 		SkScalar width;
 		if(fit && !proportionTable.size())
 		{
-			width = (this->bounds.width()-this->viewSetting.paddingX * (this->getNumExists()-1))/(SkScalar)this->getNumExists();
+			width = contentWidth / (this->getNumExists() - (SkScalar)nonFitCount);
 		}
 		else if(fit)
 		{
-			width = (this->bounds.width()-this->viewSetting.paddingX * (this->getNumExists()-1)) * proportionTable[i];
+			width = contentWidth * proportionTable[i];
 		}
+		if(renderObject->getMaxBounds().width() > 0)
+			width = renderObject->getMaxBounds().width();
 		renderObject->setBounds(SkRect::MakeXYWH(x,this->viewSetting.paddingY,width,objectHeight));
 		renderObject->Render(renderInfo);
 		x+=width+this->viewSetting.paddingX;

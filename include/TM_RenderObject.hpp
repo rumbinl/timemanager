@@ -20,6 +20,7 @@ class TM_RenderObject
         bool getRenderObjectExistence(int index);
 		void addRenderObject(TM_RenderObject* renderObject);
         SkRect getMaxBounds();
+        void setMaxBounds(SkRect maxBounds);
 		TM_RenderObject* getRenderObject(int index);
 		int getNumExists();
     protected:

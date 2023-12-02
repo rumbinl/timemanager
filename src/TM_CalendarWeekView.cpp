@@ -30,9 +30,7 @@ void TM_CalendarWeekView::RenderTimes(TM_RenderInfo renderInfo)
 		renderInfo.textFont->measureText(timeString.c_str(), timeString.size()*sizeof(char), SkTextEncoding::kUTF8, &text_bounds, &paint);
 
 		if(!i)
-		{
-			y += text_bounds.height()-fontMetrics.fBottom;
-		}
+			y += viewSetting.fontSize+fontMetrics.fDescent;
 
 		renderInfo.canvas->drawString(timeString.c_str(), xOff-text_bounds.width(), y+yOff+fontMetrics.fBottom, *renderInfo.textFont, paint);
 		renderInfo.canvas->drawLine(xOff, y+yOff, this->bounds.width(), y+yOff, paint);

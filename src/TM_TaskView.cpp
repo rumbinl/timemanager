@@ -38,7 +38,7 @@ TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr) : TM_View(bo
         ((TM_TaskManager*)context)->deleteCurrentTask();
     }, {colorScheme[1],colorScheme[2],colorScheme[3],0,12,0,0,true});
 
-    this->startDateMonthView = new TM_CalendarMonthView(SkRect::MakeWH(0,175), (void*)this->taskManPtr, 
+    this->startDateMonthView = new TM_CalendarMonthView(SkRect::MakeEmpty(), (void*)this->taskManPtr, 
 
         [](void* taskManPtr, TM_YMD date) {
             TM_TaskManager* taskMan = (TM_TaskManager*)taskManPtr;
@@ -54,7 +54,7 @@ TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr) : TM_View(bo
         }
     );
 
-    this->endDateMonthView = new TM_CalendarMonthView(SkRect::MakeWH(0,175), (void*)this->taskManPtr, 
+    this->endDateMonthView = new TM_CalendarMonthView(SkRect::MakeEmpty(), (void*)this->taskManPtr, 
 
         [](void* taskManPtr, TM_YMD date) {
             TM_TaskManager* taskMan = (TM_TaskManager*)taskManPtr;
@@ -96,7 +96,7 @@ TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr) : TM_View(bo
         taskView->setRenderObjectExistence(2,!taskView->getRenderObjectExistence(2));
     }, {colorScheme[1],colorScheme[2],colorScheme[3],0,12,5,5,false,20}));
 
-    this->renderObjects.push_back(new TM_View(SkRect::MakeWH(0,320), {1.0, 0.0}, { 
+    this->renderObjects.push_back(new TM_View(SkRect::MakeWH(0,350), {0.5,0.5}, { 
             new TM_TimeDial(SkRect::MakeEmpty(), this->taskManPtr, 
                 [](void* taskManPtr, TM_Time time) {
                     ((TM_TaskManager*)taskManPtr)->setDateTime(ZeroDate, time);
@@ -106,7 +106,7 @@ TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr) : TM_View(bo
                     return ((TM_TaskManager*)taskManPtr)->getStartTime();
                 }),
             this->startDateMonthView
-        },{colorScheme[0],colorScheme[2],colorScheme[3],0,12,0,10})
+        }, {colorScheme[0],colorScheme[2],colorScheme[3],0,12,0,10})
     );
 
     this->renderObjects.push_back(new TM_Button<bool>("End Date/Time", SkRect::MakeWH(TM_SmallWidth,TM_NormalHeight), false, (void*)this, [](void* context, bool data) {
@@ -114,7 +114,7 @@ TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr) : TM_View(bo
         taskView->setRenderObjectExistence(4,!taskView->getRenderObjectExistence(4));
     }, {colorScheme[1],colorScheme[2],colorScheme[3],0,12,5,5,false,20}));
 
-    this->renderObjects.push_back(new TM_View(SkRect::MakeWH(0,320), {1.0, 0.0}, { 
+    this->renderObjects.push_back(new TM_View(SkRect::MakeWH(0,350), {0.5, 0.5}, { 
             new TM_TimeDial(SkRect::MakeEmpty(), this->taskManPtr, 
                 [](void* taskManPtr, TM_Time time) {
                     ((TM_TaskManager*)taskManPtr)->setDateTime(ZeroDate, ZeroTime, ZeroDate, time);

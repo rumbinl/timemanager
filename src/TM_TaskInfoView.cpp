@@ -119,7 +119,7 @@ bool TM_TaskInfoView::PollEvents(TM_EventInput eventInput)
 
             this->taskInfoSectionList[count]->setTaskIt(currentIt);
 
-            SkScalar width = std::fmin(this->bounds.width(), this->renderObjects[count]->getMaxBounds().width());
+            SkScalar width = std::fmin(this->bounds.width(), this->renderObjects[count]->getMaxBounds().width()*eventInput.dpi);
             this->renderObjects[count]->setBounds(SkRect::MakeXYWH(this->bounds.x() + (this->bounds.width()-width)/2.0f, yPos, width, this->renderObjects[count]->getBounds().height()));
 
             if(this->renderObjects[count]->PollEvents(eventInput))

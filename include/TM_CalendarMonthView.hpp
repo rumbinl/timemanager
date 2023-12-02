@@ -11,13 +11,16 @@ class TM_CalendarMonthView : public TM_View
     public:
         TM_CalendarMonthView(SkRect bounds=SkRect::MakeEmpty(), void* contextPtr=NULL, void (*setDateFunc)(void* contextPtr, TM_YMD date)=NULL, TM_YMD (*getDateFunc)(void* contextPtr)=NULL, TM_ViewSetting viewSetting={colorScheme[0],colorScheme[3],colorScheme[3],0,16,0,0});
 
-        void Render(TM_RenderInfo renderInfo) override;
-       
+        std::chrono::year_month getMonthYear();
+
         void setDate(TM_YMD date);
 
+        SkRect getSaveBounds();
+
+        void switchNavigators();
     private:
         TM_MonthView* monthView;
-        TM_TextView dataView;
         TM_HorizontalView controlPanel;
-        TM_Button<int> nextMonth, previousMonth;
+        SkRect saveMaxBounds;
+        TM_Button<int> nextMonth, previousMonth, dataView;
 };
