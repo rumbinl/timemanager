@@ -14,12 +14,10 @@
 #include <TM_GradientView.hpp>
 #include <TM_ApplicationManager.hpp>
 
-class TM_TimerView;
-
 class TM_TaskView : public TM_View
 {
     public:
-        TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr, TM_ApplicationManager* appManPtr);
+        TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr);
         void setTask(TM_Task* task);
         void setDate(TM_YMD date);
         void Render(TM_RenderInfo renderInfo) override;
