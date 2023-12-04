@@ -1,6 +1,6 @@
 #include <TM_TaskView.hpp>
 
-TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr, TM_ApplicationManager* appManPtr) : TM_View(bounds, {},true,{colorScheme[0],colorScheme[3],colorScheme[3],0,12,10,10})
+TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr) : TM_View(bounds, {},true,{colorScheme[0],colorScheme[3],colorScheme[3],0,12,10,10})
 {
     this->taskManPtr = taskManPtr;
     this->currentTask = &this->dummyTask;
@@ -78,7 +78,7 @@ TM_TaskView::TM_TaskView(SkRect bounds, TM_TaskManager* taskManPtr, TM_Applicati
     this->taskInfoViewPtr = new TM_TaskInfoView(SkRect::MakeWH(TM_NormalWidth,150), this->taskManPtr);
     this->headTaskViewPtr = new TM_HeadTaskInfoSection(SkRect::MakeWH(TM_NormalWidth,50), this->taskManPtr);
 
-    this->timerViewPtr = new TM_TimerView(SkRect::MakeEmpty(), appManPtr, TM_NormalHeight, this->taskManPtr, [](void* contextPtr) -> std::pair<TM_Time,TM_Time> {
+    this->timerViewPtr = new TM_TimerView(SkRect::MakeEmpty(), TM_NormalHeight, this->taskManPtr, [](void* contextPtr) -> std::pair<TM_Time,TM_Time> {
         TM_TaskManager* taskManPtr = (TM_TaskManager*)contextPtr;
         TM_Task* currentTask;
         if((currentTask = taskManPtr->getCurrentTask()) != NULL)
