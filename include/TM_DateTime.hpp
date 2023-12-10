@@ -67,6 +67,8 @@ int TM_TimeMinutes(TM_Time time);
 
 int weekDayFromDate(std::chrono::year_month_day ymd);
 
+std::chrono::days TM_GetTimeDays(TM_Time time);
+
 std::string TM_DateToString(std::chrono::year_month_day ymd);
 
 std::chrono::year_month_day getDateFromVars(int d, int m, int y);

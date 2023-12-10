@@ -33,6 +33,20 @@ TM_CalendarView::TM_CalendarView(SkRect bounds, TM_TaskManager* taskManPtr) : TM
 					{
 						TM_CalendarWeekView* context = (TM_CalendarWeekView*)contextPtr;
 						context->setDaySpan(context->getDaySpan()+1);
+					}, {colorScheme[1],colorScheme[2],colorScheme[3],0,12,5,5,true}),
+				
+				new TM_Button<int>("\ue408", SkRect::MakeEmpty(), 0, this, 
+					[](void* contextPtr, int data)
+					{
+						TM_CalendarView* context = (TM_CalendarView*)contextPtr;
+						context->setReferenceDate(std::chrono::sys_days{context->getReferenceDate()} - std::chrono::days{1});
+					}, {colorScheme[1],colorScheme[2],colorScheme[3],0,12,5,5,true}),
+
+				new TM_Button<int>("\ue409", SkRect::MakeEmpty(), 0, this, 
+					[](void* contextPtr, int data)
+					{
+						TM_CalendarView* context = (TM_CalendarView*)contextPtr;
+						context->setReferenceDate(std::chrono::sys_days{context->getReferenceDate()} + std::chrono::days{1});
 					}, {colorScheme[1],colorScheme[2],colorScheme[3],0,12,5,5,true})
 			}),
 			this->weekView

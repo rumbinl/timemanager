@@ -451,3 +451,19 @@ int TM_TaskManager::getRepeat()
         return (**this->currentTask)->getRepeat();
     return 0;
 }
+
+TM_Time TM_TaskManager::getTaskLength()
+{
+    if(this->currentTask != this->dateSortedTasks.end())
+        return (**this->currentTask)->getTaskLength();
+    return {0,0};
+}
+
+void TM_TaskManager::setTaskLength(TM_Time time)
+{
+    if(this->currentTask != this->dateSortedTasks.end())
+    {
+        TM_Task* currentTask = **this->currentTask;
+        this->setDateTime(ZeroDate, ZeroTime, std::chrono::sys_days{currentTask->getStartDate()} + TM_GetTimeDays(currentTask->getStartTime() + time), TM_NormalizeTime(currentTask->getStartTime()+time));
+    }
+}
