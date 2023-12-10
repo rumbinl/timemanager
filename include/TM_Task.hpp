@@ -97,6 +97,7 @@ class TM_Task
         TM_Time getEndTime();
 
         TM_Time getTaskLength();
+        void setTaskLength(TM_Time time);
 
         void setName(std::string name);
         std::string getName();

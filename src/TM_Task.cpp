@@ -92,9 +92,8 @@ TM_Time TM_Task::getTaskLength()
     else
     {
         std::chrono::days dayDif = std::chrono::sys_days{endDate} - std::chrono::sys_days{startDate};
-        return {24 * (dayDif.count()-1) + 24-startTime.hours + endTime.hours, endTime.minutes - startTime.minutes };
+        return TM_Time{24 * (std::max(dayDif.count(),1)-1),0} + (TM_Time{24,0} - startTime) + endTime;
     }
-
 }
 
 int TM_Task::getDBID()
@@ -155,4 +154,10 @@ TM_YMD TM_Task::RepeatLastOccurence(TM_YMD viewStartDate, TM_YMD viewEndDate)
 	if(lastOccurrence >= viewStartDate)
 		return lastOccurrence;
 	return ZeroDate;
+}
+
+void TM_Task::setTaskLength(TM_Time time)
+{
+    this->endTime = TM_NormalizeTime(this->startTime + time);
+    this->endDate = std::chrono::sys_days{this->startDate} + TM_GetTimeDays(time + this->startTime);
 }

@@ -1,10 +1,11 @@
 #include <TM_TimeDial.hpp>
 
-TM_TimeDial::TM_TimeDial(SkRect bounds, void* timeManPtr, void (*setTime)(void* timeManPtr, TM_Time time), TM_Time (*getTime)(void* timeManPtr), TM_ViewSetting viewSetting) : TM_RenderObject(bounds, viewSetting)
+TM_TimeDial::TM_TimeDial(SkRect bounds, void* timeManPtr, void (*setTime)(void* timeManPtr, TM_Time time), TM_Time (*getTime)(void* timeManPtr), bool limited, TM_ViewSetting viewSetting) : TM_RenderObject(bounds, viewSetting)
 {
     this->timeManPtr = timeManPtr;
     this->getTime = getTime;
     this->setTime = setTime;
+    this->limited = limited;
 }
 
 void TM_TimeDial::Render(TM_RenderInfo renderInfo)
@@ -103,7 +104,7 @@ bool TM_TimeDial::PollEvents(TM_EventInput eventInput)
     eventInput.mouseX -= this->bounds.x();
     eventInput.mouseY -= this->bounds.y();
     SkScalar length = std::fmin(this->bounds.width(), this->bounds.height())/2.0f-this->dialThickness/2.0f;
-    SkScalar cx = this->bounds.width()/2.0f + sin(2 * M_PI * dialProgressPercentage/100.0f)*length, cy = this->bounds.height()/2.0f - length * cos(2 * M_PI * dialProgressPercentage/100.0f); 
+    SkScalar cx = this->bounds.width()/2.0f + sin(2 * M_PI * std::fmod(dialProgressPercentage, 100)/100.0f)*length, cy = this->bounds.height()/2.0f - length * cos(2 * M_PI * std::fmod(dialProgressPercentage,100)/100.0f); 
     SkRect rectBounds = SkRect::MakeXYWH(cx-this->dialThickness/2.0f, cy-this->dialThickness/2.0f, this->dialThickness, this->dialThickness);
     SkRRect circleBounds = SkRRect::MakeRectXY(rectBounds, this->dialThickness/2.0f, this->dialThickness/2.0f);
     if(eventInput.mouseHeld==false && this->select)
@@ -111,9 +112,10 @@ bool TM_TimeDial::PollEvents(TM_EventInput eventInput)
 
     if(select)
     {
-        SkScalar dAngle = NormalizeAngle(GetAnglePercentage(eventInput)-AngularMod(lastAngle,100));
+        SkScalar dAngle = NormalizeAngle(GetAnglePercentage(eventInput)-lastAngle);
         this->dialProgressPercentage += dAngle;
-        this->dialProgressPercentage = AngularMod(this->dialProgressPercentage, 200);
+        if(limited)
+            this->dialProgressPercentage = AngularMod(this->dialProgressPercentage, 200);
         this->lastAngle = GetAnglePercentage(eventInput);
         this->setTime(this->timeManPtr,this->getCurrentTime());
         should_update = true;
