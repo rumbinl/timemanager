@@ -162,6 +162,35 @@ void initDirectX(HWND hwnd)
 	fenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 }
 
+sk_sp<SkSurface> getBackbufferSurface()
+{
+	const uint64_t currentFenceValue = fenceValues[bufferIndex];
+	bufferIndex = swapChain->GetCurrentBackBufferIndex();
+
+	if(fence->GetCompletedValue() < fenceValues[bufferIndex])
+	{
+		fence->SetEventOnCompletion(fenceValues[bufferIndex], fenceEvent);
+
+		WaitForSingleObjectEx(fenceEvent, INFINITE, FALSE);
+	}
+
+	fenceValues[bufferIndex] = currentFenceValue + 1;
+	
+	return surfaces[bufferIndex];
+}
+
+void onSwapBuffers()
+{
+	SkSurface* surface = surfaces[bufferIndex].get();
+
+	GrFlushInfo info;
+	surface->flush(SkSurface::BackendSurfaceAccess::kPresent, info);
+	context->submit();
+	
+	swapChain->Present(1,0);
+	queue->Signal(fence.get(), fenceValues[bufferIndex]);
+}
+
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	switch(uMsg)
@@ -193,8 +222,10 @@ int main()
 	{
 		return 0;
 	}
-	
+
 	ShowWindow(hwnd, SW_SHOW);
+
+	initDirectX(hwnd);
 
 	MSG msg = {};
 	while (WaitMessage())
